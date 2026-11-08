@@ -1,0 +1,34 @@
+{
+  "rulesetAsOf": "2026-11-08",
+  "publications": [
+    {
+      "id": "AR670-1",
+      "title": "AR 670-1, Wear and Appearance of Army Uniforms and Insignia",
+      "date": "2021-01-26",
+      "change": {
+        "number": "001",
+        "date": "2025-03-04",
+        "summary": "Administrative: terminology updated from \"gender\" to \"sex\"; ACU sleeve-roll correction; implements Army Green Service Uniform (AGSU) policy."
+      },
+      "apdIndexUrl": "https://armypubs.army.mil/ProductMaps/PubForm/AR.aspx",
+      "apdNumber": "AR 670-1",
+      "lastReviewed": null
+    },
+    {
+      "id": "DAPAM670-1",
+      "title": "DA PAM 670-1, Guide to the Wear and Appearance of Army Uniforms and Insignia",
+      "date": "2021-01-26",
+      "apdIndexUrl": "https://armypubs.army.mil/ProductMaps/PubForm/DA_Pam.aspx",
+      "apdNumber": "DA PAM 670-1",
+      "lastReviewed": null
+    },
+    {
+      "id": "AR600-8-22",
+      "title": "AR 600-8-22, Military Awards (order of precedence, eligibility)",
+      "date": "2019-03-05",
+      "apdIndexUrl": "https://armypubs.army.mil/ProductMaps/PubForm/AR.aspx",
+      "apdNumber": "AR 600-8-22",
+      "lastReviewed": null
+    }
+  ]
+}
