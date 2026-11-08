@@ -1,0 +1,42 @@
+{
+  "rulesetAsOf": "2026-11-08",
+  "publications": [
+    {
+      "id": "AR670-1",
+      "title": "AR 670-1, Wear and Appearance of Army Uniforms and Insignia",
+      "date": "2021-01-26",
+      "change": {
+        "number": "001",
+        "date": "2025-03-04",
+        "summary": "Administrative revision: changes \"gender\" to \"sex\" throughout. No change to uniform wear."
+      },
+      "apdIndexUrl": "https://armypubs.army.mil/ProductMaps/PubForm/AR.aspx",
+      "apdDetailsUrl": "https://armypubs.army.mil/ProductMaps/PubForm/Details.aspx?PUB_ID=1020639",
+      "apdNumber": "AR 670-1",
+      "lastReviewed": "2026-11-08"
+    },
+    {
+      "id": "DAPAM670-1",
+      "title": "DA PAM 670-1, Guide to the Wear and Appearance of Army Uniforms and Insignia",
+      "date": "2021-01-26",
+      "apdIndexUrl": "https://armypubs.army.mil/ProductMaps/PubForm/PAM.aspx",
+      "apdDetailsUrl": "https://armypubs.army.mil/ProductMaps/PubForm/Details.aspx?PUB_ID=1021155",
+      "apdNumber": "PAM 670-1",
+      "lastReviewed": "2026-11-08"
+    },
+    {
+      "id": "AR600-8-22",
+      "title": "AR 600-8-22, Military Awards",
+      "date": "2026-05-11",
+      "change": {
+        "number": "admin",
+        "date": "2026-05-19",
+        "summary": "Administrative revision: restores text in para 1-23b(1); adds the Military Police and Retired Service ID badges. The 11 May 2026 edition (effective 11 Jun 2026) supersedes 30 Jul 2025."
+      },
+      "apdIndexUrl": "https://armypubs.army.mil/ProductMaps/PubForm/AR.aspx",
+      "apdDetailsUrl": "https://armypubs.army.mil/ProductMaps/PubForm/Details.aspx?PUB_ID=1032924",
+      "apdNumber": "AR 600-8-22",
+      "lastReviewed": "2026-11-08"
+    }
+  ]
+}
