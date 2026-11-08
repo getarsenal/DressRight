@@ -48,20 +48,21 @@ export interface CoatGeometry {
 export function coatGeometry(b: Pick<Build, 'uniform' | 'sex'>): CoatGeometry {
   const male = b.sex === 'male';
   return {
-    width: male ? 19 : 17,
+    // proportions of a 40R (male) / 12R (female) coat
+    width: male ? 17 : 15.5,
     height: male ? 30 : 26,
-    depth: male ? 10 : 9,
+    depth: male ? 9.5 : 8.6,
     top: male ? 15 : 13,
     notchY: male ? 9 : 7,
-    notchX: male ? 3.6 : 2.9,
+    notchX: male ? 3.2 : 2.7,
     topButtonY: male ? 0 : 1,
     buttons: male ? [0, -4.3, -8.6, -12.9] : [1, -3, -7],
     pocket: male
       ? b.uniform === 'AGSU'
-        ? { cx: 5.9, top: 4.6, width: 4.6, height: 5.4, flap: 2.2, style: 'flap', pleat: true }
-        : { cx: 5.9, top: 4.6, width: 4.6, height: 5.2, flap: 2.0, style: 'flap', pleat: false }
+        ? { cx: 5.0, top: 4.6, width: 4.5, height: 5.4, flap: 2.2, style: 'flap', pleat: true }
+        : { cx: 5.0, top: 4.6, width: 4.5, height: 5.2, flap: 2.0, style: 'flap', pleat: false }
       : b.uniform === 'AGSU'
-        ? { cx: 4.7, top: 4.4, width: 4.0, height: 4.6, flap: 1.9, style: 'flap', pleat: true }
+        ? { cx: 4.3, top: 4.4, width: 3.9, height: 4.6, flap: 1.9, style: 'flap', pleat: true }
         : null,
     sleeveLength: male ? 24 : 22,
     sleeveRadius: male ? 2.6 : 2.3,
@@ -230,7 +231,7 @@ export function layout(b: Build): PlacedItem[] {
   const femaleAsu = !agsu && b.sex === 'female';
   const items: PlacedItem[] = [];
   const pk = g.pocket;
-  const pcx = pk?.cx ?? 4.6;
+  const pcx = pk?.cx ?? 4.2;
 
   // Name plate: ASU only (DA PAM 14-5n: none on the AGSU).
   const npW = 3;

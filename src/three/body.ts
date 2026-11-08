@@ -15,6 +15,7 @@
  */
 import * as THREE from 'three';
 import type { CoatGeometry } from '../regs/layout';
+import { armPoint, buildArm, type ArmSweep } from './arm';
 
 export interface SurfaceHit {
   pos: THREE.Vector3;
@@ -55,8 +56,11 @@ export interface BodyParams {
   hw: (y: number) => number;
   hd: (y: number) => number;
   cz: (y: number) => number;
-  sleeveTop: (side: 1 | -1) => THREE.Vector3;
-  sleeveCurve: (side: 1 | -1) => THREE.CatmullRomCurve3;
+  /** height of the torso's shoulder cap at |x| (rises toward the neck) */
+  capY: (absX: number) => number;
+  /** the shoulder + sleeve tube for each side */
+  arm: (side: 1 | -1) => ArmSweep;
+  /** front-back semi-axis of the sleeve at `along` (arc length per radian around the outer side) */
   sleeveR: (along: number) => number;
 }
 
@@ -67,56 +71,71 @@ export function bodyParams(g: CoatGeometry, male: boolean): BodyParams {
   const D = g.depth / 2;
   // [y, value] keys from hem to shoulder line
   const hwKeys: [number, number][] = male
-    ? [[hem, W - 0.2], [hem + 9, W - 1.3], [hem + 13, W - 1.5], [top - 12, W - 0.2], [top - 4, W], [top, W - 0.4]]
-    : [[hem, W + 0.4], [hem + 7, W - 1.4], [hem + 11, W - 1.7], [top - 10, W - 0.3], [top - 3, W - 0.3], [top, W - 0.6]];
+    ? [[hem, W - 0.2], [hem + 9, W - 1.3], [hem + 13, W - 1.5], [top - 12, W - 0.2], [top - 4, W], [top, W - 0.6]]
+    : [[hem, W + 0.4], [hem + 7, W - 1.4], [hem + 11, W - 1.7], [top - 10, W - 0.3], [top - 3, W - 0.3], [top, W - 0.8]];
   const hdKeys: [number, number][] = male
     ? [[hem, D - 0.6], [hem + 12, D - 1.0], [top - 11, D], [top - 3, D - 0.4], [top, D - 1.6]]
     : [[hem, D - 0.4], [hem + 10, D - 1.0], [top - 9, D + 0.2], [top - 3, D - 0.4], [top, D - 1.5]];
   const czKeys: [number, number][] = [[hem, 0], [top - 12, 0.4], [top - 4, 0.2], [top, -0.3]];
 
-  const sleeveLen = g.sleeveLength;
-  const sr = g.sleeveRadius;
-  const sleeveTop = (side: 1 | -1) => new THREE.Vector3(side * (W - 0.6 + sr * 0.55), top - 1.4, -0.2);
-  const curves = new Map<number, THREE.CatmullRomCurve3>();
-  const sleeveCurve = (side: 1 | -1) => {
-    let c = curves.get(side);
-    if (!c) {
-      const s = sleeveTop(side);
-      // hang close to the body (following the waist suppression), bending forward below the elbow
-      c = new THREE.CatmullRomCurve3([
-        s,
-        s.clone().add(new THREE.Vector3(side * -0.15, -sleeveLen * 0.3, 0.15)),
-        s.clone().add(new THREE.Vector3(side * -0.35, -sleeveLen * 0.56, 0.45)),
-        s.clone().add(new THREE.Vector3(side * -0.3, -sleeveLen * 0.79, 1.5)),
-        s.clone().add(new THREE.Vector3(side * -0.15, -sleeveLen * 0.98, 2.7)),
-      ]);
-      curves.set(side, c);
+  const neckR = male ? 2.6 : 2.3;
+  const shoulderRise = 1.9;
+  const hw = (y: number) => profile(hwKeys, y);
+  const cz = (y: number) => profile(czKeys, y);
+  const span = hw(top) + 0.8 - neckR;
+  const capY = (absX: number) => top + shoulderRise * Math.pow(1 - Math.min(1, Math.max(0, (absX - neckR) / span)), 1.3);
+
+  // shoulder + sleeve tube (control points for the wearer's left; mirrored for the right)
+  const k = male ? 1 : 0.9; // female coat: smaller sleeve
+  const czTop = cz(top) * 0.5;
+  const x0 = neckR + 0.7;
+  const x1 = W - 2.4;
+  const bend: [number, number, number] = [W + 0.55 * k, top - 2.6 * k, czTop - 0.1];
+  const L = g.sleeveLength;
+  const armSpec = (side: 1 | -1) => ({
+    side,
+    points: [
+      [x0, capY(x0) - 0.55, czTop],
+      [x1, capY(x1) - 0.95 * k, czTop],
+      [W - 0.4, top - 0.7 * k, czTop],
+      bend,
+      [bend[0] + 0.15, bend[1] - L * 0.19, bend[2] + 0.2],
+      [bend[0], bend[1] - L * 0.48, bend[2] + 0.5],
+      [bend[0] - 0.05, bend[1] - L * 0.69, bend[2] + 1.5],
+      [bend[0] + 0.15, bend[1] - L * 0.9, bend[2] + 2.7],
+    ] as [number, number, number][],
+    a: [0.55, 1.0 * k, 1.5 * k, 2.45 * k, 2.5 * k, 2.3 * k, 2.15 * k, 2.0 * k],
+    b: [1.3, 2.4 * k, 2.7 * k, 2.7 * k, 2.6 * k, 2.4 * k, 2.25 * k, 2.1 * k],
+    bendIndex: 3,
+    seamT: 0.35,
+    sleeveLength: L,
+  });
+  const arms = new Map<number, ArmSweep>();
+  const arm = (side: 1 | -1) => {
+    let a = arms.get(side);
+    if (!a) {
+      a = buildArm(armSpec(side));
+      arms.set(side, a);
     }
-    return c;
+    return a;
   };
-  const sleeveR = (along: number) =>
-    profile(
-      [
-        [0, sr * 1.08],
-        [sleeveLen * 0.25, sr],
-        [sleeveLen * 0.58, sr * 0.9],
-        [sleeveLen, sr * 0.8],
-      ],
-      along,
-    );
+  const sleeveR = (along: number) => {
+    const a = arm(1);
+    return a.frame(a.sForAlong(along)).bb;
+  };
 
   return {
     g,
     hem,
     top,
-    neckR: male ? 2.6 : 2.3,
-    shoulderRise: 1.9,
+    neckR,
+    shoulderRise,
     n: 2.7,
-    hw: (y) => profile(hwKeys, y),
+    hw,
     hd: (y) => profile(hdKeys, y),
-    cz: (y) => profile(czKeys, y),
-    sleeveTop,
-    sleeveCurve,
+    cz,
+    capY,
+    arm,
     sleeveR,
   };
 }
@@ -138,34 +157,20 @@ export function analyticSurface(p: BodyParams): BodySurface {
     return { pos: new THREE.Vector3(x, yy, z), normal: new THREE.Vector3(-dzdx, -dzdy, 1).normalize() };
   };
 
-  const frames = new Map<number, { curve: THREE.CatmullRomCurve3; len: number }>();
   const sleeve = (side: 1 | -1, along: number, around: number): SurfaceHit => {
-    let f = frames.get(side);
-    if (!f) {
-      const curve = p.sleeveCurve(side);
-      f = { curve, len: curve.getLength() };
-      frames.set(side, f);
-    }
-    // `along` is measured in sleeve inches: 0 = shoulder seam, g.sleeveLength = bottom of the sleeve
-    const t = Math.min(1, Math.max(0, along / p.g.sleeveLength));
-    const c = f.curve.getPointAt(t);
-    const tan = f.curve.getTangentAt(t);
-    // outward reference = ±x projected perpendicular to the tangent
-    const out = new THREE.Vector3(side, 0, 0).addScaledVector(tan, -tan.x * side).normalize();
-    const fwd = new THREE.Vector3().crossVectors(tan, out).multiplyScalar(side).normalize();
-    const n = out.clone().multiplyScalar(Math.cos(around)).addScaledVector(fwd, Math.sin(around)).normalize();
-    const r = p.sleeveR(along);
-    return { pos: c.clone().addScaledVector(n, r), normal: n };
+    const arm = p.arm(side);
+    return armPoint(arm.frame(arm.sForAlong(along)), around);
   };
 
   const shoulder = (side: 1 | -1, t: number, zOff = 0): SurfaceHit => {
-    const x0 = p.neckR + 0.9;
-    const x = side * (x0 + t);
-    const span = p.hw(p.top) + 0.8 - p.neckR;
-    const y = p.top + p.shoulderRise * Math.pow(1 - Math.min(1, (Math.abs(x) - p.neckR) / span), 1.3);
-    const slope = (p.shoulderRise * 1.3) / span;
-    const normal = new THREE.Vector3(side * slope * 0.6, 1, 0).normalize();
-    return { pos: new THREE.Vector3(x, y, zOff + p.cz(p.top) * 0.5), normal };
+    const x = p.neckR + 0.9 + t;
+    const arm = p.arm(side);
+    const f = arm.frame(arm.sForX(x));
+    // top of the elliptical section, offset front/back across the loop
+    const z = Math.max(-f.bb * 0.95, Math.min(f.bb * 0.95, zOff));
+    const lift = f.a * Math.sqrt(Math.max(0, 1 - (z / f.bb) ** 2));
+    const pos = f.c.clone().addScaledVector(f.n, lift).addScaledVector(f.b, z);
+    return { pos, normal: f.n.clone() };
   };
 
   return { front, sleeve, shoulder };
@@ -240,17 +245,34 @@ export function torsoGeometry(p: BodyParams, uvRect: { x0: number; y0: number; w
   return geo;
 }
 
-/** Sleeve: circles swept along the sleeve curve with a tapering radius. */
-export function sleeveGeometry(p: BodyParams, side: 1 | -1, surf: BodySurface) {
-  const segA = 48;
-  const segL = 40;
-  const len = p.g.sleeveLength;
+/**
+ * Make triangle winding agree with the supplied vertex normals. Mirrored
+ * geometry (left vs right arm) otherwise ends up inside-out, and with
+ * double-sided materials three.js then lights it from the inside (black).
+ */
+export function orientIndices(pos: number[], nor: number[], idx: number[]) {
+  let score = 0;
+  const v = (i: number) => new THREE.Vector3(pos[i * 3], pos[i * 3 + 1], pos[i * 3 + 2]);
+  for (let t = 0; t < idx.length; t += 3 * Math.max(1, Math.floor(idx.length / 300))) {
+    const [a, b, c] = [idx[t], idx[t + 1], idx[t + 2]];
+    const face = new THREE.Vector3().crossVectors(v(b).sub(v(a)), v(c).sub(v(a)));
+    score += face.dot(new THREE.Vector3(nor[a * 3], nor[a * 3 + 1], nor[a * 3 + 2]));
+  }
+  if (score < 0) for (let t = 0; t < idx.length; t += 3) [idx[t + 1], idx[t + 2]] = [idx[t + 2], idx[t + 1]];
+  return idx;
+}
+
+/** Shoulder + sleeve tube: elliptical sections swept along the arm curve. */
+export function sleeveGeometry(p: BodyParams, side: 1 | -1) {
+  const arm = p.arm(side);
+  const segA = 56;
+  const segL = 110;
   const pos: number[] = [];
   const nor: number[] = [];
   for (let j = 0; j <= segL; j++) {
-    const along = (j / segL) * len;
+    const f = arm.frame((j / segL) * arm.total);
     for (let i = 0; i <= segA; i++) {
-      const h = surf.sleeve(side, along, (i / segA) * Math.PI * 2);
+      const h = armPoint(f, (i / segA) * Math.PI * 2);
       pos.push(h.pos.x, h.pos.y, h.pos.z);
       nor.push(h.normal.x, h.normal.y, h.normal.z);
     }
@@ -260,9 +282,9 @@ export function sleeveGeometry(p: BodyParams, side: 1 | -1, surf: BodySurface) {
     for (let i = 0; i < segA; i++) {
       const a = j * (segA + 1) + i;
       const c = a + segA + 1;
-      if (side === 1) idx.push(a, a + 1, c, a + 1, c + 1, c);
-      else idx.push(a, c, a + 1, a + 1, c, c + 1);
+      idx.push(a, c, a + 1, a + 1, c, c + 1);
     }
+  orientIndices(pos, nor, idx);
   const geo = new THREE.BufferGeometry();
   geo.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
   geo.setAttribute('normal', new THREE.Float32BufferAttribute(nor, 3));
@@ -272,13 +294,23 @@ export function sleeveGeometry(p: BodyParams, side: 1 | -1, surf: BodySurface) {
 
 /** Closes the cuff opening so the sleeve doesn't read as a hollow tube. */
 export function cuffCap(p: BodyParams, side: 1 | -1) {
-  const curve = p.sleeveCurve(side);
-  const center = curve.getPointAt(1);
-  const tan = curve.getTangentAt(1);
-  const geo = new THREE.CircleGeometry(p.sleeveR(p.g.sleeveLength) * 0.97, 40);
-  const q = new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0, 0, 1), tan);
-  geo.applyQuaternion(q);
-  geo.translate(center.x - tan.x * 0.25, center.y - tan.y * 0.25, center.z - tan.z * 0.25);
+  const arm = p.arm(side);
+  const f = arm.frame(arm.total - 0.2);
+  const seg = 48;
+  const pos: number[] = [f.c.x, f.c.y, f.c.z];
+  for (let i = 0; i <= seg; i++) {
+    const h = armPoint({ ...f, a: f.a * 0.97, bb: f.bb * 0.97 }, (i / seg) * Math.PI * 2);
+    pos.push(h.pos.x, h.pos.y, h.pos.z);
+  }
+  const idx: number[] = [];
+  for (let i = 1; i <= seg; i++) idx.push(0, i, i + 1);
+  const nor: number[] = [];
+  for (let i = 0; i < pos.length / 3; i++) nor.push(f.t.x, f.t.y, f.t.z);
+  orientIndices(pos, nor, idx);
+  const geo = new THREE.BufferGeometry();
+  geo.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
+  geo.setAttribute('normal', new THREE.Float32BufferAttribute(nor, 3));
+  geo.setIndex(idx);
   return geo;
 }
 
@@ -315,6 +347,7 @@ export function conformalPatch(
       const c = a + sx + 1;
       idx.push(a, a + 1, c, a + 1, c + 1, c);
     }
+  orientIndices(pos, nor, idx);
   const geo = new THREE.BufferGeometry();
   geo.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
   geo.setAttribute('normal', new THREE.Float32BufferAttribute(nor, 3));

@@ -31,9 +31,9 @@ export function lapelPoints(g: CoatGeometry, p: BodyParams, side: 1 | -1): [numb
   const pts: [number, number][] = [
     [p.neckR * 0.72, neckTop],
     [0, g.topButtonY],
-    [g.notchX + 1.7, g.notchY + 0.2],
-    [g.notchX + 1.0, g.notchY],
-    [g.notchX + 1.9, g.notchY + 1.0],
+    [g.notchX + 1.4, g.notchY + 0.2],
+    [g.notchX + 0.8, g.notchY],
+    [g.notchX + 1.6, g.notchY + 1.0],
     [p.neckR + 1.5, p.top + p.shoulderRise * 0.55],
     [p.neckR + 0.2, neckTop + 0.1],
   ];
@@ -201,7 +201,7 @@ export function tailoringMaps(b: Pick<Build, 'uniform' | 'sex'>, g: CoatGeometry
     stitch(ctx, shade(fabric, 0.8), pts.map(([x, y]) => [x - s * 0.15 * Math.sign(x || s), y]), true, 1);
     // gorge seam (collar meets lapel at the notch)
     seam([
-      [s * (g.notchX + 1.0), g.notchY],
+      [s * (g.notchX + 0.8), g.notchY],
       [s * (p.neckR * 0.9), g.notchY + 2.4],
     ]);
     path(bx, pts);
@@ -286,10 +286,10 @@ export function tailoringMaps(b: Pick<Build, 'uniform' | 'sex'>, g: CoatGeometry
     });
   }
   // lower pockets
-  const lw = male ? 6.6 : 5.6;
+  const lw = male ? 5.8 : 4.9;
   const ly = tb - (male ? 6.6 : 7.4);
   [1, -1].forEach((s) => {
-    const cx = s * (male ? 5.6 : 4.6);
+    const cx = s * (male ? 4.9 : 4.1);
     if (agsu) {
       patch(cx, ly - 0.3, lw, male ? 6.4 : 4.6, false);
       flap(flapShape(cx, ly, lw, 2.4, 0.3));
@@ -311,6 +311,6 @@ export function buttonSpots(b: Pick<Build, 'uniform' | 'sex'>, g: CoatGeometry):
   const out: [number, number, number][] = g.buttons.map((y) => [0, y, 0.42]);
   if (g.pocket?.style === 'flap') [1, -1].forEach((s) => out.push([s * g.pocket!.cx, g.pocket!.top - g.pocket!.flap - 0.0, 0.3]));
   const ly = g.topButtonY - (male ? 6.6 : 7.4);
-  [1, -1].forEach((s) => out.push([s * (male ? 5.6 : 4.6), ly - (b.uniform === 'AGSU' ? 2.25 : 1.95), 0.32]));
+  [1, -1].forEach((s) => out.push([s * (male ? 4.9 : 4.1), ly - (b.uniform === 'AGSU' ? 2.25 : 1.95), 0.32]));
   return out;
 }

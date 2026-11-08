@@ -149,7 +149,7 @@ export function Coat({ build, items, selected, onSelect, showMeasures }: Props) 
   const surf = useMemo(() => analyticSurface(p), [p]);
   const maps = useMemo(() => tailoringMaps(build, g, p), [build.uniform, build.sex, g, p]);
   const torso = useMemo(() => torsoGeometry(p, maps.rect), [p, maps.rect]);
-  const sleeves = useMemo(() => [sleeveGeometry(p, 1, surf), sleeveGeometry(p, -1, surf)], [p, surf]);
+  const sleeves = useMemo(() => [sleeveGeometry(p, 1), sleeveGeometry(p, -1)], [p]);
   const fabric = FABRIC[build.uniform];
   const cloth = useMemo(
     () => ({
