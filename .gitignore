@@ -2,3 +2,7 @@ node_modules
 dist
 *.log
 *.tsbuildinfo
+tools/blender/out/
+tools/blender/assets/
+__pycache__/
+*.pyc

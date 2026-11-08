@@ -9,10 +9,28 @@ import type { PlacedItem } from '../../regs/layout';
 import { rankById } from '../../regs/catalog/ranks';
 import { branchById } from '../../regs/catalog/branches';
 import { Coat } from '../../three/Coat';
+import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment.js';
 import { Sheet, type Snap } from '../components/Sheet';
 import { Icon } from '../components/Icons';
 import { Citations } from '../Citations';
 import { FindingList } from '../Findings';
+
+/** soft studio reflections (generated locally, no HDR download) */
+function Studio() {
+  const { gl, scene } = useThree();
+  useEffect(() => {
+    const pm = new THREE.PMREMGenerator(gl);
+    const env = pm.fromScene(new RoomEnvironment(), 0.04).texture;
+    scene.environment = env;
+    scene.environmentIntensity = 0.55;
+    return () => {
+      scene.environment = null;
+      env.dispose();
+      pm.dispose();
+    };
+  }, [gl, scene]);
+  return null;
+}
 
 /**
  * Frames the whole coat for the current screen shape: on a tall phone the
@@ -88,9 +106,10 @@ export function CoatScreen({ build, update, items, findings }: {
       <div className="viewport">
         <Canvas camera={camera} dpr={[1, 2]} onPointerMissed={() => setSelected(null)}>
           <color attach="background" args={['#121512']} />
-          <hemisphereLight args={['#eef2f7', '#2b2a22', 1.1]} />
-          <directionalLight position={[14, 26, 30]} intensity={2.1} />
-          <directionalLight position={[-22, 12, 18]} intensity={0.8} />
+          <Studio />
+          <hemisphereLight args={['#eef2f7', '#2b2a22', 0.7]} />
+          <directionalLight position={[14, 26, 30]} intensity={2.0} />
+          <directionalLight position={[-22, 12, 18]} intensity={0.7} />
           <directionalLight position={[0, 10, -30]} intensity={0.6} />
           <Coat build={build} items={items} selected={selected} onSelect={select} showMeasures={measure} />
           <ContactShadows position={[0, -16.5, 0]} opacity={0.45} scale={44} blur={2.6} far={20} />

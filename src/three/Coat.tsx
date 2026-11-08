@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import * as THREE from 'three';
 import { Html, Line } from '@react-three/drei';
 import type { ThreeEvent } from '@react-three/fiber';
@@ -17,6 +17,7 @@ import {
   type SurfaceHit,
 } from './body';
 import { FABRIC, buttonSpots, tailoringMaps } from './tailoring';
+import { loadCoatModel, type CoatModel } from './glbCoat';
 
 const BRASS = '#c9a227';
 
@@ -43,7 +44,8 @@ function placerFor(item: PlacedItem, surf: BodySurface, sleeveR: (a: number) => 
       const side = item.surface === 'leftSleeve' ? 1 : -1;
       return (u, v) => {
         const along = item.y - v;
-        return surf.sleeve(side, along, (-side * (item.x + u)) / sleeveR(along));
+        const across = -side * (item.x + u);
+        return surf.sleeveAcross ? surf.sleeveAcross(side, along, across) : surf.sleeve(side, along, across / sleeveR(along));
       };
     }
     default: {
@@ -59,7 +61,7 @@ function placerFor(item: PlacedItem, surf: BodySurface, sleeveR: (a: number) => 
 function surfacePoint(surface: PlacedItem['surface'], x: number, y: number, surf: BodySurface, sleeveR: (a: number) => number) {
   if (surface === 'front') return surf.front(x, y);
   const side = surface === 'leftSleeve' ? 1 : -1;
-  return surf.sleeve(side, y, (-side * x) / sleeveR(y));
+  return surf.sleeveAcross ? surf.sleeveAcross(side, y, -side * x) : surf.sleeve(side, y, (-side * x) / sleeveR(y));
 }
 
 function Decal({ item, place, selected, onSelect, offset, artV }: {
@@ -142,8 +144,88 @@ function Callout({ m, surface, surf, sleeveR }: { m: Measure; surface: PlacedIte
   );
 }
 
-export function Coat({ build, items, selected, onSelect, showMeasures }: Props) {
+/** The sculpted Blender coat when one exists for this uniform, else null (procedural). */
+function useCoatModel(uniform: string, sex: string, fabric: string) {
+  const [state, setState] = useState<{ key: string; model: CoatModel | null } | null>(null);
+  const key = `${uniform}|${sex}|${fabric}`;
+  useEffect(() => {
+    let live = true;
+    loadCoatModel(uniform, sex, fabric).then((model) => live && setState({ key, model }));
+    return () => {
+      live = false;
+    };
+  }, [key, uniform, sex, fabric]);
+  if (!state || state.key !== key) return { loading: sex === 'male', model: null };
+  return { loading: false, model: state.model };
+}
+
+export function Coat(props: Props) {
+  const { build } = props;
+  const { loading, model } = useCoatModel(build.uniform, build.sex, FABRIC[build.uniform]);
+  if (loading) return null;
+  return model ? <SculptedCoat {...props} model={model} /> : <ProceduralCoat {...props} />;
+}
+
+/** decals, sleeve braid and callouts on whatever surface the coat provides */
+function Insignia({ build, items, selected, onSelect, showMeasures, surf, sleeveR, sleeveLen }: Props & {
+  surf: BodySurface;
+  sleeveR: (a: number) => number;
+  sleeveLen: number;
+}) {
   const artV = useArtVersion();
+  const fabric = FABRIC[build.uniform];
+  const placers = useMemo(() => {
+    const m = new Map<string, Placer>();
+    items.forEach((i) => m.set(i.key, placerFor(i, surf, sleeveR)));
+    return m;
+  }, [items, surf, sleeveR]);
+  const braidSpec = sleeveBraid(build);
+  const braid = useMemo(
+    () =>
+      braidSpec
+        ? ([1, -1] as const).map((side) => {
+            const along = sleeveLen - 3 - braidSpec.width / 2;
+            return conformalPatch(2 * Math.PI * sleeveR(along) + 0.2, braidSpec.width, (u, v) => surf.sleeve(side, along - v, u / sleeveR(along)), 0.03, 40);
+          })
+        : [],
+    [braidSpec?.width, sleeveLen, sleeveR, surf],
+  );
+  return (
+    <group>
+      {braid.map((geo, i) => (
+        <mesh key={i} geometry={geo}>
+          {braidSpec?.color === 'gold' ? (
+            <meshStandardMaterial color={BRASS} metalness={0.6} roughness={0.35} side={THREE.DoubleSide} />
+          ) : (
+            <meshStandardMaterial color={new THREE.Color(fabric).multiplyScalar(0.8)} roughness={0.7} side={THREE.DoubleSide} />
+          )}
+        </mesh>
+      ))}
+      {items.map((i) => {
+        const onLapel = i.key.startsWith('disk') || i.key.startsWith('us-') || i.key.startsWith('br-');
+        const onLoop = i.surface === 'leftLoop' || i.surface === 'rightLoop';
+        const offset = onLoop ? (i.key.startsWith('strap-') ? 0.12 : 0.16) : onLapel ? 0.1 : 0.05;
+        return <Decal key={i.key} artV={artV} item={i} place={placers.get(i.key)!} selected={selected === i.key} onSelect={onSelect} offset={offset} />;
+      })}
+      {items
+        .filter((i) => i.measures && (showMeasures || selected === i.key))
+        .flatMap((i) => i.measures!.map((m, k) => <Callout key={`${i.key}-${k}`} m={m} surface={i.surface} surf={surf} sleeveR={sleeveR} />))}
+    </group>
+  );
+}
+
+function SculptedCoat(props: Props & { model: CoatModel }) {
+  const { model } = props;
+  return (
+    <group>
+      <primitive object={model.scene} />
+      <Insignia {...props} surf={model.surface} sleeveR={model.sleeveR} sleeveLen={model.sleeveLength} />
+    </group>
+  );
+}
+
+function ProceduralCoat(props: Props) {
+  const { build } = props;
   const g = useMemo(() => coatGeometry(build), [build.uniform, build.sex]);
   const p = useMemo(() => bodyParams(g, build.sex === 'male'), [g, build.sex]);
   const surf = useMemo(() => analyticSurface(p), [p]);
@@ -158,14 +240,7 @@ export function Coat({ build, items, selected, onSelect, showMeasures }: Props) 
     }),
     [maps, fabric],
   );
-  const placers = useMemo(() => {
-    const m = new Map<string, Placer>();
-    items.forEach((i) => m.set(i.key, placerFor(i, surf, p.sleeveR)));
-    return m;
-  }, [items, surf, p]);
-
-  const braidSpec = sleeveBraid(build);
-  const loopLen = g.width / 2 - g.notchX - 0.5;
+  const loopLen = g.loopLength;
   const sleeveLen = g.sleeveLength;
   const cuffs = useMemo(() => [cuffCap(p, 1), cuffCap(p, -1)], [p]);
 
@@ -175,17 +250,6 @@ export function Coat({ build, items, selected, onSelect, showMeasures }: Props) 
     const yc = g.buttons[g.buttons.length - 2] - 1.9;
     return conformalBand(p, yc, 1.6);
   }, [build.uniform, g, p]);
-
-  const braid = useMemo(
-    () =>
-      braidSpec
-        ? ([1, -1] as const).map((side) => {
-            const along = sleeveLen - 3 - braidSpec.width / 2;
-            return conformalPatch(2 * Math.PI * p.sleeveR(along) + 0.2, braidSpec.width, (u, v) => surf.sleeve(side, along - v, u / p.sleeveR(along)), 0.03, 40);
-          })
-        : [],
-    [braidSpec?.width, sleeveLen, p, surf],
-  );
 
   const loops = useMemo(
     () => ([1, -1] as const).map((side) => conformalPatch(loopLen, 2, (u, v) => surf.shoulder(side, loopLen / 2 + u, v), 0.08, 12)),
@@ -247,26 +311,7 @@ export function Coat({ build, items, selected, onSelect, showMeasures }: Props) 
         </group>
       )}
 
-      {braid.map((geo, i) => (
-        <mesh key={i} geometry={geo}>
-          {braidSpec?.color === 'gold' ? (
-            <meshStandardMaterial color={BRASS} metalness={0.6} roughness={0.35} side={THREE.DoubleSide} />
-          ) : (
-            <meshStandardMaterial color={new THREE.Color(fabric).multiplyScalar(0.8)} roughness={0.7} side={THREE.DoubleSide} />
-          )}
-        </mesh>
-      ))}
-
-      {items.map((i) => {
-        const onLapel = i.key.startsWith('disk') || i.key.startsWith('us-') || i.key.startsWith('br-');
-        const onLoop = i.surface === 'leftLoop' || i.surface === 'rightLoop';
-        const offset = onLoop ? (i.key.startsWith('strap-') ? 0.12 : 0.16) : onLapel ? 0.1 : 0.05;
-        return <Decal key={i.key} artV={artV} item={i} place={placers.get(i.key)!} selected={selected === i.key} onSelect={onSelect} offset={offset} />;
-      })}
-
-      {items
-        .filter((i) => i.measures && (showMeasures || selected === i.key))
-        .flatMap((i) => i.measures!.map((m, k) => <Callout key={`${i.key}-${k}`} m={m} surface={i.surface} surf={surf} sleeveR={p.sleeveR} />))}
+      <Insignia {...props} surf={surf} sleeveR={p.sleeveR} sleeveLen={sleeveLen} />
     </group>
   );
 }
