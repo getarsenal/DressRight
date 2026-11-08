@@ -1,5 +1,31 @@
 # Building a real coat model in Blender
 
+## Current pipeline (male AGSU and ASU coats)
+
+The male coats in the app are now built in Blender by a script, not by hand:
+
+```sh
+tools/blender/fetch_assets.sh                     # CC0 Human Base Meshes body (Blender Foundation)
+python tools/blender/coat.py --uniform AGSU --export public/models/coat-agsu-male.glb
+python tools/blender/coat.py --uniform ASU  --export public/models/coat-asu-male.glb
+tools/blender/compress.sh public/models/coat-*.glb   # meshopt, about 4x smaller
+```
+
+(`coat.py` runs under Blender or a `bpy` Python module.) It fits the coat to the realistic mannequin, drapes it with a cloth simulation,
+then cuts the lapels, pockets, flaps, belt and buttons from measurements taken off the product photo (the `SPEC` table). At export it
+moves the origin to the top button and thins the mesh to a phone budget. It also writes `dr_arm_{L,R}_00…12` empties along each
+sleeve's centerline. The root node's extras carry `dr_sleeve_length` and the spec.
+
+In the app, `src/three/glbCoat.ts` loads the model and implements `BodySurface` by ray-casting with a BVH:
+- the front from +z;
+- the sleeves outward from the centerline anchors;
+- the shoulder loops from above.
+
+It also adds a twill normal map. The male entries in `coatGeometry()` (`src/regs/layout.ts`) are measured from the same spec, so the
+regulation layout lines up with the sculpted pockets, notch and sleeves. Female coats still use the procedural body until a sculpted one exists.
+
+The full contract below is the target for hand-built models.
+
 DressRight currently draws the coat procedurally (`src/three/body.ts`): the torso is built from mathematical cross-sections, with sloped
 shoulders, waist suppression and curved sleeves. That's good enough to place insignia correctly and wrap them onto the cloth. It will
 never look like a tailored garment, though. This guide covers how to build a sculpted model that drops into the app.

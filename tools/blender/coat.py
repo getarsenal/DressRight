@@ -36,6 +36,7 @@ ap.add_argument("--out", default="tools/blender/out")
 ap.add_argument("--samples", type=int, default=32)
 ap.add_argument("--res", type=int, default=900)
 ap.add_argument("--stage", default="v3")
+ap.add_argument("--export", default="", help="write a .glb for the web app")
 ap.add_argument("--body", default=os.path.join(os.path.dirname(os.path.abspath(__file__)), "assets", "human_base_meshes_bundle.blend"))
 args = ap.parse_args(argv)
 os.makedirs(args.out, exist_ok=True)
@@ -200,7 +201,7 @@ def coat_joints(m, roomy=0.0):
     for s, sx in (("L", 1), ("R", -1)):
         pts = []
         # tailored sleeve (inches): bicep, elbow, forearm, cuff radii side-to-side / front-to-back
-        for name, dz, r in (("bic", -7.5, (2.35, 2.55)), ("elb", -12.5, (2.1, 2.3)), ("fore", -17.3, (1.95, 2.1)), ("wri", -23.6, (1.75, 1.85))):
+        for name, dz, r in (("bic", -7.5, (2.15, 2.55)), ("elb", -12.5, (1.95, 2.3)), ("fore", -17.3, (1.85, 2.1)), ("wri", -23.6, (1.7, 1.85))):
             _, cx, cy, *_ = arm_at(dz)
             pts.append((name, (cx * sx, cy, Z(dz)), (r[0] + roomy * 0.5, r[1] + roomy * 0.5)))
         _, c0x, c0y, *_ = arm_at(-4.0)
@@ -309,6 +310,11 @@ def polygon_mesh(name, outline, step=0.12, plane="XZ", depth=-40.0):
     return link(bpy.data.objects.new(name, me))
 
 
+def on_sleeve(p, nor):
+    """A hit on the inner face of a hanging sleeve (it faces the body), not the chest beside it."""
+    return abs(p.x) > 5.5 and p.z < Z(-3.0) and nor.x * (1 if p.x > 0 else -1) < -0.2
+
+
 def project_onto(ob, target, offset, axis="Y", positive=True):
     """Drop each vertex onto the target along the axis, keeping only front-facing hits.
 
@@ -328,6 +334,11 @@ def project_onto(ob, target, offset, axis="Y", positive=True):
             origin, d = Vector((v.co.x, v.co.y, 80)), Vector((0, 0, -1))
             ok_side = lambda h: h.z > Z(-2.5)
         hit, nor, _, _ = bvh.ray_cast(origin, d)
+        if axis == "Y":  # look past a hanging sleeve to the chest behind it
+            for _ in range(8):
+                if hit is None or not on_sleeve(hit, nor):
+                    break
+                hit, nor, _, _ = bvh.ray_cast(hit + d * 0.02, d)
         if hit is not None and ok_side(hit):
             if nor.dot(d) > 0:
                 nor = -nor
@@ -430,7 +441,7 @@ def button(name, hit, nor, d, mat, h=0.16):
 
 
 def build_mannequin():
-    ob = body_mod.load_body(args.body, SH)
+    ob = body_mod.load_body(args.body, SH, arm_hang_deg=12.0)
     ob.data.materials.clear()
     ob.data.materials.append(principled("Mannequin", (0.30, 0.31, 0.32), rough=0.5)[0])
     return ob
@@ -447,6 +458,9 @@ def drape_on(ob, body, frames=36):
     pin = ob.vertex_groups.new(name="pin")
     for v in ob.data.vertices:
         w = smooth_step(Z(0.2), Z(1.4), v.co.z) if abs(v.co.x) < 4.2 else 0.0
+        # hold the shoulder caps too, so the sleeves can't slide down and bunch into a fold
+        if 3.5 < abs(v.co.x) < 10.5:
+            w = max(w, 0.7 * smooth_step(Z(-3.2), Z(-0.6), v.co.z))
         if w > 0:
             pin.add([v.index], w, "REPLACE")
     cl = ob.modifiers.new("Cloth", "CLOTH")
@@ -457,7 +471,7 @@ def drape_on(ob, body, frames=36):
     st.tension_stiffness = 30
     st.compression_stiffness = 30
     st.shear_stiffness = 12
-    st.bending_stiffness = 1.2
+    st.bending_stiffness = 4.0  # wool-blend suiting resists folding
     st.shrink_min = 0.035  # contract slightly so the cloth settles onto the body
     st.gravity = (0, 0, -386.0)  # 9.81 m/s² in in/s²
     st.vertex_group_mass = "pin"
@@ -481,8 +495,12 @@ def smooth_step(a, b, t):
     return k * k * (3 - 2 * k)
 
 
+COAT_J = {}
+
+
 def build_coat(uniform, man):
     J, E = coat_joints(body_mod.measure(man, SH), roomy=0.45)
+    COAT_J.update(J)
     ob = skin_object("Coat", J, E, 3)
     bm = bmesh.new()
     bm.from_mesh(ob.data)
@@ -503,6 +521,18 @@ def build_coat(uniform, man):
     sm.iterations = 6
     apply_all(ob)
     drape_on(ob, man)
+    # iron the sleeve heads: the cap rests on the deltoid while the sleeve below hangs
+    # free, which leaves a shelf; a local smooth blends one into the other
+    cap = ob.vertex_groups.new(name="cap")
+    for v in ob.data.vertices:
+        w = smooth_step(7.6, 8.8, abs(v.co.x)) * smooth_step(Z(-9.0), Z(-5.5), v.co.z) * (1 - smooth_step(Z(-1.8), Z(-0.4), v.co.z))
+        if w > 0:
+            cap.add([v.index], w, "REPLACE")
+    ir = ob.modifiers.new("Iron", "SMOOTH")
+    ir.vertex_group = "cap"
+    ir.factor = 0.7
+    ir.iterations = 20
+    apply_all(ob)
     ss = ob.modifiers.new("Subsurf", "SUBSURF")  # smooth the simulated surface
     ss.levels = 1
     apply_all(ob)
@@ -590,9 +620,10 @@ def build_details(coat, uniform):
         lcx = L["cx"] * sx
         piece(f"LowerFlap{sx}", rect(lcx, Z(L["top"]), L["w"], L["h"]), coat, 0.06, 0.1, fabric, bevel=0.045)
         hit, nor = front_hit(bvh, lcx + L["button_dx"] * sx, Z(L["button_z"]))
-        if hit:
+        if hit and agsu:  # the blue coat's lower flaps have no buttons
             button(f"LowerButton{sx}", hit + nor * 0.16, nor, 0.62, brass, h=0.13)
-    for i, z in enumerate(SPEC["buttons_z"]):
+    # the AGSU's fourth button is under the belt; the blue coat shows all four
+    for i, z in enumerate(SPEC["buttons_z"] + ([] if agsu else [SPEC["buttons_z"][-1] - 2.9])):
         hit, nor = front_hit(bvh, 0.35, Z(z))
         if hit:
             button(f"FrontButton{i}", hit + nor * 0.12, nor, SPEC["button_d"], brass)
@@ -671,6 +702,100 @@ def shoot(cam, name, az, elev=4, dist=175, target=(0, 0, 2)):
     bpy.ops.render.render(write_still=True)
 
 
+# ---------------------------------------------------------------- export for the web app
+
+
+def sleeve_centerline(coat, man, side, samples=13):
+    """Points along each sleeve's centerline, shoulder → cuff: the middle of the
+    mannequin's arm in horizontal slabs (the sleeve hangs around the arm)."""
+    s = "L" if side > 0 else "R"
+    top = COAT_J["del" + s][0]
+    z0, z1 = top[2], Z(SPEC["cuff_z"])
+    mv = [v.co for v in man.data.vertices if v.co.x * side > 5.0 and z1 - 1.0 < v.co.z < z0 + 1.0]
+    out = []
+    for i in range(samples):
+        z = z0 + (z1 - z0) * i / (samples - 1)
+        slab = sorted((v for v in mv if abs(v.z - z) < 0.45), key=lambda v: v.x * side)
+        if len(slab) < 6:
+            out.append(out[-1].copy() if out else Vector(top))
+            out[-1].z = z
+            continue
+        xs = [v.x * side for v in slab]
+        # the arm is the outermost island; if it touches the torso, take one arm's width from the outside
+        cut = max(xs) - 3.8
+        for k in range(len(xs) - 1, 0, -1):
+            if xs[k] - xs[k - 1] > 0.35:
+                cut = max(cut, xs[k - 1] + 0.01)
+                break
+        arm = [v for v in slab if v.x * side >= cut]
+        ax = [v.x for v in arm]
+        ay = [v.y for v in arm]
+        out.append(Vector(((max(ax) + min(ax)) / 2, (max(ay) + min(ay)) / 2, z)))
+    return out
+
+
+def export_glb(coat, man, path, uniform):
+    """Write the coat + mannequin as a .glb for the app (frame: top button at the origin, inches)."""
+    top_button = Z(SPEC["buttons_z"][0])
+    # anchors: sleeve centerlines (the app ray-casts outward from these to find the sleeve surface)
+    root = bpy.data.objects.new("DressRightCoat", None)
+    bpy.context.collection.objects.link(root)
+    for side in (1, -1):
+        for i, p in enumerate(sleeve_centerline(coat, man, side)):
+            e = bpy.data.objects.new(f"dr_arm_{'L' if side > 0 else 'R'}_{i:02d}", None)
+            e.location = p
+            bpy.context.collection.objects.link(e)
+    # simple glTF-friendly materials (the procedural twill doesn't export; the app adds its own weave)
+    flat = principled("Fabric", FABRIC_RGB[uniform], rough=0.82, sheen=0.25)[0]
+    for ob in bpy.data.objects:
+        if ob.type == "MESH" and ob.data.materials and ob.data.materials[0].name.startswith("Fabric"):
+            ob.data.materials[0] = flat
+    # phone budget: thin out dense pieces (cloth sim + subsurf leave far more than needed)
+    for ob in bpy.data.objects:
+        if ob.type != "MESH" or ob.name == "Mannequin":
+            continue
+        bpy.ops.object.select_all(action="DESELECT")
+        ob.select_set(True)
+        bpy.context.view_layer.objects.active = ob
+        bpy.ops.object.convert(target="MESH")  # bake bevels etc. first so the budget is real
+        tris = sum(len(p.vertices) - 2 for p in ob.data.polygons)
+        if ob.name not in ("Coat", "Tie", "ShirtFront", "ShirtCollar"):
+            continue  # thin cut pieces (lapels, flaps, loops) keep their exact edges and shading
+        target = 45000 if ob.name == "Coat" else 3000
+        if tris > target * 1.2:
+            dec = ob.modifiers.new("Budget", "DECIMATE")
+            dec.ratio = target / tris
+            bpy.ops.object.modifier_apply(modifier=dec.name)
+        bpy.ops.object.shade_smooth(keep_sharp_edges=False)  # decimation leaves facets otherwise
+    # remove render-only objects, move the origin to the top button
+    for ob in list(bpy.data.objects):
+        if ob.type in ("CAMERA", "LIGHT"):
+            bpy.data.objects.remove(ob)
+    for ob in bpy.data.objects:
+        if ob is not root:
+            ob.location.z -= top_button
+            if ob.parent is None:
+                ob.parent = root
+    root["dr_version"] = 1
+    root["dr_uniform"] = uniform
+    root["dr_units"] = "inch"
+    root["dr_sleeve_length"] = -SPEC["cuff_z"]
+    root["dr_shoulder_line_y"] = SH - top_button
+    root["dr_spec"] = str({k: v for k, v in SPEC.items() if k != "lapel"})
+    bpy.ops.object.select_all(action="DESELECT")
+    bpy.ops.export_scene.gltf(
+        filepath=os.path.abspath(path),
+        export_format="GLB",
+        export_yup=True,
+        export_apply=True,
+        export_extras=True,
+        export_cameras=False,
+        export_lights=False,
+        export_animations=False,
+        export_skins=False,
+    )
+
+
 def main():
     reset()
     man = build_mannequin()
@@ -686,6 +811,12 @@ def main():
         shoot(cam, f"{args.stage}_{n}", az)
     shoot(cam, f"{args.stage}_closeup", 12, elev=6, dist=85, target=(0, 0, Z(-5)))
     bpy.ops.wm.save_as_mainfile(filepath=os.path.abspath(os.path.join(args.out, f"coat_{args.stage}.blend")))
+    if args.export:
+        # lighter mannequin for the web
+        dec = man.modifiers.new("Web", "DECIMATE")
+        dec.ratio = 0.35
+        apply_all(man)
+        export_glb(coat, man, args.export, args.uniform)
 
 
 main()

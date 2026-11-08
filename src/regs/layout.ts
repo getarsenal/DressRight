@@ -43,29 +43,54 @@ export interface CoatGeometry {
   pocket: { cx: number; top: number; width: number; height: number; flap: number; style: 'flap' | 'welt'; pleat: boolean } | null;
   sleeveLength: number;
   sleeveRadius: number;
+  /** shoulder loop length, collar seam end to shoulder seam */
+  loopLength: number;
+  /**
+   * Tilt (radians) of the lapel's inside edge. When set, collar and lapel
+   * insignia are placed along that axis from the notch (sculpted coat);
+   * otherwise the legacy offsets for the procedural coat are used.
+   */
+  collarTilt?: number;
 }
 
 export function coatGeometry(b: Pick<Build, 'uniform' | 'sex'>): CoatGeometry {
   const male = b.sex === 'male';
+  if (male) {
+    // Measured from the sculpted 40R coat (tools/blender/coat.py SPEC, from the
+    // product photo): origin at the top button, shoulder line 7.1 in above it.
+    return {
+      width: 17,
+      height: 30,
+      depth: 9.5,
+      top: 15,
+      notchY: 6.78,
+      notchX: 3.54,
+      topButtonY: 0,
+      buttons: [0, -3.1, -5.9, -8.7],
+      pocket:
+        b.uniform === 'AGSU'
+          ? { cx: 4.6, top: 2.6, width: 4.7, height: 6.9, flap: 2.75, style: 'flap', pleat: true }
+          : { cx: 4.6, top: 2.6, width: 4.7, height: 6.6, flap: 2.5, style: 'flap', pleat: false },
+      sleeveLength: 22.9,
+      sleeveRadius: 2.6,
+      loopLength: 4.0,
+      collarTilt: 0.35,
+    };
+  }
+  // proportions of a 12R female coat (procedural model)
   return {
-    // proportions of a 40R (male) / 12R (female) coat
-    width: male ? 17 : 15.5,
-    height: male ? 30 : 26,
-    depth: male ? 9.5 : 8.6,
-    top: male ? 15 : 13,
-    notchY: male ? 9 : 7,
-    notchX: male ? 3.2 : 2.7,
-    topButtonY: male ? 0 : 1,
-    buttons: male ? [0, -4.3, -8.6, -12.9] : [1, -3, -7],
-    pocket: male
-      ? b.uniform === 'AGSU'
-        ? { cx: 5.0, top: 4.6, width: 4.5, height: 5.4, flap: 2.2, style: 'flap', pleat: true }
-        : { cx: 5.0, top: 4.6, width: 4.5, height: 5.2, flap: 2.0, style: 'flap', pleat: false }
-      : b.uniform === 'AGSU'
-        ? { cx: 4.3, top: 4.4, width: 3.9, height: 4.6, flap: 1.9, style: 'flap', pleat: true }
-        : null,
-    sleeveLength: male ? 24 : 22,
-    sleeveRadius: male ? 2.6 : 2.3,
+    width: 15.5,
+    height: 26,
+    depth: 8.6,
+    top: 13,
+    notchY: 7,
+    notchX: 2.7,
+    topButtonY: 1,
+    buttons: [1, -3, -7],
+    pocket: b.uniform === 'AGSU' ? { cx: 4.3, top: 4.4, width: 3.9, height: 4.6, flap: 1.9, style: 'flap', pleat: true } : null,
+    sleeveLength: 22,
+    sleeveRadius: 2.3,
+    loopLength: 15.5 / 2 - 2.7 - 0.5,
   };
 }
 
@@ -430,15 +455,23 @@ export function layout(b: Build): PlacedItem[] {
 
   // ----- collar & lapel insignia
   const collarNote = femaleAsu ? ' (female ASU coat: measured about 5/8 inch up from the collar and lapel seam)' : '';
+  /** a point `up` inches along the lapel's inside-edge axis from the notch (sculpted coat) */
+  const fromNotch = (s: 1 | -1, up: number) => {
+    const t = g.collarTilt ?? 0;
+    return { x: s * (g.notchX - Math.sin(t) * up), y: g.notchY + Math.cos(t) * up };
+  };
+  const tilted = g.collarTilt !== undefined;
   if (officer) {
     ([-1, 1] as const).forEach((s) => {
       const usY = g.notchY + 0.625 + 0.2;
+      const us = tilted ? fromNotch(s, 0.625 + 0.2) : { x: s * (g.notchX + 0.9), y: usY };
+      const br = tilted ? fromNotch(s, 0.625 + 0.2 - 1.25) : { x: s * (g.notchX + 0.45), y: usY - 1.25 };
       items.push({
         key: `us-${s}`,
         label: 'U.S. insignia (officer)',
         surface: 'front',
-        x: s * (g.notchX + 0.9),
-        y: usY,
+        x: us.x,
+        y: us.y,
         w: 0.75,
         h: 0.4,
         rot: s * 0.35,
@@ -450,8 +483,8 @@ export function layout(b: Build): PlacedItem[] {
         key: `br-${s}`,
         label: `Branch insignia (${branch.name})`,
         surface: 'front',
-        x: s * (g.notchX + 0.45),
-        y: usY - 1.25,
+        x: br.x,
+        y: br.y,
         w: 0.85,
         h: 0.85,
         rot: s * 0.35,
@@ -466,8 +499,7 @@ export function layout(b: Build): PlacedItem[] {
         key: `disk-${s}`,
         label: s < 0 ? 'U.S. insignia disk (right collar)' : `Branch insignia disk (${branch.name}, left collar)`,
         surface: 'front',
-        x: s * (g.notchX + 1.0),
-        y: g.notchY + (femaleAsu ? 0.625 : 1.0) + 0.5,
+        ...(tilted ? fromNotch(s, 1.0 + 0.5) : { x: s * (g.notchX + 1.0), y: g.notchY + (femaleAsu ? 0.625 : 1.0) + 0.5 }),
         w: 1,
         h: 1,
         rot: s * 0.35,
@@ -482,7 +514,7 @@ export function layout(b: Build): PlacedItem[] {
   }
 
   // ----- shoulder loops: DUI and officer grade
-  const loopLen = g.width / 2 - g.notchX - 0.5;
+  const loopLen = g.loopLength;
   const general = ['BG', 'MG', 'LTG', 'GEN'].includes(rank.id);
   (['leftLoop', 'rightLoop'] as const).forEach((surface) => {
     if (officer && !agsu) {

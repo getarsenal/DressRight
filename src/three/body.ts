@@ -29,6 +29,8 @@ export interface BodySurface {
   sleeve(side: 1 | -1, along: number, around: number): SurfaceHit;
   /** a point on the top of the shoulder: `t` inches out from the neck end of the shoulder loop */
   shoulder(side: 1 | -1, t: number, zOff?: number): SurfaceHit;
+  /** optional: a sleeve point `across` inches around the surface from straight outward (+ toward the front) */
+  sleeveAcross?(side: 1 | -1, along: number, across: number): SurfaceHit;
 }
 
 const smooth = (a: number, b: number, t: number) => {
