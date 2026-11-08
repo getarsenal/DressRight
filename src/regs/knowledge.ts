@@ -167,7 +167,7 @@ export const ARTICLES: Article[] = [
     question: 'How many service stripes (hash marks) and overseas bars do I get, and where do they go?',
     tags: ['hash marks', 'service stripes', 'overseas bars', 'sleeve'],
     answer:
-      'Service stripes (enlisted only): one per 3 years of active Federal service, Reserve service creditable for non-regular retirement, or both; the 10th comes at 29 1/2 years. On the ASU they go on the left sleeve at 45°, 4 inches up; on the AGSU, on BOTH sleeves at 30°, seam to seam. Overseas service bars (officers and enlisted): one per 6 months in a listed operation (e.g. OEF, OIF, OND, OIR, OFS) on the right sleeve: 4 inches up for enlisted, 1/4 inch above the braid for officers.',
+      'Service stripes (enlisted only): one per 3 years of active Federal service, Reserve service creditable for non-regular retirement, or both; the 10th comes at 29 1/2 years. On the ASU they go on the left sleeve at 45°, 4 inches up. On the AGSU they also go on the left sleeve, at 30°, as DA PAM 670-1 figure 21-148 shows. (The paragraph text says "both sleeves, seam to seam", which contradicts its own figure and looks copied from the mess-uniform rule; confirm with your unit.) Overseas service bars (officers and enlisted): one per 6 months in a listed operation (e.g. OEF, OIF, OND, OIR, OFS) on the right sleeve: 4 inches up for enlisted, 1/4 inch above the braid for officers.',
     personal: (b) => ({
       verdict: 'depends',
       text: `With ${b.yearsService} years and ${b.monthsHostile} qualifying months: ${rankById(b.rankId).category === 'enlisted' ? Math.floor(b.yearsService / 3) : 0} service stripe(s) and ${Math.floor(b.monthsHostile / 6)} overseas bar(s).`,

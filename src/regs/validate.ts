@@ -166,6 +166,14 @@ const rules: Rule[] = [
     const rank = rankById(b.rankId);
     if (rank.category !== 'enlisted' && b.yearsService >= 3)
       out.push({ id: 'stripes-officer', severity: 'info', message: 'Service stripes are for enlisted Soldiers, so none are shown.', citations: [C.serviceStripesElig] });
+    if (b.uniform === 'AGSU' && rank.category === 'enlisted' && b.yearsService >= 3)
+      out.push({
+        id: 'agsu-stripes-conflict',
+        severity: 'info',
+        message:
+          'AGSU service stripes: DA PAM 670-1\'s text says "both sleeves, seam to seam", but its own figure 21-148 shows them on the left sleeve only. DressRight follows the figure; check your unit\'s guidance.',
+        citations: [C.serviceStripes],
+      });
     if (b.hasCombatPatch && b.monthsHostile === 0)
       out.push({
         id: 'mohc-no-deployment',

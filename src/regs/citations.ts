@@ -169,7 +169,14 @@ export const C = {
   serviceStripes: {
     source: 'DAPAM670-1',
     para: '21-28c',
-    topic: 'Service stripes: ASU left sleeve at 45°, 4 inches from the bottom; AGSU both sleeves at 30°, seam to seam',
+    topic:
+      'Service stripes: ASU left sleeve at 45°, 4 inches from the bottom. AGSU: text says both sleeves at 30° seam to seam, but figure 21-148 shows the left sleeve only (text appears copied from the mess-uniform paragraph)',
+    verification: 'verified',
+  },
+  stripeSizes: {
+    source: 'DAPAM670-1',
+    para: '21-7b, 21-28a–b, 21-29a–b',
+    topic: 'Sizes: large chevrons 3 in wide (5/16-in bands, 3/16-in spaces); service stripes and overseas bars 3/16 x 1-5/16 in on a 3/32-in border',
     verification: 'verified',
   },
   serviceStripesElig: {
