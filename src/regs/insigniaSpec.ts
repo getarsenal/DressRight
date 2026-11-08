@@ -105,7 +105,8 @@ export function chevronGeometry(rank: Rank, small: boolean) {
   };
   const lastSide = chevrons.length ? yAt(chevrons[chevrons.length - 1], -hw) : apex0;
   // arc sits under the chevrons: proportional spacing, but never with its ends above the last chevron's ends
-  const rocker0Center = Math.max(lastApex + 1.71 * u, lastSide + pitch * 0.7 + dip * (hw / (1.6 * u)) ** 2);
+  // the top arc's ends meet the last chevron's ends at the sides (as on the issued PFC and SFC insignia)
+  const rocker0Center = Math.max(lastApex + 1.71 * u, lastSide + dip * (hw / (1.6 * u)) ** 2);
   const baseArc: Pt[] = Array.from({ length: 41 }, (_, i) => {
     const x = -reach + (2 * reach * i) / 40;
     return [x, rocker0Center - dip * (x / (1.6 * u)) ** 2];
@@ -121,7 +122,8 @@ export function chevronGeometry(rank: Rank, small: boolean) {
 }
 
 export function chevronSize(rank: Rank, small: boolean): { w: number; h: number } {
-  if (rank.chevrons?.device === 'eagle' && rank.chevrons.up === 0) return small ? { w: 2.5, h: 2.4 } : { w: 2.875, h: 2.75 };
+  // Specialist: 2-7/8 in wide (large) or 2-1/2 in (small), spade-shaped (21-7b(1)(b), (2)(b))
+  if (rank.chevrons?.device === 'eagle' && rank.chevrons.up === 0) return small ? { w: 2.5, h: 2.95 } : { w: 2.875, h: 3.4 };
   const g = chevronGeometry(rank, small);
   return { w: g.width, h: g.height };
 }

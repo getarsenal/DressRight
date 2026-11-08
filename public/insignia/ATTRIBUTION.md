@@ -1,0 +1,472 @@
+# Insignia image credits
+
+All images were downloaded from Wikimedia Commons and are public domain (US Government works, PD-ineligible/PD-self) or CC0, per each file's Commons license metadata at download time. Format: file | Commons page | author | license.
+
+- `ribbons/MOH.svg` | https://commons.wikimedia.org/wiki/File:Medal_of_Honor_ribbon.svg | Ipankonin | Public domain (PD US Military Award)
+- `ribbons/DSC.png` | https://commons.wikimedia.org/wiki/File:Distinguished_Service_Cross_ribbon.svg | Ipankonin | Public domain (PD US Military Award)
+- `ribbons/NAVY_CROSS.png` | https://commons.wikimedia.org/wiki/File:Navy_Cross_ribbon.svg | James Earle Fraser | Public domain (PD US Military Award)
+- `ribbons/AIR_FORCE_CROSS.png` | https://commons.wikimedia.org/wiki/File:Air_Force_Cross_ribbon.svg | Ipankonin | Public domain (PD US Military Award)
+- `ribbons/DDSM.svg` | https://commons.wikimedia.org/wiki/File:Defense_Distinguished_Service_Medal_ribbon.svg | Defense Logistics Agency | Public domain (PD US Military Award)
+- `ribbons/DSM.png` | https://commons.wikimedia.org/wiki/File:U.S._Army_Distinguished_Service_Medal_ribbon.svg | Ipankonin | Public domain (PD US Military Award)
+- `ribbons/NAVY_DISTINGUISHED_SERVICE_MEDAL.png` | https://commons.wikimedia.org/wiki/File:Navy_Distinguished_Service_Medal_ribbon.svg | Ipankonin | Public domain (PD US Military Award)
+- `ribbons/AIR_FORCE_DISTINGUISHED_SERVICE_MEDAL.png` | https://commons.wikimedia.org/wiki/File:Air_Force_Distinguished_Service_ribbon.svg | Ipankonin | Public domain (PD US Military Award)
+- `ribbons/COAST_GUARD_DISTINGUISHED_SERVICE_MEDAL.png` | https://commons.wikimedia.org/wiki/File:Coast_Guard_Distinguished_Service_ribbon.svg | Ipankonin | Public domain (PD US Military Award)
+- `ribbons/HOMELAND_SECURITY_DISTINGUISHED_SERVICE_MEDAL.png` | https://commons.wikimedia.org/wiki/File:Homeland_Security_Distinguished_Service_Medal_ribbon.svg | Defense Logistics Agency. | Public domain (PD-USGov-Award)
+- `ribbons/SS.png` | https://commons.wikimedia.org/wiki/File:Silver_Star_Medal_ribbon.svg | Unknown | Public domain (PD US Military Award)
+- `ribbons/DSSM.png` | https://commons.wikimedia.org/wiki/File:Defense_Superior_Service_Medal_ribbon.svg | Ipankonin | Public domain (PD US Military Award)
+- `ribbons/LOM.png` | https://commons.wikimedia.org/wiki/File:Legion_of_Merit_ribbon.svg | This vector image was created with Inkscape by Ipankonin, and then manually replaced. | Public domain (PD US Military Award)
+- `ribbons/DFC.png` | https://commons.wikimedia.org/wiki/File:Distinguished_Flying_Cross_ribbon.svg | Original: Zscout370 Vector: Ipankonin | Public domain (PD US Military Award)
+- `ribbons/SM.png` | https://commons.wikimedia.org/wiki/File:Soldier's_Medal_ribbon.svg | Defense Logistics Agency | Public domain (PD US Military Award)
+- `ribbons/NAVY_AND_MARINE_CORPS_MEDAL.png` | https://commons.wikimedia.org/wiki/File:Navy_and_Marine_Corps_Medal_ribbon.svg | Ipankonin | Public domain (PD US Military Award)
+- `ribbons/AIRMANS_MEDAL.png` | https://commons.wikimedia.org/wiki/File:Airman's_Medal_ribbon.svg | Ipankonin | Public domain (PD US Military Award)
+- `ribbons/COAST_GUARD_MEDAL.png` | https://commons.wikimedia.org/wiki/File:Coast_Guard_Medal_ribbon.svg | Original: GifTagger Vector: Magasjukur2 | Public domain (PD US Military Award)
+- `ribbons/BSM.png` | https://commons.wikimedia.org/wiki/File:Bronze_Star_Medal_ribbon.svg | Defense Logistics Agency | Public domain (PD US Military Award)
+- `ribbons/PH.png` | https://commons.wikimedia.org/wiki/File:Purple_Heart_ribbon.svg | United States Army Institute of Heraldry | Public domain (PD US Military Award)
+- `ribbons/DMSM.png` | https://commons.wikimedia.org/wiki/File:Defense_Meritorious_Service_Medal_ribbon.svg | Ipankonin | Public domain (PD US Military Award)
+- `ribbons/MSM.png` | https://commons.wikimedia.org/wiki/File:Meritorious_Service_Medal_ribbon.svg | Defense Logistics Agency | Public domain (PD US Military Award)
+- `ribbons/AM.png` | https://commons.wikimedia.org/wiki/File:Air_Medal_ribbon.svg | Ipankonin | Public domain (PD US Military Award)
+- `ribbons/AERIAL_ACHIEVEMENT_MEDAL.png` | https://commons.wikimedia.org/wiki/File:Aerial_Achievement_Medal_ribbon.svg | Ipankonin | Public domain (PD US Military Award)
+- `ribbons/JSCM.png` | https://commons.wikimedia.org/wiki/File:Joint_Service_Commendation_Medal_ribbon.svg | Ipankonin | Public domain (PD US Military Award)
+- `ribbons/ARCOM.png` | https://commons.wikimedia.org/wiki/File:Army_Commendation_Medal_ribbon.svg | US Army | Public domain (PD US Army USAIOH; PD US Military Award)
+- `ribbons/NAVY_AND_MARINE_CORPS_COMMENDATION_MEDAL.png` | https://commons.wikimedia.org/wiki/File:Navy_and_Marine_Corps_Commendation_Medal_ribbon.svg | U.S. Navy | Public domain (PD US Army USAIOH; PD US Military Award)
+- `ribbons/AIR_AND_SPACE_COMMENDATION_MEDAL.png` | https://commons.wikimedia.org/wiki/File:Air_and_Space_Commendation_Medal_ribbon.svg | Ipankonin | Public domain (PD US Military Award)
+- `ribbons/COAST_GUARD_COMMENDATION_MEDAL.png` | https://commons.wikimedia.org/wiki/File:U.S._Coast_Guard_Commendation_Medal_ribbon.svg | Ipankonin | Public domain (PD US Military Award)
+- `ribbons/JSAM.png` | https://commons.wikimedia.org/wiki/File:Joint_Service_Achievement_Medal_ribbon.svg | Ipankonin | Public domain (PD US Military Award)
+- `ribbons/AAM.svg` | https://commons.wikimedia.org/wiki/File:Army_Achievement_Medal_ribbon.svg | Ipankonin | Public domain (PD US Military Award)
+- `ribbons/NAVY_AND_MARINE_CORPS_ACHIEVEMENT_MEDAL.png` | https://commons.wikimedia.org/wiki/File:Navy_and_Marine_Corps_Achievement_Medal_ribbon.svg | Ipankonin | Public domain (PD US Military Award)
+- `ribbons/AIR_AND_SPACE_ACHIEVEMENT_MEDAL.png` | https://commons.wikimedia.org/wiki/File:Air_and_Space_Achievement_Medal_ribbon.svg | USAF | Public domain (PD US Air Force)
+- `ribbons/COAST_GUARD_ACHIEVEMENT_MEDAL.png` | https://commons.wikimedia.org/wiki/File:U.S._Coast_Guard_Achievement_Medal_ribbon.svg | Ipankonin | Public domain (PD US Military Award)
+- `ribbons/COMMANDANTS_LETTER_OF_COMMENDATION_RIBBON.png` | https://commons.wikimedia.org/wiki/File:Commandant's_Letter_of_Commendation_Ribbon.svg | Ipankonin | Public domain (PD US Military Award)
+- `ribbons/POW.png` | https://commons.wikimedia.org/wiki/File:Prisoner_of_War_Medal_ribbon.svg | Ipankonin | Public domain (PD US Military Award)
+- `ribbons/COMBAT_ACTION_RIBBON.png` | https://commons.wikimedia.org/wiki/File:Combat_Action_Ribbon.svg | U.S. Navy | Public domain (PD US Military Award)
+- `ribbons/AIR_FORCE_COMBAT_ACTION_MEDAL.png` | https://commons.wikimedia.org/wiki/File:Air_Force_Combat_Action_ribbon.svg | Ipankonin | Public domain (PD US Military Award)
+- `ribbons/COAST_GUARD_COMBAT_ACTION_RIBBON.png` | https://commons.wikimedia.org/wiki/File:United_States_Coast_Guard_Combat_Action_Ribbon.svg | U.S. Coast Guard | Public domain (PD US Coast Guard; PD US Military Award)
+- `ribbons/AGCM.png` | https://commons.wikimedia.org/wiki/File:Army_Good_Conduct_Medal_ribbon.svg | US Army | Public domain (PD US Army USAIOH; PD US Military Award)
+- `ribbons/NAVY_GOOD_CONDUCT_MEDAL.png` | https://commons.wikimedia.org/wiki/File:U.S._Navy_Good_Conduct_Medal_ribbon.svg | U.S. Navy | Public domain
+- `ribbons/MARINE_CORPS_GOOD_CONDUCT_MEDAL.png` | https://commons.wikimedia.org/wiki/File:U.S._Marine_Corps_Good_Conduct_Medal_ribbon.svg | Ipankonin | Public domain (PD US Military Award)
+- `ribbons/AIR_FORCE_GOOD_CONDUCT_MEDAL.png` | https://commons.wikimedia.org/wiki/File:U.S._Air_Force_Good_Conduct_Medal_ribbon.svg | Original: Pmsyyz Vector: Ipankonin | Public domain (PD US Military Award)
+- `ribbons/SPACE_FORCE_GOOD_CONDUCT_MEDAL.png` | https://commons.wikimedia.org/wiki/File:U.S._Space_Force_Good_Conduct_Medal_ribbon.svg | Defense Logistics Agency | Public domain (PD-user; PD US Space Force)
+- `ribbons/COAST_GUARD_GOOD_CONDUCT_MEDAL.png` | https://commons.wikimedia.org/wiki/File:U.S._Coast_Guard_Good_Conduct_Medal_ribbon.svg | Ipankonin | Public domain (PD US Military Award)
+- `ribbons/ARCAM.png` | https://commons.wikimedia.org/wiki/File:U.S._Army_Reserve_Components_Achievement_Medal_ribbon.svg | Defense Logistics Agency | Public domain (PD US Army USAIOH)
+- `ribbons/NAVAL_RESERVE_MERITORIOUS_SERVICE_MEDAL.png` | https://commons.wikimedia.org/wiki/File:Naval_Reserve_Meritorious_Service_Medal_ribbon.svg | Ipankonin | Public domain (PD US Military Award)
+- `ribbons/SELECTED_MARINE_CORPS_RESERVE_MEDAL.png` | https://commons.wikimedia.org/wiki/File:Selected_Marine_Corps_Reserve_Medal_ribbon.svg | Ipankonin | Public domain (PD US Military Award)
+- `ribbons/AIR_RESERVE_FORCES_MERITORIOUS_SERVICE_MEDAL.png` | https://commons.wikimedia.org/wiki/File:Air_Reserve_Forces_Meritorious_Service_Medal_ribbon.PNG | US Air Force Personnel Center | Public domain (PD US Air Force)
+- `ribbons/NAVY_EXPEDITIONARY_MEDAL.png` | https://commons.wikimedia.org/wiki/File:Navy_Expeditionary_Medal_ribbon.svg | Defense Logistics Agency | Public domain (PD US Military Award)
+- `ribbons/MARINE_CORPS_EXPEDITIONARY_MEDAL.png` | https://commons.wikimedia.org/wiki/File:Marine_Corps_Expeditionary_Medal_ribbon.svg | Ipankonin | Public domain (PD US Military Award)
+- `ribbons/AMERICAN_DEFENSE_SERVICE_MEDAL.png` | https://commons.wikimedia.org/wiki/File:American_Defense_Service_Medal_ribbon.svg | Ipankonin | Public domain (PD US Military Award)
+- `ribbons/WOMENS_ARMY_CORPS_SERVICE_MEDAL.png` | https://commons.wikimedia.org/wiki/File:Women's_Army_Corps_Service_Medal_ribbon.svg | Ipankonin | Public domain (PD US Military Award)
+- `ribbons/AMERICAN_CAMPAIGN_MEDAL.png` | https://commons.wikimedia.org/wiki/File:American_Campaign_Medal_ribbon.svg | Ipankonin | Public domain (PD US Military Award)
+- `ribbons/ASIATIC_PACIFIC_CAMPAIGN_MEDAL.png` | https://commons.wikimedia.org/wiki/File:Asiatic-Pacific_Campaign_Medal_ribbon.svg | Ipankonin | Public domain (PD US Military Award)
+- `ribbons/EUROPEAN_AFRICAN_MIDDLE_EASTERN_CAMPAIGN_MEDAL.png` | https://commons.wikimedia.org/wiki/File:European-African-Middle_Eastern_Campaign_ribbon.svg | Ipankonin | Public domain (PD US Military Award)
+- `ribbons/WORLD_WAR_II_VICTORY_MEDAL.png` | https://commons.wikimedia.org/wiki/File:World_War_II_Victory_Medal_ribbon.svg | Ipankonin | Public domain (PD US Military Award)
+- `ribbons/ARMY_OF_OCCUPATION_MEDAL.png` | https://commons.wikimedia.org/wiki/File:Army_of_Occupation_ribbon.svg | Ipankonin | Public domain (PD US Military Award)
+- `ribbons/MEDAL_FOR_HUMANE_ACTION.png` | https://commons.wikimedia.org/wiki/File:Medal_for_Humane_Action_ribbon.svg | Ipankonin | Public domain (PD US Military Award)
+- `ribbons/NDSM.png` | https://commons.wikimedia.org/wiki/File:National_Defense_Service_Medal_ribbon.svg | Defense Logistics Agency | Public domain (PD US Military Award)
+- `ribbons/KOREAN_SERVICE_MEDAL.png` | https://commons.wikimedia.org/wiki/File:Korean_Service_Medal_ribbon.svg | Ipankonin | Public domain (PD US Military Award)
+- `ribbons/ANTARCTICA_SERVICE_MEDAL.png` | https://commons.wikimedia.org/wiki/File:Antarctica_Service_Medal_ribbon.svg | Ipankonin | Public domain (PD US Military Award)
+- `ribbons/AFEM.png` | https://commons.wikimedia.org/wiki/File:Armed_Forces_Expeditionary_Medal_ribbon.svg | Shazz (commons) — Shazz (pl.wiki) | Public domain (PD US Military Award)
+- `ribbons/VIETNAM_SERVICE_MEDAL.png` | https://commons.wikimedia.org/wiki/File:Vietnam_Service_Medal_ribbon.svg | Original: Hansonveteran Vector: Ipankonin | Public domain (PD US Military Award)
+- `ribbons/SWASM.png` | https://commons.wikimedia.org/wiki/File:Southwest_Asia_Service_Medal_ribbon.svg | Nadine Russell | Public domain (PD US Military Award)
+- `ribbons/KCM.png` | https://commons.wikimedia.org/wiki/File:Kosovo_Campaign_Medal_ribbon.svg | Ipankonin | Public domain (PD US Military Award)
+- `ribbons/ACM.png` | https://commons.wikimedia.org/wiki/File:Afghanistan_Campaign_Medal_ribbon.svg | Ipankonin | Public domain (PD US Military Award)
+- `ribbons/ICM.png` | https://commons.wikimedia.org/wiki/File:Iraq_Campaign_Medal_ribbon.svg | Defense Logistics Agency | Public domain (PD US Army USAIOH; PD US Military Award)
+- `ribbons/IRCM.png` | https://commons.wikimedia.org/wiki/File:Inherent_Resolve_Campaign_Medal_ribbon.svg | U.S. Defense Logistics Agency | Public domain (PD US Military Award)
+- `ribbons/GWOTEM.png` | https://commons.wikimedia.org/wiki/File:Global_War_on_Terrorism_Expeditionary_Medal_ribbon.svg | Defense Logistics Agency (DLA) | Public domain (PD US Military Award)
+- `ribbons/GWOTSM.png` | https://commons.wikimedia.org/wiki/File:Global_War_on_Terrorism_Service_Medal_ribbon.svg | Ipankonin | Public domain (PD US Army USAIOH; PD US Military Award)
+- `ribbons/KDSM.png` | https://commons.wikimedia.org/wiki/File:Korea_Defense_Service_Medal_ribbon.svg | Ipankonin | Public domain (PD US Military Award)
+- `ribbons/AFSM.png` | https://commons.wikimedia.org/wiki/File:Armed_Forces_Service_Medal_ribbon.svg | Defense Logistics Agency (DLA) | Public domain (PD US Military Award)
+- `ribbons/HSM.png` | https://commons.wikimedia.org/wiki/File:Humanitarian_Service_Medal_ribbon.svg | Ipankonin | Public domain (PD US Military Award)
+- `ribbons/MOVSM.png` | https://commons.wikimedia.org/wiki/File:Military_Outstanding_Volunteer_Service_Medal_ribbon.svg | Ipankonin | Public domain (PD US Military Award)
+- `ribbons/NUCLEAR_DETERRENCE_OPERATIONS_SERVICE_MEDAL.png` | https://commons.wikimedia.org/wiki/File:Nuclear_Deterrence_Operations_Service_Medal_ribbon.svg | Defense Logistics Agency. | Public domain (PD US Military Award)
+- `ribbons/AIR_AND_SPACE_CAMPAIGN_MEDAL.png` | https://commons.wikimedia.org/wiki/File:Air_and_Space_Campaign_Medal_ribbon.svg | Ipankonin | Public domain (PD US Military Award)
+- `ribbons/NAVY_ARCTIC_SERVICE_RIBBON.png` | https://commons.wikimedia.org/wiki/File:Navy_Arctic_Service_Ribbon.svg | Ipankonin | Public domain (PD US Military Award)
+- `ribbons/NAVY_AND_MARINE_CORPS_SEA_SERVICE_DEPLOYMENT_RIBBON.png` | https://commons.wikimedia.org/wiki/File:Navy_and_Marine_Corps_Sea_Service_Deployment_Ribbon.svg | Ipankonin | Public domain (PD US Military Award)
+- `ribbons/NAVY_AND_MARINE_CORPS_OVERSEAS_SERVICE_RIBBON.png` | https://commons.wikimedia.org/wiki/File:Navy_and_Marine_Corps_Overseas_Service_Ribbon.svg | Ipankonin | Public domain (PD US Military Award)
+- `ribbons/AIR_AND_SPACE_EXPEDITIONARY_SERVICE_RIBBON.png` | https://commons.wikimedia.org/wiki/File:Air_and_Space_Expeditionary_Service_Ribbon.svg | Ipankonin | Public domain (PD US Military Award)
+- `ribbons/AIR_FORCE_OVERSEAS_SHORT_TOUR_SERVICE_RIBBON.png` | https://commons.wikimedia.org/wiki/File:Air_Force_Overseas_Short_Tour_Service_Ribbon.svg | Ipankonin | Public domain (PD US Military Award)
+- `ribbons/AIR_FORCE_OVERSEAS_LONG_TOUR_SERVICE_RIBBON.png` | https://commons.wikimedia.org/wiki/File:Air_and_Space_Overseas_Long_Tour_Service_Ribbon.svg | USAF | Public domain (PD-user; PD US Air Force)
+- `ribbons/AIR_FORCE_LONGEVITY_SERVICE_AWARD.png` | https://commons.wikimedia.org/wiki/File:Air_Force_Longevity_Service_ribbon.svg | Ipankonin | Public domain (PD US Military Award)
+- `ribbons/COAST_GUARD_SEA_SERVICE_RIBBON.png` | https://commons.wikimedia.org/wiki/File:U.S._Coast_Guard_Sea_Service_Ribbon.svg | Ipankonin | Public domain (PD US Military Award)
+- `ribbons/AFRM.png` | https://commons.wikimedia.org/wiki/File:Armed_Forces_Reserve_Medal_ribbon.svg | Ipankonin | Public domain (PD US Military Award)
+- `ribbons/NAVAL_RESERVE_MEDAL.png` | https://commons.wikimedia.org/wiki/File:U.S._Naval_Reserve_Medal_ribbon.svg | Original: Unknown Vector: Ipankonin | Public domain (PD US Military Award)
+- `ribbons/NCOPDR.png` | https://commons.wikimedia.org/wiki/File:Non-Commissioned_Officer_Professional_Development_Ribbon.svg | U.S. Defense Logistics Agency | Public domain (PD US Military Award)
+- `ribbons/ASR.png` | https://commons.wikimedia.org/wiki/File:Army_Service_Ribbon.svg | Ipankonin | Public domain (PD US Military Award)
+- `ribbons/OSR.png` | https://commons.wikimedia.org/wiki/File:Army_Overseas_Service_Ribbon.svg | US Army | Public domain (PD US Army USAIOH; PD US Military Award)
+- `ribbons/ARCOTR.png` | https://commons.wikimedia.org/wiki/File:Army_Reserve_Overseas_Training_Ribbon.svg | Ipankonin | Public domain (PD US Military Award)
+- `ribbons/ARMY_SEA_DUTY_RIBBON.png` | https://commons.wikimedia.org/wiki/File:U.S._Army_Sea_Duty_Ribbon.svg | Defense Logistics Agency | Public domain (PD US Military Award)
+- `ribbons/DISTINGUISHED_MARKSMANSHIP_RIBBON.png` | https://commons.wikimedia.org/wiki/File:Distinguished_Marksmanship_Ribbon.svg | Ipankonin | Public domain (PD US Military Award)
+- `ribbons/DISTINGUISHED_PISTOL_SHOT_RIBBON.png` | https://commons.wikimedia.org/wiki/File:Distinguished_Pistol_Shot_Ribbon.svg | Ipankonin | Public domain (PD US Military Award)
+- `ribbons/UNITED_NATIONS_SERVICE_MEDAL_KOREA.png` | https://commons.wikimedia.org/wiki/File:United_Nations_Service_Medal_Korea_ribbon.svg | Vector: Borodun | Public domain (PD US not renewed)
+- `ribbons/UN_MEDAL.png` | https://commons.wikimedia.org/wiki/File:United_Nations_Medal_ribbon.svg | United Nations | Public domain (PD US Military Award)
+- `ribbons/UN_MEDAL_UNOSOM.png` | https://commons.wikimedia.org/wiki/File:United_Nations_Medal,_Operation_in_Somalia_ribbon.svg | United Nations | Public domain (PD US Military Award)
+- `ribbons/NATO.png` | https://commons.wikimedia.org/wiki/File:NATO_Medal_Yugoslavia_ribbon_bar.svg | Defense Logistics Agency. | Public domain (PD US Military)
+- `ribbons/MFO.png` | https://commons.wikimedia.org/wiki/File:MFO_Medal_ribbon.png | PalawanOz | Public domain (PD-self)
+- `ribbons/REPUBLIC_OF_VIETNAM_CAMPAIGN_MEDAL.png` | https://commons.wikimedia.org/wiki/File:Republic_of_Vietnam_Campaign_Medal_ribbon,_with_60-_clasp.svg | Republic of Vietnam | Public domain (PD US Military Award; PD US no notice)
+- `ribbons/KLM-SA.png` | https://commons.wikimedia.org/wiki/File:Kuwait_Liberation_Medal_(Saudi_Arabia)_ribbon.svg | Kingdom of Saudi Arabia | Public domain (PD US Military Award)
+- `ribbons/KLM-K.png` | https://commons.wikimedia.org/wiki/File:Kuwait_Liberation_Medal_(Kuwait)_ribbon.svg | State of Kuwait | Public domain (PD shape; PD-shape missing SDC copyright status)
+- `ribbons/KOREAN_WAR_SERVICE_MEDAL.png` | https://commons.wikimedia.org/wiki/File:Republic_of_Korea_War_Service_Medal_ribbon.svg | Minister of National Defense of the Republic of Korea | Public domain (PD US not renewed)
+- `ribbons/REPUBLIC_OF_VIETNAM_GALLANTRY_CROSS.png` | https://commons.wikimedia.org/wiki/File:Vietnamese_Gallantry_Cross_ribbon.svg | This vector image includes elements that have been taken or adapted from this file: | Public domain (PD US Military Award)
+- `ribbons/PHILIPPINE_DEFENSE_MEDAL.png` | https://commons.wikimedia.org/wiki/File:Philippine_Defense_ribbon.png | Zscout370 at English Wikipedia | Public domain (PD-user)
+- `unit-awards/PUC.png` | https://commons.wikimedia.org/wiki/File:U.S._Army_and_U.S._Air_Force_Presidential_Unit_Citation_ribbon.svg | Ipankonin | Public domain (PD US Military Award)
+- `unit-awards/JMUA.png` | https://commons.wikimedia.org/wiki/File:Joint_Meritorious_Unit_Award_ribbon.svg | Ipankonin | Public domain (PD US Military Award)
+- `unit-awards/VUA.png` | https://commons.wikimedia.org/wiki/File:Valorous_Unit_Award_ribbon.svg | Ipankonin | Public domain (PD US Military Award)
+- `unit-awards/MUC.png` | https://commons.wikimedia.org/wiki/File:Meritorious_Unit_Commendation_ribbon.svg | Ipankonin | Public domain (PD US Military Award)
+- `unit-awards/ASUA.png` | https://commons.wikimedia.org/wiki/File:Army_Superior_Unit_Award_ribbon.svg | Ipankonin | Public domain (PD US Military Award)
+- `unit-awards/NAVY_PRESIDENTIAL_UNIT_CITATION.png` | https://commons.wikimedia.org/wiki/File:United_States_Navy_Presidential_Unit_Citation_ribbon.svg | U.S. Navy | Public domain (PD US Navy; PD US Military Award)
+- `unit-awards/NAVY_UNIT_COMMENDATION.png` | https://commons.wikimedia.org/wiki/File:U.S._Navy_Unit_Commendation_ribbon.svg | Ipankonin (talk) | Public domain (PD US Military Award)
+- `unit-awards/NAVY_MERITORIOUS_UNIT_COMMENDATION.png` | https://commons.wikimedia.org/wiki/File:Navy_Meritorious_Unit_Commendation_ribbon.svg | Ipankonin | Public domain (PD US Military Award)
+- `unit-awards/AIR_FORCE_OUTSTANDING_UNIT_AWARD.png` | https://commons.wikimedia.org/wiki/File:Outstanding_Unit_ribbon.svg | Ipankonin | Public domain (PD US Military Award)
+- `unit-awards/AIR_FORCE_MERITORIOUS_UNIT_AWARD.png` | https://commons.wikimedia.org/wiki/File:Air_Force_Meritorious_Unit_ribbon.svg | Ipankonin | Public domain (PD US Military Award)
+- `unit-awards/AIR_FORCE_ORGANIZATIONAL_EXCELLENCE_AWARD.png` | https://commons.wikimedia.org/wiki/File:Organizational_Excellence_ribbon.svg | Ipankonin | Public domain (PD US Military Award)
+- `unit-awards/COAST_GUARD_PRESIDENTIAL_UNIT_CITATION.png` | https://commons.wikimedia.org/wiki/File:U.S._Coast_Guard_Presidential_Unit_Citation_ribbon.svg | Ipankonin | Public domain (PD US Military Award)
+- `unit-awards/COAST_GUARD_UNIT_COMMENDATION.png` | https://commons.wikimedia.org/wiki/File:Coast_Guard_Unit_Commendation_ribbon.svg | Ipankonin | Public domain (PD US Military Award)
+- `unit-awards/COAST_GUARD_MERITORIOUS_UNIT_COMMENDATION.png` | https://commons.wikimedia.org/wiki/File:Coast_Guard_Meritorious_Unit_Commendation_ribbon.svg | Ipankonin | Public domain (PD US Military Award)
+- `unit-awards/KOREA_PRESIDENTIAL_UNIT_CITATION.png` | https://commons.wikimedia.org/wiki/File:Presidential_Unit_Citation_(South_Korea).svg | Inductiveload | Public domain (PD-self; PD US Military Award)
+- `unit-awards/VIETNAM_PRESIDENTIAL_UNIT_CITATION.png` | https://commons.wikimedia.org/wiki/File:Presidential_Unit_Citation_(Vietnam).svg | Inductiveload | Public domain (PD-self)
+- `unit-awards/VIETNAM_CIVIL_ACTIONS_UNIT_CITATION.png` | https://commons.wikimedia.org/wiki/File:VNCivilActionsRibbon.svg | en:User:Marine 69-71 (original); Pbroks13 (talk) (redraw) | Public domain (PD-user)
+- `unit-awards/PHILIPPINE_PRESIDENTIAL_UNIT_CITATION.png` | https://commons.wikimedia.org/wiki/File:Presidential_Unit_Citation_(Philippines).svg | Inductiveload | Public domain (PD-self; PD US Military Award)
+- `ribbons/NATO_MEDAL_KOSOVO.png` | https://commons.wikimedia.org/wiki/File:NATO_medal_for_Kosovo_ribbon.svg | NATO | Public domain (PD-Belgium-exempt)
+- `ribbons/NATO_MEDAL_NON_ARTICLE_5.png` | https://commons.wikimedia.org/wiki/File:NATO_Medal_ribbon_(Non-Article_5).svg | NATO and the U.S. Defense Logistics Agency | Public domain (PD US Military Award)
+- `ribbons/NATO_MEDAL_ISAF.png` | https://commons.wikimedia.org/wiki/File:NATO_Medal_ISAF_ribbon_bar_v1.svg | Mboro | Public domain (PD-self)
+- `ribbons/NATO_MEDAL_ARTICLE_5.png` | https://commons.wikimedia.org/wiki/File:NATO_Medal_ribbon_(Article_5).svg | NATO | Public domain (PD US Military Award)
+- `ribbons/NATO_MEDAL_RESOLUTE_SUPPORT.png` | https://commons.wikimedia.org/wiki/File:NATO_Medal_AFGHANISTAN_Resolute_Support_ribbon_bar.svg | Mboro | Public domain (PD-self)
+- `ribbons/NATO_MEDAL_NTM_IRAQ.png` | https://commons.wikimedia.org/wiki/File:NATO_Medal_NTM-IRAQ_ribbon_bar.svg | Mboro | Public domain (PD-self)
+- `ribbons/NATO_MEDAL_NM_IRAQ.png` | https://commons.wikimedia.org/wiki/File:NATO_Medal_NM-IRAQ_ribbon_bar.svg | Mboro | Public domain (PD-self)
+- `ribbons/NATO_MEDAL_MACEDONIA.png` | https://commons.wikimedia.org/wiki/File:NATO_Medal_Macedonia_ribbon_bar.svg | Mboro | Public domain (PD shape)
+- `ribbons/NATO_MERITORIOUS_SERVICE_MEDAL.png` | https://commons.wikimedia.org/wiki/File:NATO_Meritorious_Service_Medal_bar.svg | Mboro | Public domain (PD-self)
+- `ribbons/NAVY_E_RIBBON.png` | https://commons.wikimedia.org/wiki/File:Battle_Effectiveness_Award_ribbon.svg | U.S. Navy | Public domain (PD US Navy)
+- `ribbons/MARINE_SECURITY_GUARD_RIBBON.png` | https://commons.wikimedia.org/wiki/File:Marine_Security_Guard_Ribbon.svg | Ipankonin | Public domain (PD US Military Award)
+- `ribbons/NAVY_FLEET_MARINE_FORCE_RIBBON.png` | https://commons.wikimedia.org/wiki/File:Navy_Fleet_Marine_Force_Service_Ribbon.svg | Defense Logistics Agency | Public domain (PD US Military Award)
+- `ribbons/DISTINGUISHED_WARFARE_MEDAL.png` | https://commons.wikimedia.org/wiki/File:USA_Distinguished_Warfare_Medal_ribbon.svg | EricSerge (talk) 23:39, 1 March 2013 (UTC) | Public domain (PD US Military Award)
+- `unit-awards/VIETNAM_PRESIDENTIAL_UNIT_CITATION_ARMY.png` | https://commons.wikimedia.org/wiki/File:Vietnam_Presidential_Unit_Citation_US_Army_sized.png | Inductiveload | CC0 (CC-Zero)
+- `unit-awards/JMUA_NAVY_FRAME.png` | https://commons.wikimedia.org/wiki/File:Joint_Meritorious_Unit_Award_(USMC_and_USN_frame).svg | Defense Logistics Agency | Public domain (PD US Military Award)
+- `devices/OLC_BRONZE.png` | https://commons.wikimedia.org/wiki/File:Oak_leaf_cluster,_bronze.svg | Ipankonin | Public domain (PD US Military Award)
+- `devices/OLC_SILVER.png` | https://commons.wikimedia.org/wiki/File:Oakleaf-silver.svg | Ipankonin | Public domain (PD US Military Award)
+- `devices/OLC_GOLD.png` | https://commons.wikimedia.org/wiki/File:Oakleaf-gold.svg | Ipankonin | Public domain (PD US Military Award)
+- `devices/OLC_BRONZE_3D.png` | https://commons.wikimedia.org/wiki/File:Bronze_oak_leaf-3d.svg | lestatdelc | Public domain (PD US Military Award)
+- `devices/OLC_SILVER_3D.png` | https://commons.wikimedia.org/wiki/File:Silver_oakleaf-3d.svg | Lestatdelc | Public domain (PD US Military Award)
+- `devices/STAR_BRONZE.png` | https://commons.wikimedia.org/wiki/File:Ribbonstar-bronze.svg | Ipankonin | Public domain (PD US Military Award)
+- `devices/STAR_SILVER.png` | https://commons.wikimedia.org/wiki/File:Ribbonstar-silver.svg | Ipankonin | Public domain (PD US Military Award)
+- `devices/STAR_GOLD.png` | https://commons.wikimedia.org/wiki/File:Ribbonstar-gold.svg | Ipankonin | Public domain (PD US Military Award)
+- `devices/V_BRONZE.png` | https://commons.wikimedia.org/wiki/File:"V"_device,_brass.svg | Ipankonin | Public domain (PD US Army USAIOH; PD US Military Award)
+- `devices/V_GOLD.png` | https://commons.wikimedia.org/wiki/File:"V"_device,_gold.svg | U.S. Army | Public domain (PD US not renewed; PD US Military Award)
+- `devices/V_SILVER.png` | https://commons.wikimedia.org/wiki/File:"V"_device,_silver.svg | This vector image includes elements that have been taken or adapted from this file: | Public domain (PD US Military Award)
+- `devices/C_DEVICE.png` | https://commons.wikimedia.org/wiki/File:Ribbon_Device_C_Bronze.png | Department of Defense | Public domain (PD US Government)
+- `devices/R_DEVICE.png` | https://commons.wikimedia.org/wiki/File:Ribbon_Device_R_Bronze.png | Department of Defense | Public domain (PD US Government; PD-USGov missing SDC copyright status)
+- `devices/A_DEVICE.png` | https://commons.wikimedia.org/wiki/File:A_device.svg | Oneam | Public domain (PD US Military Award)
+- `devices/E_DEVICE.png` | https://commons.wikimedia.org/wiki/File:E_Device.svg | USN | Public domain (PD US Navy)
+- `devices/HOURGLASS_SILVER.png` | https://commons.wikimedia.org/wiki/File:Silver_Hourglass_Device.gif | United States Army | Public domain (PD US Government)
+- `devices/HOURGLASS_GOLD.png` | https://commons.wikimedia.org/wiki/File:Gold_Hourglass_Device.gif | United States Army | Public domain (PD US Government)
+- `devices/ARROWHEAD.png` | https://commons.wikimedia.org/wiki/File:Arrowhead_device.svg | Ipankonin | Public domain (PD US Military Award)
+- `devices/FMF_COMBAT_INSIGNIA.png` | https://commons.wikimedia.org/wiki/File:Fleet_Marine_Force_Combat_Insignia.svg | U.S. Defense Logistics Agency | Public domain (PD US Military Award)
+- `devices/NUMERAL_0.png` | https://commons.wikimedia.org/wiki/File:Award_numeral_0.svg | Unknown | Public domain (PD US Government)
+- `devices/NUMERAL_1.png` | https://commons.wikimedia.org/wiki/File:Award_numeral_1.png | Unknown | Public domain (PD US Government)
+- `devices/NUMERAL_2.png` | https://commons.wikimedia.org/wiki/File:Award_numeral_2.svg | Unknown | Public domain (PD US Government)
+- `devices/NUMERAL_3.png` | https://commons.wikimedia.org/wiki/File:Award_numeral_3.svg | Unknown | Public domain (PD US Government)
+- `devices/NUMERAL_4.png` | https://commons.wikimedia.org/wiki/File:Award_numeral_4.svg | Unknown | Public domain (PD US Military)
+- `devices/NUMERAL_5.png` | https://commons.wikimedia.org/wiki/File:Award_numeral_5.png | Unknown | Public domain (PD US Government)
+- `devices/NUMERAL_6.png` | https://commons.wikimedia.org/wiki/File:Award_numeral_6.png | Unknown | Public domain (PD US Government)
+- `devices/NUMERAL_7.png` | https://commons.wikimedia.org/wiki/File:Award_numeral_7.svg | Д.Ильин: vectorization | CC0 (CC-Zero)
+- `devices/NUMERAL_8.png` | https://commons.wikimedia.org/wiki/File:Award_numeral_8.png | Unknown | Public domain (PD US Government)
+- `devices/NUMERAL_9.png` | https://commons.wikimedia.org/wiki/File:Award_numeral_9.png | Unknown | Public domain (PD US Government)
+- `badges/CIB.png` | https://commons.wikimedia.org/wiki/File:Combat_Infantry_Badge.svg | Ipankonin | Public domain (PD US Military Badge)
+- `badges/CIB__2nd-award.png` | https://commons.wikimedia.org/wiki/File:CIB2.svg | Ipankonin | Public domain (PD US Military Badge; PD-USGov missing SDC copyright status)
+- `badges/CIB__3rd-award.png` | https://commons.wikimedia.org/wiki/File:CIB3.svg | Ipankonin | Public domain (PD US Military Badge; PD-USGov missing SDC copyright status)
+- `badges/CIB__4th-award.png` | https://commons.wikimedia.org/wiki/File:CIB4.gif | US Air Force | Public domain (PD US Army)
+- `badges/CAB.png` | https://commons.wikimedia.org/wiki/File:Combat_Action_Badge.svg | Ipankonin | Public domain (PD US Military Badge)
+- `badges/CMB.png` | https://commons.wikimedia.org/wiki/File:Combat_Medical_Badge,_1st_award.svg | Defense Logistics Agency | Public domain (PD US Military Badge; PD US no notice 1989; PD-USGov missing SDC copyright status; PD-US missing SDC copyright status)
+- `badges/CMB__3rd-award.png` | https://commons.wikimedia.org/wiki/File:US_Army_Combat_Medical_Badge_3rd_Award.png | United States Army Institute of Heraldry | Public domain (PD US Army USAIOH)
+- `badges/EIB.png` | https://commons.wikimedia.org/wiki/File:Expert_Infantry_Badge.svg | Ipankonin | Public domain (PD US Military Badge)
+- `badges/ESB.png` | https://commons.wikimedia.org/wiki/File:Expert_Soldier_Badge.svg | Jionunez | Public domain (PD US Government)
+- `badges/EFMB.png` | https://commons.wikimedia.org/wiki/File:ExpertMedBadge.svg | Redrawn by User:Slashme | Public domain (PD US Military Badge; PD-USGov missing SDC copyright status)
+- `badges/PARA.png` | https://commons.wikimedia.org/wiki/File:US_Army_Airborne_basic_parachutist_badge-vector.svg | Yaira M. Resto (USAF) | Public domain (PD US Military Badge; PD US Air Force)
+- `badges/PARA__senior.png` | https://commons.wikimedia.org/wiki/File:US_Senior_Parachutist_Badge.png | U.S. Army | Public domain (PD US Army)
+- `badges/PARA__master.png` | https://commons.wikimedia.org/wiki/File:Master_Parachutist_badge_(United_States).svg | US Air Force | Public domain (PD US Air Force)
+- `badges/AASLT.png` | https://commons.wikimedia.org/wiki/File:AirAssaultBadge.svg | U.S. Army | Public domain (PD US Army USAIOH)
+- `badges/PF.png` | https://commons.wikimedia.org/wiki/File:Badge_Pathfinder.svg | United States Army - land service branch of the United States Armed Forces Vectorization: Mrmw | Public domain (PD US Military Badge; PD-USGov missing SDC copyright status)
+- `badges/MFF.png` | https://commons.wikimedia.org/wiki/File:Military_Freefall_Parachutist_Badge_(US_Army).png | U.S. Army | Public domain (PD US Army)
+- `badges/MFF__jumpmaster.png` | https://commons.wikimedia.org/wiki/File:Master_Military_Freefall_Parachutist_Badge_(US_Army).png | U.S. Army | Public domain (PD US Army)
+- `badges/AVN.png` | https://commons.wikimedia.org/wiki/File:US_Army_Aviator_Badge.png | U.S. Army | Public domain (PD US Army)
+- `badges/AVN__senior.png` | https://commons.wikimedia.org/wiki/File:Senior_Army_Aviator_Badge.png | This image includes elements that have been taken or adapted from this file: | Public domain (PD US Army)
+- `badges/AVN__master.png` | https://commons.wikimedia.org/wiki/File:US_Army_Master_Aviator_Badge.png | Unknown | Public domain (PD US Army USAIOH)
+- `badges/AIRCREW.png` | https://commons.wikimedia.org/wiki/File:Aviation_Badge_Basic.png | Bastruk | Public domain (PD US Military Badge; PD-USGov missing SDC copyright status)
+- `badges/AIRCREW__senior.png` | https://commons.wikimedia.org/wiki/File:Aviation_Badge_Senior.png | Bastruk | Public domain (PD US Military Badge; PD-USGov missing SDC copyright status)
+- `badges/AIRCREW__master.png` | https://commons.wikimedia.org/wiki/File:Aviation_Badge_Master.png | Bastruk | Public domain (PD US Military Badge; PD-USGov missing SDC copyright status)
+- `badges/FLIGHT_SURGEON.png` | https://commons.wikimedia.org/wiki/File:USArmy_FlightSurgeon_Badge.svg | Tomcole27 | CC0 (CC-Zero)
+- `badges/FLIGHT_SURGEON__senior.png` | https://commons.wikimedia.org/wiki/File:Senior_Flight_Surgeon_Badge_USA.png | United States Army | Public domain (PD US Army USAIOH)
+- `badges/ASTRONAUT.png` | https://commons.wikimedia.org/wiki/File:ArmyAstroBadge.png | United States Army | Public domain (PD NASA; PD US Army USAIOH)
+- `badges/EOD.png` | https://commons.wikimedia.org/wiki/File:EOD_Insignia.png | Naval Media Center (United States Navy) | Public domain (PD US Military Badge; PD US Navy)
+- `badges/DIVER.png` | https://commons.wikimedia.org/wiki/File:Dive_Badge.png | Institute of Heraldry | Public domain (PD US Government)
+- `badges/DIVER__salvage.png` | https://commons.wikimedia.org/wiki/File:US_Army_Salvage_Diver_Badge.png | United States Army | Public domain (PD US Military Badge; PD-USGov missing SDC copyright status)
+- `badges/DIVER__master.png` | https://commons.wikimedia.org/wiki/File:US_Army_Master_Diver_Badge.png | United States Army | Public domain (PD US Military Badge)
+- `badges/COMBAT_DIVER.png` | https://commons.wikimedia.org/wiki/File:Special_Operations_Diver_Badge.png | Bastruk | Public domain (PD US Military Badge; PD-USGov missing SDC copyright status)
+- `badges/DRVR.png` | https://commons.wikimedia.org/wiki/File:Driver_and_Mechanic_Badge_Vector.svg | Discord User: poopy300000 | Public domain (CC-Zero; PD US Army USAIOH)
+- `badges/DS.png` | https://commons.wikimedia.org/wiki/File:DrillInstructBadge.gif | U.S. Army | Public domain (PD US Army)
+- `badges/REC.png` | https://commons.wikimedia.org/wiki/File:SilverRecruit.gif | US Army | Public domain (PD US Military Badge)
+- `badges/REC__gold.png` | https://commons.wikimedia.org/wiki/File:GoldRecruit.gif | Unknown | Public domain (PD US Military Badge)
+- `badges/REC__reserve.png` | https://commons.wikimedia.org/wiki/File:US_Army_Reserve_Recruiter_Badge.png | w:User:McChizzle | Public domain (PD-user)
+- `badges/ASIB.png` | https://commons.wikimedia.org/wiki/File:United_States_Army_Staff_Identification_Badge.png | Bastruk | Public domain (PD US Military Badge)
+- `badges/TOMB.png` | https://commons.wikimedia.org/wiki/File:TombUN.gif | Unknown | Public domain (PD US Military Badge)
+- `badges/PRESIDENTIAL_SERVICE_BADGE.png` | https://commons.wikimedia.org/wiki/File:US_-_Presidential_Service_Badge.png | Willie Kendrick | Public domain (PD US Military Badge)
+- `badges/VICE_PRESIDENTIAL_SERVICE_BADGE.png` | https://commons.wikimedia.org/wiki/File:US_-_Vice_Presidential_Service_Badge.png | United States Government | Public domain (PD US Government)
+- `badges/OSD_ID_BADGE.png` | https://commons.wikimedia.org/wiki/File:Office_of_the_Secretary_of_Defense_identification_badge.svg | Original: United States Department of Defense Vector: Designism | CC0 (CC-Zero)
+- `badges/JCS_ID_BADGE.png` | https://commons.wikimedia.org/wiki/File:Joint_Staff_Identification_Badge_(1999).svg | DOD | Public domain (PD US Military; PD-USGov missing SDC copyright status)
+- `badges/MILITARY_HORSEMAN.png` | https://commons.wikimedia.org/wiki/File:US_Army_Military_Horseman_Identification_Badge.png | U.S. Army | Public domain (PD US Army)
+- `badges/PARACHUTE_RIGGER.png` | https://commons.wikimedia.org/wiki/File:US_Army_Parachute_Rigger_Badge.png | U.S. Army | Public domain (PD US Army USAIOH)
+- `badges/MASTER_GUNNER.png` | https://commons.wikimedia.org/wiki/File:US_Army_Master_Gunner_Identification_Badge.png | The Army Institute of Heraldry | Public domain (PD US Army USAIOH)
+- `badges/INSTRUCTOR.png` | https://commons.wikimedia.org/wiki/File:US_Army_Instructor_ID_Badge.png | U.S. Army | Public domain (PD US Army)
+- `badges/INSTRUCTOR__senior.png` | https://commons.wikimedia.org/wiki/File:US_Army_Senior_Instructor_ID_Badge.png | User:McChizzle | Public domain (PD-user; PD US Military Badge)
+- `badges/INSPECTOR_GENERAL.png` | https://commons.wikimedia.org/wiki/File:US_Army_Inspector_General_Identification_Badge.png | U.S. Army | Public domain (PD US Army USAIOH)
+- `badges/CAREER_COUNSELOR.png` | https://commons.wikimedia.org/wiki/File:Career_Counselor_Badge.gif | U.S. Army | Public domain (PD US Army)
+- `badges/MP_BADGE.png` | https://commons.wikimedia.org/wiki/File:USA_-_Army_MP_Badge.png | United States Army | Public domain (PD US Army; PD US no notice)
+- `badges/CID_BADGE.png` | https://commons.wikimedia.org/wiki/File:United_States_Army_Criminal_Investigation_Division_Special_Agent_Badge.png | United States Army Criminal Investigation Division | Public domain (PD US Government)
+- `badges/MARINER.png` | https://commons.wikimedia.org/wiki/File:United_States_Army_Mariner_Badge,_basic_grade.png | MWFwiki | Public domain (CC-Zero; PD US Army USAIOH)
+- `badges/PHYSICAL_FITNESS.png` | https://commons.wikimedia.org/wiki/File:United_States_Army_Physical_Fitness_Badge.gif | Unknown | Public domain (PD US Military Badge)
+- `tabs/RANGER.png` | https://commons.wikimedia.org/wiki/File:Ranger_Tab.svg | Fred the Oyster iThe source code of this SVG is valid. This vector image was created with Adobe Illustrator by v. | Public domain (PD US Army USAIOH)
+- `tabs/SFTAB.png` | https://commons.wikimedia.org/wiki/File:Special_Forces_Tab_(US_Army).png | U.S. Army | Public domain (PD US Army)
+- `tabs/SAPPER.png` | https://commons.wikimedia.org/wiki/File:Sapper_Tab.png | Bastruk | Public domain (PD US Military Badge; PD-USGov missing SDC copyright status)
+- `tabs/P100.png` | https://commons.wikimedia.org/wiki/File:USA_-_President's_Hundred_Tab.png | United States Army | Public domain (PD US Army)
+- `tabs/RANGER__metal.png` | https://commons.wikimedia.org/wiki/File:Ranger_Tab_Metal.png | U.S. Army Corps of Engineers | Public domain (PD US Army USACE)
+- `tabs/SAPPER__metal.png` | https://commons.wikimedia.org/wiki/File:Sapper_Tab_Metal.png | U.S. Army Corps of Engineers | Public domain (PD US Army USACE)
+- `tabs/P100__metal.png` | https://commons.wikimedia.org/wiki/File:US_Army_Presidents_100_Metal_Tab.png | User:McChizzle | Public domain (PD-user; PD US Military Badge; PD US Military Award)
+- `badges/RIFLE__expert.png` | https://commons.wikimedia.org/wiki/File:United_States_Army_Marksmanship_Qualification_Badges.png | U.S. Army | Public domain (PD US Army)
+- `badges/RIFLE__sharpshooter.png` | https://commons.wikimedia.org/wiki/File:United_States_Army_Marksmanship_Qualification_Badges.png | U.S. Army | Public domain (PD US Army)
+- `badges/RIFLE__marksman.png` | https://commons.wikimedia.org/wiki/File:United_States_Army_Marksmanship_Qualification_Badges.png | U.S. Army | Public domain (PD US Army)
+- `badges/BAR_RIFLE.png` | https://commons.wikimedia.org/wiki/File:United_States_Army_Marksmanship_Qualification_Badges.png | U.S. Army | Public domain (PD US Army)
+- `badges/EOD__senior.png` | https://commons.wikimedia.org/wiki/File:EOD_Insignia.png | Naval Media Center (United States Navy) | Public domain (PD US Military Badge; PD US Navy)
+- `badges/EOD__master.png` | https://commons.wikimedia.org/wiki/File:EOD_Insignia.png | Naval Media Center (United States Navy) | Public domain (PD US Military Badge; PD US Navy)
+
+## Processing notes
+
+SVGs were checked for scripts, foreignObject, event handlers and external references before inclusion.
+
+- `ribbons/DSC.png`: original SVG rejected by safety check (parse error no element found: line 1, column 0); using PNG rendering; PNG rendering from Commons thumbnail service (960px wide); original is image/svg+xml 1024x279
+- `ribbons/NAVY_CROSS.png`: original SVG rejected by safety check (parse error no element found: line 1, column 0); using PNG rendering; PNG rendering from Commons thumbnail service (960px wide); original is image/svg+xml 1024x279
+- `ribbons/AIR_FORCE_CROSS.png`: original SVG rejected by safety check (parse error no element found: line 1, column 0); using PNG rendering; PNG rendering from Commons thumbnail service (960px wide); original is image/svg+xml 132x36
+- `ribbons/DSM.png`: original SVG rejected by safety check (parse error no element found: line 1, column 0); using PNG rendering; PNG rendering from Commons thumbnail service (960px wide); original is image/svg+xml 218x60
+- `ribbons/NAVY_DISTINGUISHED_SERVICE_MEDAL.png`: PNG rendering from Commons thumbnail service (960px wide); original is image/svg+xml 1024x279
+- `ribbons/AIR_FORCE_DISTINGUISHED_SERVICE_MEDAL.png`: PNG rendering from Commons thumbnail service (960px wide); original is image/svg+xml 106x30
+- `ribbons/COAST_GUARD_DISTINGUISHED_SERVICE_MEDAL.png`: PNG rendering from Commons thumbnail service (960px wide); original is image/svg+xml 106x30
+- `ribbons/HOMELAND_SECURITY_DISTINGUISHED_SERVICE_MEDAL.png`: PNG rendering from Commons thumbnail service (960px wide); original is image/svg+xml 132x36
+- `ribbons/SS.png`: PNG rendering from Commons thumbnail service (960px wide); original is image/svg+xml 1024x279
+- `ribbons/DSSM.png`: PNG rendering from Commons thumbnail service (960px wide); original is image/svg+xml 1024x279
+- `ribbons/LOM.png`: PNG rendering from Commons thumbnail service (960px wide); original is image/svg+xml 1024x279
+- `ribbons/DFC.png`: PNG rendering from Commons thumbnail service (960px wide); original is image/svg+xml 218x60
+- `ribbons/SM.png`: PNG rendering from Commons thumbnail service (960px wide); original is image/svg+xml 218x60
+- `ribbons/NAVY_AND_MARINE_CORPS_MEDAL.png`: PNG rendering from Commons thumbnail service (960px wide); original is image/svg+xml 1024x279
+- `ribbons/AIRMANS_MEDAL.png`: PNG rendering from Commons thumbnail service (960px wide); original is image/svg+xml 132x36
+- `ribbons/COAST_GUARD_MEDAL.png`: PNG rendering from Commons thumbnail service (960px wide); original is image/svg+xml 106x30
+- `ribbons/BSM.png`: PNG rendering from Commons thumbnail service (960px wide); original is image/svg+xml 218x60
+- `ribbons/PH.png`: PNG rendering from Commons thumbnail service (960px wide); original is image/svg+xml 218x60
+- `ribbons/DMSM.png`: PNG rendering from Commons thumbnail service (960px wide); original is image/svg+xml 1024x279
+- `ribbons/MSM.png`: PNG rendering from Commons thumbnail service (960px wide); original is image/svg+xml 1024x279
+- `ribbons/AM.png`: PNG rendering from Commons thumbnail service (960px wide); original is image/svg+xml 218x60
+- `ribbons/AERIAL_ACHIEVEMENT_MEDAL.png`: PNG rendering from Commons thumbnail service (960px wide); original is image/svg+xml 218x60
+- `ribbons/JSCM.png`: PNG rendering from Commons thumbnail service (960px wide); original is image/svg+xml 1024x279
+- `ribbons/ARCOM.png`: PNG rendering from Commons thumbnail service (960px wide); original is image/svg+xml 1024x279
+- `ribbons/NAVY_AND_MARINE_CORPS_COMMENDATION_MEDAL.png`: PNG rendering from Commons thumbnail service (960px wide); original is image/svg+xml 1024x279
+- `ribbons/AIR_AND_SPACE_COMMENDATION_MEDAL.png`: PNG rendering from Commons thumbnail service (960px wide); original is image/svg+xml 132x36
+- `ribbons/COAST_GUARD_COMMENDATION_MEDAL.png`: PNG rendering from Commons thumbnail service (960px wide); original is image/svg+xml 1024x279
+- `ribbons/JSAM.png`: PNG rendering from Commons thumbnail service (960px wide); original is image/svg+xml 1024x279
+- `ribbons/NAVY_AND_MARINE_CORPS_ACHIEVEMENT_MEDAL.png`: PNG rendering from Commons thumbnail service (960px wide); original is image/svg+xml 1024x279
+- `ribbons/AIR_AND_SPACE_ACHIEVEMENT_MEDAL.png`: PNG rendering from Commons thumbnail service (960px wide); original is image/svg+xml 132x36
+- `ribbons/COAST_GUARD_ACHIEVEMENT_MEDAL.png`: PNG rendering from Commons thumbnail service (960px wide); original is image/svg+xml 1024x279
+- `ribbons/COMMANDANTS_LETTER_OF_COMMENDATION_RIBBON.png`: PNG rendering from Commons thumbnail service (960px wide); original is image/svg+xml 106x30
+- `ribbons/POW.png`: PNG rendering from Commons thumbnail service (960px wide); original is image/svg+xml 1024x279
+- `ribbons/COMBAT_ACTION_RIBBON.png`: PNG rendering from Commons thumbnail service (960px wide); original is image/svg+xml 1024x279
+- `ribbons/AIR_FORCE_COMBAT_ACTION_MEDAL.png`: PNG rendering from Commons thumbnail service (960px wide); original is image/svg+xml 106x30
+- `ribbons/COAST_GUARD_COMBAT_ACTION_RIBBON.png`: PNG rendering from Commons thumbnail service (960px wide); original is image/svg+xml 1024x279
+- `ribbons/AGCM.png`: PNG rendering from Commons thumbnail service (960px wide); original is image/svg+xml 1024x279
+- `ribbons/NAVY_GOOD_CONDUCT_MEDAL.png`: PNG rendering from Commons thumbnail service (960px wide); original is image/svg+xml 1024x279
+- `ribbons/MARINE_CORPS_GOOD_CONDUCT_MEDAL.png`: PNG rendering from Commons thumbnail service (960px wide); original is image/svg+xml 1024x279
+- `ribbons/AIR_FORCE_GOOD_CONDUCT_MEDAL.png`: PNG rendering from Commons thumbnail service (960px wide); original is image/svg+xml 132x36
+- `ribbons/SPACE_FORCE_GOOD_CONDUCT_MEDAL.png`: PNG rendering from Commons thumbnail service (960px wide); original is image/svg+xml 132x36
+- `ribbons/COAST_GUARD_GOOD_CONDUCT_MEDAL.png`: PNG rendering from Commons thumbnail service (960px wide); original is image/svg+xml 1024x279
+- `ribbons/ARCAM.png`: PNG rendering from Commons thumbnail service (960px wide); original is image/svg+xml 1024x279
+- `ribbons/NAVAL_RESERVE_MERITORIOUS_SERVICE_MEDAL.png`: PNG rendering from Commons thumbnail service (960px wide); original is image/svg+xml 1024x279
+- `ribbons/SELECTED_MARINE_CORPS_RESERVE_MEDAL.png`: PNG rendering from Commons thumbnail service (960px wide); original is image/svg+xml 1024x279
+- `ribbons/AIR_RESERVE_FORCES_MERITORIOUS_SERVICE_MEDAL.png`: PNG rendering from Commons thumbnail service (120px wide); original is image/png 212x60
+- `ribbons/NAVY_EXPEDITIONARY_MEDAL.png`: PNG rendering from Commons thumbnail service (960px wide); original is image/svg+xml 1024x279
+- `ribbons/MARINE_CORPS_EXPEDITIONARY_MEDAL.png`: PNG rendering from Commons thumbnail service (960px wide); original is image/svg+xml 1024x279
+- `ribbons/AMERICAN_DEFENSE_SERVICE_MEDAL.png`: PNG rendering from Commons thumbnail service (960px wide); original is image/svg+xml 1024x279
+- `ribbons/WOMENS_ARMY_CORPS_SERVICE_MEDAL.png`: PNG rendering from Commons thumbnail service (960px wide); original is image/svg+xml 106x30
+- `ribbons/AMERICAN_CAMPAIGN_MEDAL.png`: PNG rendering from Commons thumbnail service (960px wide); original is image/svg+xml 1024x279
+- `ribbons/ASIATIC_PACIFIC_CAMPAIGN_MEDAL.png`: PNG rendering from Commons thumbnail service (960px wide); original is image/svg+xml 1024x279
+- `ribbons/EUROPEAN_AFRICAN_MIDDLE_EASTERN_CAMPAIGN_MEDAL.png`: PNG rendering from Commons thumbnail service (960px wide); original is image/svg+xml 106x30
+- `ribbons/WORLD_WAR_II_VICTORY_MEDAL.png`: PNG rendering from Commons thumbnail service (960px wide); original is image/svg+xml 512x140
+- `ribbons/ARMY_OF_OCCUPATION_MEDAL.png`: PNG rendering from Commons thumbnail service (960px wide); original is image/svg+xml 106x30
+- `ribbons/MEDAL_FOR_HUMANE_ACTION.png`: PNG rendering from Commons thumbnail service (960px wide); original is image/svg+xml 106x30
+- `ribbons/NDSM.png`: PNG rendering from Commons thumbnail service (960px wide); original is image/svg+xml 1024x279
+- `ribbons/KOREAN_SERVICE_MEDAL.png`: PNG rendering from Commons thumbnail service (960px wide); original is image/svg+xml 1024x279
+- `ribbons/ANTARCTICA_SERVICE_MEDAL.png`: PNG rendering from Commons thumbnail service (960px wide); original is image/svg+xml 1024x279
+- `ribbons/AFEM.png`: PNG rendering from Commons thumbnail service (960px wide); original is image/svg+xml 1024x279
+- `ribbons/VIETNAM_SERVICE_MEDAL.png`: PNG rendering from Commons thumbnail service (960px wide); original is image/svg+xml 1024x279
+- `ribbons/SWASM.png`: PNG rendering from Commons thumbnail service (960px wide); original is image/svg+xml 1024x279
+- `ribbons/KCM.png`: PNG rendering from Commons thumbnail service (960px wide); original is image/svg+xml 1024x279
+- `ribbons/ACM.png`: PNG rendering from Commons thumbnail service (960px wide); original is image/svg+xml 1024x279
+- `ribbons/ICM.png`: PNG rendering from Commons thumbnail service (960px wide); original is image/svg+xml 1024x279
+- `ribbons/IRCM.png`: PNG rendering from Commons thumbnail service (960px wide); original is image/svg+xml 1024x279
+- `ribbons/GWOTEM.png`: PNG rendering from Commons thumbnail service (960px wide); original is image/svg+xml 1024x279
+- `ribbons/GWOTSM.png`: PNG rendering from Commons thumbnail service (960px wide); original is image/svg+xml 1024x279
+- `ribbons/KDSM.png`: PNG rendering from Commons thumbnail service (960px wide); original is image/svg+xml 1024x279
+- `ribbons/AFSM.png`: PNG rendering from Commons thumbnail service (960px wide); original is image/svg+xml 1024x279
+- `ribbons/HSM.png`: PNG rendering from Commons thumbnail service (960px wide); original is image/svg+xml 1024x279
+- `ribbons/MOVSM.png`: PNG rendering from Commons thumbnail service (960px wide); original is image/svg+xml 1024x279
+- `ribbons/NUCLEAR_DETERRENCE_OPERATIONS_SERVICE_MEDAL.png`: PNG rendering from Commons thumbnail service (960px wide); original is image/svg+xml 1024x279
+- `ribbons/AIR_AND_SPACE_CAMPAIGN_MEDAL.png`: PNG rendering from Commons thumbnail service (960px wide); original is image/svg+xml 1024x279
+- `ribbons/NAVY_ARCTIC_SERVICE_RIBBON.png`: PNG rendering from Commons thumbnail service (960px wide); original is image/svg+xml 1024x279
+- `ribbons/NAVY_AND_MARINE_CORPS_SEA_SERVICE_DEPLOYMENT_RIBBON.png`: PNG rendering from Commons thumbnail service (960px wide); original is image/svg+xml 1024x279
+- `ribbons/NAVY_AND_MARINE_CORPS_OVERSEAS_SERVICE_RIBBON.png`: PNG rendering from Commons thumbnail service (960px wide); original is image/svg+xml 1024x279
+- `ribbons/AIR_AND_SPACE_EXPEDITIONARY_SERVICE_RIBBON.png`: PNG rendering from Commons thumbnail service (960px wide); original is image/svg+xml 106x30
+- `ribbons/AIR_FORCE_OVERSEAS_SHORT_TOUR_SERVICE_RIBBON.png`: PNG rendering from Commons thumbnail service (960px wide); original is image/svg+xml 106x30
+- `ribbons/AIR_FORCE_OVERSEAS_LONG_TOUR_SERVICE_RIBBON.png`: PNG rendering from Commons thumbnail service (960px wide); original is image/svg+xml 132x36
+- `ribbons/AIR_FORCE_LONGEVITY_SERVICE_AWARD.png`: older 'Air Force Longevity Service' file; the current 'Air and Space' SVG is CC BY-SA; PNG rendering from Commons thumbnail service (960px wide); original is image/svg+xml 106x30
+- `ribbons/COAST_GUARD_SEA_SERVICE_RIBBON.png`: PNG rendering from Commons thumbnail service (960px wide); original is image/svg+xml 1024x279
+- `ribbons/AFRM.png`: PNG rendering from Commons thumbnail service (960px wide); original is image/svg+xml 132x36
+- `ribbons/NAVAL_RESERVE_MEDAL.png`: PNG rendering from Commons thumbnail service (960px wide); original is image/svg+xml 1024x279
+- `ribbons/NCOPDR.png`: PNG rendering from Commons thumbnail service (960px wide); original is image/svg+xml 1024x279
+- `ribbons/ASR.png`: PNG rendering from Commons thumbnail service (960px wide); original is image/svg+xml 1024x279
+- `ribbons/OSR.png`: PNG rendering from Commons thumbnail service (960px wide); original is image/svg+xml 1024x279
+- `ribbons/ARCOTR.png`: Commons artwork uses horizontal red/white/blue stripes; verify against AR 600-8-22 if it looks unexpected; PNG rendering from Commons thumbnail service (960px wide); original is image/svg+xml 1024x279
+- `ribbons/ARMY_SEA_DUTY_RIBBON.png`: PNG rendering from Commons thumbnail service (960px wide); original is image/svg+xml 1024x279
+- `ribbons/DISTINGUISHED_MARKSMANSHIP_RIBBON.png`: PNG rendering from Commons thumbnail service (960px wide); original is image/svg+xml 106x30
+- `ribbons/DISTINGUISHED_PISTOL_SHOT_RIBBON.png`: PNG rendering from Commons thumbnail service (960px wide); original is image/svg+xml 106x30
+- `ribbons/UNITED_NATIONS_SERVICE_MEDAL_KOREA.png`: PNG rendering from Commons thumbnail service (960px wide); original is image/svg+xml 218x60
+- `ribbons/UN_MEDAL.png`: PNG rendering from Commons thumbnail service (960px wide); original is image/svg+xml 1024x279
+- `ribbons/UN_MEDAL_UNOSOM.png`: PNG rendering from Commons thumbnail service (960px wide); original is image/svg+xml 1024x279
+- `ribbons/NATO.png`: NATO Medal for the former Yugoslavia (original Article 5-era design); other NATO variants are separate IDs; PNG rendering from Commons thumbnail service (960px wide); original is image/svg+xml 132x36
+- `ribbons/MFO.png`: very small (60px) rendering: the only PD file is a 100px PNG and originals were rate-limited; PNG rendering from Commons thumbnail service (60px wide); original is image/png 100x30
+- `ribbons/REPUBLIC_OF_VIETNAM_CAMPAIGN_MEDAL.png`: ribbon includes the '60-' date clasp, which is always worn on this ribbon; PNG rendering from Commons thumbnail service (960px wide); original is image/svg+xml 132x36
+- `ribbons/KLM-SA.png`: PNG rendering from Commons thumbnail service (960px wide); original is image/svg+xml 1024x279
+- `ribbons/KLM-K.png`: PNG rendering from Commons thumbnail service (960px wide); original is image/svg+xml 1024x279
+- `ribbons/KOREAN_WAR_SERVICE_MEDAL.png`: PNG rendering from Commons thumbnail service (960px wide); original is image/svg+xml 132x36
+- `ribbons/REPUBLIC_OF_VIETNAM_GALLANTRY_CROSS.png`: PNG rendering from Commons thumbnail service (960px wide); original is image/svg+xml 1024x279
+- `ribbons/PHILIPPINE_DEFENSE_MEDAL.png`: very small (60px) rendering: only a 106px PNG exists; PNG rendering from Commons thumbnail service (60px wide); original is image/png 106x30
+- `unit-awards/PUC.png`: Army-style gold frame included; PNG rendering from Commons thumbnail service (960px wide); original is image/svg+xml 106x40
+- `unit-awards/JMUA.png`: Army-style gold frame included; PNG rendering from Commons thumbnail service (960px wide); original is image/svg+xml 106x40
+- `unit-awards/VUA.png`: Army-style gold frame included; PNG rendering from Commons thumbnail service (960px wide); original is image/svg+xml 106x40
+- `unit-awards/MUC.png`: Army-style gold frame included; PNG rendering from Commons thumbnail service (960px wide); original is image/svg+xml 106x40
+- `unit-awards/ASUA.png`: Army-style gold frame included; PNG rendering from Commons thumbnail service (960px wide); original is image/svg+xml 106x40
+- `unit-awards/NAVY_PRESIDENTIAL_UNIT_CITATION.png`: PNG rendering from Commons thumbnail service (960px wide); original is image/svg+xml 1024x279
+- `unit-awards/NAVY_UNIT_COMMENDATION.png`: PNG rendering from Commons thumbnail service (960px wide); original is image/svg+xml 1024x279
+- `unit-awards/NAVY_MERITORIOUS_UNIT_COMMENDATION.png`: PNG rendering from Commons thumbnail service (960px wide); original is image/svg+xml 1024x279
+- `unit-awards/AIR_FORCE_OUTSTANDING_UNIT_AWARD.png`: PNG rendering from Commons thumbnail service (960px wide); original is image/svg+xml 106x30
+- `unit-awards/AIR_FORCE_MERITORIOUS_UNIT_AWARD.png`: PNG rendering from Commons thumbnail service (960px wide); original is image/svg+xml 106x30
+- `unit-awards/AIR_FORCE_ORGANIZATIONAL_EXCELLENCE_AWARD.png`: PNG rendering from Commons thumbnail service (960px wide); original is image/svg+xml 106x30
+- `unit-awards/COAST_GUARD_PRESIDENTIAL_UNIT_CITATION.png`: PNG rendering from Commons thumbnail service (960px wide); original is image/svg+xml 1024x279
+- `unit-awards/COAST_GUARD_UNIT_COMMENDATION.png`: PNG rendering from Commons thumbnail service (960px wide); original is image/svg+xml 1024x279
+- `unit-awards/COAST_GUARD_MERITORIOUS_UNIT_COMMENDATION.png`: PNG rendering from Commons thumbnail service (960px wide); original is image/svg+xml 106x30
+- `unit-awards/KOREA_PRESIDENTIAL_UNIT_CITATION.png`: PNG rendering from Commons thumbnail service (960px wide); original is image/svg+xml 106x30
+- `unit-awards/VIETNAM_PRESIDENTIAL_UNIT_CITATION.png`: PNG rendering from Commons thumbnail service (960px wide); original is image/svg+xml 106x30
+- `unit-awards/VIETNAM_CIVIL_ACTIONS_UNIT_CITATION.png`: palm device is part of the artwork (the unit citation is always worn with palm); PNG rendering from Commons thumbnail service (960px wide); original is image/svg+xml 104x29
+- `unit-awards/PHILIPPINE_PRESIDENTIAL_UNIT_CITATION.png`: PNG rendering from Commons thumbnail service (960px wide); original is image/svg+xml 106x30
+- `ribbons/NATO_MEDAL_KOSOVO.png`: PNG rendering from Commons thumbnail service (960px wide); original is image/svg+xml 132x36
+- `ribbons/NATO_MEDAL_NON_ARTICLE_5.png`: PNG rendering from Commons thumbnail service (960px wide); original is image/svg+xml 1024x279
+- `ribbons/NATO_MEDAL_ISAF.png`: PNG rendering from Commons thumbnail service (960px wide); original is image/svg+xml 218x60
+- `ribbons/NATO_MEDAL_ARTICLE_5.png`: PNG rendering from Commons thumbnail service (960px wide); original is image/svg+xml 1024x279
+- `ribbons/NATO_MEDAL_RESOLUTE_SUPPORT.png`: PNG rendering from Commons thumbnail service (960px wide); original is image/svg+xml 218x60
+- `ribbons/NATO_MEDAL_NTM_IRAQ.png`: PNG rendering from Commons thumbnail service (960px wide); original is image/svg+xml 218x60
+- `ribbons/NATO_MEDAL_NM_IRAQ.png`: PNG rendering from Commons thumbnail service (960px wide); original is image/svg+xml 218x60
+- `ribbons/NATO_MEDAL_MACEDONIA.png`: PNG rendering from Commons thumbnail service (960px wide); original is image/svg+xml 218x60
+- `ribbons/NATO_MERITORIOUS_SERVICE_MEDAL.png`: PNG rendering from Commons thumbnail service (960px wide); original is image/svg+xml 218x60
+- `ribbons/NAVY_E_RIBBON.png`: PNG rendering from Commons thumbnail service (960px wide); original is image/svg+xml 1024x279
+- `ribbons/MARINE_SECURITY_GUARD_RIBBON.png`: PNG rendering from Commons thumbnail service (960px wide); original is image/svg+xml 1024x279
+- `ribbons/NAVY_FLEET_MARINE_FORCE_RIBBON.png`: PNG rendering from Commons thumbnail service (960px wide); original is image/svg+xml 1024x279
+- `ribbons/DISTINGUISHED_WARFARE_MEDAL.png`: PNG rendering from Commons thumbnail service (960px wide); original is image/svg+xml 212x60
+- `unit-awards/VIETNAM_PRESIDENTIAL_UNIT_CITATION_ARMY.png`: PNG rendering from Commons thumbnail service (120px wide); original is image/png 200x75
+- `unit-awards/JMUA_NAVY_FRAME.png`: PNG rendering from Commons thumbnail service (960px wide); original is image/svg+xml 146x40
+- `devices/OLC_BRONZE.png`: PNG rendering from Commons thumbnail service (250px wide); original is image/svg+xml 297x252
+- `devices/OLC_SILVER.png`: PNG rendering from Commons thumbnail service (250px wide); original is image/svg+xml 300x255
+- `devices/OLC_GOLD.png`: PNG rendering from Commons thumbnail service (250px wide); original is image/svg+xml 300x255
+- `devices/OLC_BRONZE_3D.png`: PNG rendering from Commons thumbnail service (250px wide); original is image/svg+xml 106x85
+- `devices/OLC_SILVER_3D.png`: PNG rendering from Commons thumbnail service (250px wide); original is image/svg+xml 106x85
+- `devices/STAR_BRONZE.png`: PNG rendering from Commons thumbnail service (250px wide); original is image/svg+xml 214x200
+- `devices/STAR_SILVER.png`: PNG rendering from Commons thumbnail service (250px wide); original is image/svg+xml 220x210
+- `devices/STAR_GOLD.png`: PNG rendering from Commons thumbnail service (250px wide); original is image/svg+xml 214x200
+- `devices/V_BRONZE.png`: PNG rendering from Commons thumbnail service (250px wide); original is image/svg+xml 200x200
+- `devices/V_GOLD.png`: PNG rendering from Commons thumbnail service (250px wide); original is image/svg+xml 200x200
+- `devices/V_SILVER.png`: PNG rendering from Commons thumbnail service (250px wide); original is image/svg+xml 200x200
+- `devices/C_DEVICE.png`: PNG rendering from Commons thumbnail service (120px wide); original is image/png 154x195
+- `devices/R_DEVICE.png`: PNG rendering from Commons thumbnail service (120px wide); original is image/png 177x190
+- `devices/A_DEVICE.png`: PNG rendering from Commons thumbnail service (250px wide); original is image/svg+xml 250x200
+- `devices/E_DEVICE.png`: PNG rendering from Commons thumbnail service (250px wide); original is image/svg+xml 92x138
+- `devices/HOURGLASS_SILVER.png`: PNG rendering from Commons thumbnail service (120px wide); original is image/gif 158x259; opaque white background made transparent (border flood fill) and trimmed
+- `devices/HOURGLASS_GOLD.png`: PNG rendering from Commons thumbnail service (120px wide); original is image/gif 158x259; opaque white background made transparent (border flood fill) and trimmed
+- `devices/ARROWHEAD.png`: PNG rendering from Commons thumbnail service (250px wide); original is image/svg+xml 250x200
+- `devices/FMF_COMBAT_INSIGNIA.png`: PNG rendering from Commons thumbnail service (250px wide); original is image/svg+xml 471x500
+- `devices/NUMERAL_0.png`: enclosed white counter of the 0 is opaque white; PNG rendering from Commons thumbnail service (250px wide); original is image/svg+xml 180x180; opaque white background made transparent (border flood fill) and trimmed
+- `devices/NUMERAL_1.png`: PNG rendering from Commons thumbnail service (120px wide); original is image/png 180x180
+- `devices/NUMERAL_2.png`: PNG rendering from Commons thumbnail service (250px wide); original is image/svg+xml 124x153
+- `devices/NUMERAL_3.png`: PNG rendering from Commons thumbnail service (250px wide); original is image/svg+xml 123x154
+- `devices/NUMERAL_4.png`: PNG rendering from Commons thumbnail service (250px wide); original is image/svg+xml 225x225; opaque white background made transparent (border flood fill) and trimmed
+- `devices/NUMERAL_5.png`: PNG rendering from Commons thumbnail service (120px wide); original is image/png 180x180
+- `devices/NUMERAL_6.png`: PNG rendering from Commons thumbnail service (120px wide); original is image/png 180x180
+- `devices/NUMERAL_7.png`: PNG rendering from Commons thumbnail service (250px wide); original is image/svg+xml 739x1013; opaque white background made transparent (border flood fill) and trimmed
+- `devices/NUMERAL_8.png`: PNG rendering from Commons thumbnail service (120px wide); original is image/png 180x180
+- `devices/NUMERAL_9.png`: PNG rendering from Commons thumbnail service (120px wide); original is image/png 180x180
+- `badges/CIB.png`: PNG rendering from Commons thumbnail service (500px wide); original is image/svg+xml 234x84
+- `badges/CIB__2nd-award.png`: PNG rendering from Commons thumbnail service (500px wide); original is image/svg+xml 234x95
+- `badges/CIB__3rd-award.png`: PNG rendering from Commons thumbnail service (500px wide); original is image/svg+xml 234x95
+- `badges/CIB__4th-award.png`: low resolution (only a small GIF exists on Commons; originals were rate-limited so a 120px rendering is used); PNG rendering from Commons thumbnail service (120px wide); original is image/gif 217x90; opaque white background made transparent (border flood fill) and trimmed
+- `badges/CAB.png`: PNG rendering from Commons thumbnail service (500px wide); original is image/svg+xml 193x95
+- `badges/CMB.png`: PNG rendering from Commons thumbnail service (500px wide); original is image/svg+xml 1000x750
+- `badges/CMB__3rd-award.png`: PNG rendering from Commons thumbnail service (120px wide); original is image/png 180x158; opaque white background made transparent (border flood fill) and trimmed
+- `badges/EIB.png`: PNG rendering from Commons thumbnail service (500px wide); original is image/svg+xml 1508x220
+- `badges/ESB.png`: PNG rendering from Commons thumbnail service (500px wide); original is image/svg+xml 193x55
+- `badges/EFMB.png`: PNG rendering from Commons thumbnail service (500px wide); original is image/svg+xml 208x135
+- `badges/PARA.png`: PNG rendering from Commons thumbnail service (500px wide); original is image/svg+xml 2628x1416
+- `badges/PARA__senior.png`: PNG rendering from Commons thumbnail service (120px wide); original is image/png 240x180
+- `badges/PARA__master.png`: PNG rendering from Commons thumbnail service (500px wide); original is image/svg+xml 1042x812
+- `badges/AASLT.png`: PNG rendering from Commons thumbnail service (500px wide); original is image/svg+xml 3175x1534; opaque white background made transparent (border flood fill) and trimmed
+- `badges/PF.png`: PNG rendering from Commons thumbnail service (500px wide); original is image/svg+xml 320x240
+- `badges/MFF.png`: PNG rendering from Commons thumbnail service (330px wide); original is image/png 384x246; opaque white background made transparent (border flood fill) and trimmed
+- `badges/MFF__jumpmaster.png`: PNG rendering from Commons thumbnail service (330px wide); original is image/png 384x320
+- `badges/AVN.png`: PNG rendering from Commons thumbnail service (500px wide); original is image/png 640x183
+- `badges/AVN__senior.png`: PNG rendering from Commons thumbnail service (120px wide); original is image/png 155x53
+- `badges/AVN__master.png`: PNG rendering from Commons thumbnail service (500px wide); original is image/png 752x259
+- `badges/AIRCREW.png`: PNG rendering from Commons thumbnail service (500px wide); original is image/png 1260x382
+- `badges/AIRCREW__senior.png`: PNG rendering from Commons thumbnail service (500px wide); original is image/png 1260x433
+- `badges/AIRCREW__master.png`: PNG rendering from Commons thumbnail service (500px wide); original is image/png 1260x441
+- `badges/FLIGHT_SURGEON.png`: PNG rendering from Commons thumbnail service (500px wide); original is image/svg+xml 1380x416
+- `badges/FLIGHT_SURGEON__senior.png`: PNG rendering from Commons thumbnail service (500px wide); original is image/png 1308x437; opaque white background made transparent (border flood fill) and trimmed
+- `badges/ASTRONAUT.png`: PNG rendering from Commons thumbnail service (250px wide); original is image/png 298x90; opaque white background made transparent (border flood fill) and trimmed
+- `badges/EOD.png`: cropped from the composite PD image (Basic EOD); white background made transparent; label text removed
+- `badges/DIVER.png`: photo of the DoD diver (helmet) badge; Commons describes it as the military dive badge used across DoD; PNG rendering from Commons thumbnail service (500px wide); original is image/png 1400x1400; opaque white background made transparent (border flood fill) and trimmed
+- `badges/DIVER__salvage.png`: PNG rendering from Commons thumbnail service (120px wide); original is image/png 217x300
+- `badges/DIVER__master.png`: PNG rendering from Commons thumbnail service (250px wide); original is image/png 289x328
+- `badges/COMBAT_DIVER.png`: PNG rendering from Commons thumbnail service (330px wide); original is image/png 339x339
+- `badges/DRVR.png`: image shows the badge together with its six qualification clasps; PNG rendering from Commons thumbnail service (500px wide); original is image/svg+xml 454x189
+- `badges/DS.png`: PNG rendering from Commons thumbnail service (330px wide); original is image/gif 497x427
+- `badges/REC.png`: PNG rendering from Commons thumbnail service (120px wide); original is image/gif 121x150; opaque white background made transparent (border flood fill) and trimmed
+- `badges/REC__gold.png`: PNG rendering from Commons thumbnail service (120px wide); original is image/gif 124x155; opaque white background made transparent (border flood fill) and trimmed
+- `badges/REC__reserve.png`: PNG rendering from Commons thumbnail service (500px wide); original is image/png 998x842
+- `badges/ASIB.png`: PNG rendering from Commons thumbnail service (500px wide); original is image/png 1537x1536
+- `badges/TOMB.png`: PNG rendering from Commons thumbnail service (500px wide); original is image/gif 600x552; opaque white background made transparent (border flood fill) and trimmed
+- `badges/PRESIDENTIAL_SERVICE_BADGE.png`: PNG rendering from Commons thumbnail service (500px wide); original is image/png 3488x3488
+- `badges/VICE_PRESIDENTIAL_SERVICE_BADGE.png`: PNG rendering from Commons thumbnail service (500px wide); original is image/png 589x598
+- `badges/OSD_ID_BADGE.png`: PNG rendering from Commons thumbnail service (500px wide); original is image/svg+xml 1811x1809
+- `badges/JCS_ID_BADGE.png`: PNG rendering from Commons thumbnail service (500px wide); original is image/svg+xml 357x385
+- `badges/MILITARY_HORSEMAN.png`: PNG rendering from Commons thumbnail service (330px wide); original is image/png 447x427
+- `badges/PARACHUTE_RIGGER.png`: PNG rendering from Commons thumbnail service (500px wide); original is image/png 523x214
+- `badges/MASTER_GUNNER.png`: PNG rendering from Commons thumbnail service (500px wide); original is image/png 789x905
+- `badges/INSTRUCTOR.png`: PNG rendering from Commons thumbnail service (330px wide); original is image/png 417x427; opaque white background made transparent (border flood fill) and trimmed
+- `badges/INSTRUCTOR__senior.png`: Commons has the same image uploaded as both the Senior and Master Instructor badge; only the Senior ID is kept; PNG rendering from Commons thumbnail service (500px wide); original is image/png 600x600
+- `badges/INSPECTOR_GENERAL.png`: PNG rendering from Commons thumbnail service (500px wide); original is image/png 1195x1177
+- `badges/CAREER_COUNSELOR.png`: PNG rendering from Commons thumbnail service (500px wide); original is image/gif 600x430; opaque white background made transparent (border flood fill) and trimmed
+- `badges/MP_BADGE.png`: PNG rendering from Commons thumbnail service (330px wide); original is image/png 389x543
+- `badges/CID_BADGE.png`: PNG rendering from Commons thumbnail service (330px wide); original is image/png 473x593
+- `badges/MARINER.png`: PNG rendering from Commons thumbnail service (500px wide); original is image/png 1149x1204
+- `badges/PHYSICAL_FITNESS.png`: PNG rendering from Commons thumbnail service (500px wide); original is image/gif 919x919; opaque white background made transparent (border flood fill) and trimmed
+- `tabs/RANGER.png`: PNG rendering from Commons thumbnail service (500px wide); original is image/svg+xml 765x315
+- `tabs/SFTAB.png`: PNG rendering from Commons thumbnail service (330px wide); original is image/png 500x191
+- `tabs/SAPPER.png`: PNG rendering from Commons thumbnail service (500px wide); original is image/png 715x285
+- `tabs/P100.png`: PNG rendering from Commons thumbnail service (500px wide); original is image/png 1226x430
+- `tabs/RANGER__metal.png`: PNG rendering from Commons thumbnail service (120px wide); original is image/png 151x58
+- `tabs/SAPPER__metal.png`: PNG rendering from Commons thumbnail service (120px wide); original is image/png 143x58
+- `tabs/P100__metal.png`: PNG rendering from Commons thumbnail service (500px wide); original is image/png 1400x447
+- `badges/RIFLE__expert.png`: cropped from the composite PD image (Expert); label text removed
+- `badges/RIFLE__sharpshooter.png`: cropped from the composite PD image (Sharpshooter); label text removed
+- `badges/RIFLE__marksman.png`: cropped from the composite PD image (Marksman); label text removed
+- `badges/BAR_RIFLE.png`: cropped from the composite PD image (Rifle clasp); label text removed
+- `badges/EOD__senior.png`: cropped from the composite PD image (Senior EOD); white background made transparent; label text removed
+- `badges/EOD__master.png`: cropped from the composite PD image (Master EOD); white background made transparent; label text removed
