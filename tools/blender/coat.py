@@ -22,6 +22,9 @@ import sys
 
 import bpy
 import bmesh
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import body as body_mod  # noqa: E402
 from mathutils import Vector
 from mathutils.bvhtree import BVHTree
 from mathutils.geometry import delaunay_2d_cdt
@@ -32,7 +35,8 @@ ap.add_argument("--uniform", default="AGSU", choices=["AGSU", "ASU"])
 ap.add_argument("--out", default="tools/blender/out")
 ap.add_argument("--samples", type=int, default=32)
 ap.add_argument("--res", type=int, default=900)
-ap.add_argument("--stage", default="v2")
+ap.add_argument("--stage", default="v3")
+ap.add_argument("--body", default=os.path.join(os.path.dirname(os.path.abspath(__file__)), "assets", "human_base_meshes_bundle.blend"))
 args = ap.parse_args(argv)
 os.makedirs(args.out, exist_ok=True)
 
@@ -155,26 +159,54 @@ def mannequin_joints():
     return J, E
 
 
-def coat_joints():
-    """Coat skeleton: silhouette half-widths from the photo (chest 7.7, belt 6.5, hem 7.3)."""
+def coat_joints(m, roomy=0.0):
+    """Coat skeleton fitted to the measured body: torso centers/depths follow the body
+    (chest, shoulder blades, seat) plus tailoring ease; widths are at least the photo
+    silhouette; sleeves follow the body's arm path."""
+
+    def torso_at(dz):
+        z = Z(dz)
+        best = min(m["torso"], key=lambda t: abs(t[0] - z))
+        return best  # (z, half-width, front y, back y)
+
+    def ring(dz, min_hw, ease_x, ease_y, extra_back=0.0, at=None):
+        _, hw, yf, yb = torso_at(dz if at is None else at)  # `at`: measure at another height (skirt hangs from the hips)
+        rx = max(min_hw, hw + ease_x) + roomy
+        cy = (yf + yb + extra_back) / 2
+        ry = (yb + extra_back - yf) / 2 + ease_y + roomy
+        return ((0, cy, Z(dz)), (rx, ry))
+
     J = {
-        "hemx": ((0, 0.4, Z(-34)), (7.55, 5.3)),
-        "hip": ((0, 0.3, Z(-21)), (7.35, 5.15)),
-        "belt": ((0, 0.1, Z(-14.8)), (6.75, 4.75)),
-        "ribs": ((0, -0.2, Z(-10)), (7.45, 5.1)),
-        "chest": ((0, -0.5, Z(-6)), (7.75, 5.25)),
-        "uchest": ((0, -0.2, Z(-2.2)), (7.2, 4.8)),
-        "neckb": ((0, 0.4, Z(1.0)), (2.85, 2.95)),
-        "collar": ((0, 0.45, Z(SPEC["collar_top_z"] + 0.9)), (2.95, 3.05)),  # collar stand
+        "hemx": ring(-31, 7.55, 1.5, 1.05, at=-21),  # skirt hangs straight from the seat
+        "hip": ring(-21, 7.35, 1.0, 0.85),
+        "belt": ring(-14.8, 6.75, 0.6, 0.65),
+        "ribs": ring(-10, 7.45, 0.9, 0.7),
+        "chest": ring(-6, 7.75, 1.0, 0.75),
+        # armpit level: keep the torso full where the sleeves branch off (the skin modifier pinches here)
+        "axilla": ring(-3.9, 8.1, 1.4, 0.75),
+        "uchest": ring(-2.3, 7.2, 0.9, 0.7),
+        "neckb": ((0, 0.5, Z(0.9)), (2.9, 3.0)),
+        "collar": ((0, 0.55, Z(SPEC["collar_top_z"] + 0.9)), (3.0, 3.1)),
     }
-    E = [("hemx", "hip"), ("hip", "belt"), ("belt", "ribs"), ("ribs", "chest"), ("chest", "uchest"), ("uchest", "neckb"), ("neckb", "collar")]
+    E = [("hemx", "hip"), ("hip", "belt"), ("belt", "ribs"), ("ribs", "chest"), ("chest", "axilla"), ("axilla", "uchest"), ("uchest", "neckb"), ("neckb", "collar")]
+    arm = sorted(m["arm"], key=lambda a: -a[0])
+
+    def arm_at(dz):
+        z = Z(dz)
+        a = min(arm, key=lambda t: abs(t[0] - z))
+        return a  # (z, cx, cy, rx, ry)
+
     for s, sx in (("L", 1), ("R", -1)):
-        J["sh" + s] = ((5.6 * sx, 0.2, Z(-1.2)), (2.35, 2.5))
-        J["del" + s] = ((7.9 * sx, 0.3, Z(-2.3)), (2.55, 2.75))
-        J["bic" + s] = ((8.55 * sx, 0.2, Z(-7.5)), (2.35, 2.5))
-        J["elb" + s] = ((9.05 * sx, -0.4, Z(-12.5)), (2.05, 2.2))
-        J["fore" + s] = ((9.35 * sx, -1.3, Z(-17.3)), (1.9, 2.05))
-        J["wri" + s] = ((9.55 * sx, -2.3, Z(-23.6)), (1.7, 1.85))
+        pts = []
+        # tailored sleeve (inches): bicep, elbow, forearm, cuff radii side-to-side / front-to-back
+        for name, dz, r in (("bic", -7.5, (2.35, 2.55)), ("elb", -12.5, (2.1, 2.3)), ("fore", -17.3, (1.95, 2.1)), ("wri", -23.6, (1.75, 1.85))):
+            _, cx, cy, *_ = arm_at(dz)
+            pts.append((name, (cx * sx, cy, Z(dz)), (r[0] + roomy * 0.5, r[1] + roomy * 0.5)))
+        _, c0x, c0y, *_ = arm_at(-4.0)
+        J["sh" + s] = ((5.5 * sx, 0.7, Z(-1.3)), (2.35, 2.75))
+        J["del" + s] = (((c0x + 0.15) * sx, c0y, Z(-2.6)), (2.6, 3.0))
+        for name, c, r in pts:
+            J[name + s] = (c, r)
         E += [("uchest", "sh" + s), ("sh" + s, "del" + s), ("del" + s, "bic" + s), ("bic" + s, "elb" + s), ("elb" + s, "fore" + s), ("fore" + s, "wri" + s)]
     return J, E
 
@@ -397,14 +429,59 @@ def button(name, hit, nor, d, mat, h=0.16):
 
 
 def build_mannequin():
-    J, E = mannequin_joints()
-    ob = skin_object("Mannequin", J, E, 2)
+    ob = body_mod.load_body(args.body, SH)
+    ob.data.materials.clear()
     ob.data.materials.append(principled("Mannequin", (0.30, 0.31, 0.32), rough=0.5)[0])
     return ob
 
 
-def build_coat(uniform):
-    J, E = coat_joints()
+def drape_on(ob, body, frames=36):
+    """Cloth-simulate the coat onto the body: it settles under gravity with a slight
+    contraction, rests on the shoulders, bridges across the chest and can't pass
+    through the body (collision). The collar is pinned so the coat hangs from the neck."""
+    col = body.modifiers.new("Collision", "COLLISION")
+    body.collision.thickness_outer = 0.18
+    body.collision.thickness_inner = 0.4
+    body.collision.cloth_friction = 6
+    pin = ob.vertex_groups.new(name="pin")
+    for v in ob.data.vertices:
+        w = smooth_step(Z(0.2), Z(1.4), v.co.z) if abs(v.co.x) < 4.2 else 0.0
+        if w > 0:
+            pin.add([v.index], w, "REPLACE")
+    cl = ob.modifiers.new("Cloth", "CLOTH")
+    st = cl.settings
+    st.quality = 10
+    st.mass = 0.35
+    st.air_damping = 2.0
+    st.tension_stiffness = 30
+    st.compression_stiffness = 30
+    st.shear_stiffness = 12
+    st.bending_stiffness = 1.2
+    st.shrink_min = 0.035  # contract slightly so the cloth settles onto the body
+    st.gravity = (0, 0, -386.0)  # 9.81 m/s² in in/s²
+    st.vertex_group_mass = "pin"
+    st.pin_stiffness = 1.0
+    cs = cl.collision_settings
+    cs.distance_min = 0.12
+    cs.collision_quality = 4
+    sc = bpy.context.scene
+    sc.frame_start, sc.frame_end = 1, frames
+    cl.point_cache.frame_start, cl.point_cache.frame_end = 1, frames
+    for f in range(1, frames + 1):
+        sc.frame_set(f)
+    bpy.context.view_layer.objects.active = ob
+    bpy.ops.object.modifier_apply(modifier="Cloth")
+    body.modifiers.remove(col)
+    sc.frame_set(1)
+
+
+def smooth_step(a, b, t):
+    k = min(1.0, max(0.0, (t - a) / (b - a)))
+    return k * k * (3 - 2 * k)
+
+
+def build_coat(uniform, man):
+    J, E = coat_joints(body_mod.measure(man, SH), roomy=0.45)
     ob = skin_object("Coat", J, E, 3)
     bm = bmesh.new()
     bm.from_mesh(ob.data)
@@ -419,6 +496,15 @@ def build_coat(uniform):
         bisect(bm, cut, axis, where=lambda c, sx=sx: c.x * sx > 7.6 and c.z < Z(-14))
     bm.to_mesh(ob.data)
     bm.free()
+    # smooth like pressed cloth, then make sure nothing of the body pokes through
+    sm = ob.modifiers.new("Press", "SMOOTH")
+    sm.factor = 0.6
+    sm.iterations = 6
+    apply_all(ob)
+    drape_on(ob, man)
+    ss = ob.modifiers.new("Subsurf", "SUBSURF")  # smooth the simulated surface
+    ss.levels = 1
+    apply_all(ob)
     ob.data.materials.append(fabric_material(uniform))
     return ob
 
@@ -602,7 +688,7 @@ def shoot(cam, name, az, elev=4, dist=175, target=(0, 0, 2)):
 def main():
     reset()
     man = build_mannequin()
-    coat = build_coat(args.uniform)
+    coat = build_coat(args.uniform, man)
     sol = coat.modifiers.new("Thickness", "SOLIDIFY")
     sol.thickness = 0.08
     sol.offset = 1
