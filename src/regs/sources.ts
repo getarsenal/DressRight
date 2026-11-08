@@ -22,6 +22,8 @@ export interface Publication {
   apdIndexUrl: string;
   /** Text the drift checker looks for on the index page, e.g. "AR 670-1". */
   apdNumber: string;
+  /** Product details page; the only place APD lists changes (e.g. "Changes 001 - 03/04/2025"). */
+  apdDetailsUrl?: string;
   /**
    * ISO date a maintainer last compared our data line-by-line against the
    * official PDF. `null` = never reviewed against the primary source.
@@ -49,11 +51,22 @@ export interface Directive {
 
 export const DIRECTIVES: Directive[] = [
   {
-    id: 'AD 2025-13',
-    title: 'Army Directive 2025-13, Facial Hair Grooming Standards',
+    id: 'AD 2026-16',
+    title: 'Army Directive 2026-16, Chaplain Rank and Insignia (23 Jun 2026)',
+    affects: 'Chaplain rank on the ACU/ECWCS',
+    notes: 'Does not change rank or branch insignia on the ASU or AGSU (para 4c).',
+  },
+  {
+    id: 'AD 2023-01',
+    title: 'Army Directive 2023-01, Army Recruiting Ribbon Program',
+    affects: 'Creates the Army Recruiting Ribbon (now in AR 600-8-22 precedence)',
+    notes: 'Included in the ribbon catalog.',
+  },
+  {
+    id: 'AD 2025-13 / 2025-18 / 2026-09',
+    title: 'Army Directives on facial hair, appearance and grooming, and religious accommodation',
     affects: 'Grooming (ch. 3); not the uniform build itself',
-    notes:
-      'Listed so the in-app version banner reflects interim changes. Not used by the uniform builder.',
+    notes: 'Listed for completeness; not used by the uniform builder.',
   },
 ];
 

@@ -35,7 +35,11 @@ export interface Build {
   uniform: Uniform;
   sex: Sex;
   component: Component;
+  /** ARNG state/territory, e.g. "PA" */
+  state: string;
   dutyStatus: DutyStatus;
+  /** has the Soldier finished first-run setup */
+  onboarded: boolean;
   rankId: string;
   branchId: string;
   lastName: string;
@@ -71,7 +75,9 @@ export const DEFAULT_BUILD: Build = {
   uniform: 'AGSU',
   sex: 'male',
   component: 'RA',
+  state: '',
   dutyStatus: 'T10',
+  onboarded: false,
   rankId: 'SSG',
   branchId: 'IN',
   lastName: 'SOLDIER',

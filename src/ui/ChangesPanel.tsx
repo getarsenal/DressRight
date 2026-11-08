@@ -3,8 +3,7 @@ import { Citations } from './Citations';
 
 export function ChangesPanel() {
   return (
-    <main className="page">
-      <h2>What changed</h2>
+    <div className="page">
       <p className="muted">
         If you set up your uniform from an older version of AR 670-1 (or from someone else's coat), check these first. Newest first.
       </p>
@@ -29,6 +28,6 @@ export function ChangesPanel() {
           </article>
         ))}
       </div>
-    </main>
+    </div>
   );
 }

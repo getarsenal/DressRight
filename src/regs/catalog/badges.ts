@@ -27,18 +27,27 @@ export interface BadgeDef {
   /** id badges: which pocket */
   side?: 'left' | 'right';
   /**
-   * Combat & special skill badge group (DA PAM 670-1 para 22-16, per a
-   * secondary-source summary — verify). Only one group 1 or 2 badge is worn
-   * above the ribbons; up to three from groups 3–4 may be worn above it.
+   * Combat & special skill badge group (DA PAM 670-1 para 22-16a, verified).
+   * Group 5 = driver badge and marksmanship badges. Max three badges above
+   * the ribbons in total, only one of them from group 1 or 2.
    */
   group?: 1 | 2 | 3 | 4 | 5;
+  /**
+   * Established in AR 600-8-22 (2026) but not yet in DA PAM 670-1 (2021),
+   * so its wear group / placement is not specified.
+   */
+  isNew?: boolean;
 }
 
 export const BADGES: BadgeDef[] = [
   // combat
   { id: 'CIB', name: 'Combat Infantryman Badge', kind: 'combat', metal: 'blue-silver', label: 'CIB', levels: ['1st award', '2nd award', '3rd award'], group: 1 },
-  { id: 'CAB', name: 'Combat Action Badge', kind: 'combat', metal: 'silver', label: 'CAB', levels: ['1st award', '2nd award', '3rd award'], group: 1 },
+  { id: 'CAB', name: 'Combat Action Badge', kind: 'combat', metal: 'silver', label: 'CAB', group: 1 },
+  { id: 'MCIB', name: 'Master Combat Infantryman Badge', kind: 'combat', metal: 'blue-silver', label: 'MCIB', group: 1, isNew: true },
+  { id: 'MCMB', name: 'Master Combat Medical Badge', kind: 'combat', metal: 'silver', label: 'MCMB', group: 1, isNew: true },
+  { id: 'MCAB', name: 'Master Combat Action Badge', kind: 'combat', metal: 'silver', label: 'MCAB', group: 1, isNew: true },
   { id: 'CMB', name: 'Combat Medical Badge', kind: 'combat', metal: 'silver', label: 'CMB', levels: ['1st award', '2nd award', '3rd award'], group: 1 },
+  { id: 'CSIB', name: 'Combat Service Identification Badge (blues, in place of the combat patch)', kind: 'id', metal: 'silver', label: 'CSIB', side: 'right' },
   // special skill
   { id: 'EIB', name: 'Expert Infantryman Badge', kind: 'skill', metal: 'blue-silver', label: 'EIB', group: 2 },
   { id: 'ESB', name: 'Expert Soldier Badge', kind: 'skill', metal: 'silver', label: 'ESB', group: 2 },
@@ -50,15 +59,20 @@ export const BADGES: BadgeDef[] = [
   { id: 'AVN', name: 'Army Aviator Badge', kind: 'skill', metal: 'silver', label: 'AVIATOR', levels: ['Basic', 'Senior', 'Master'], group: 3 },
   { id: 'EOD', name: 'Explosive Ordnance Disposal Badge', kind: 'skill', metal: 'silver', label: 'EOD', levels: ['Basic', 'Senior', 'Master'], group: 3 },
   { id: 'DIVER', name: 'Diver Badge', kind: 'skill', metal: 'silver', label: 'DIVER', group: 4 },
+  { id: 'FS', name: 'Flight Surgeon Badge', kind: 'skill', metal: 'silver', label: 'FLT SURG', levels: ['Basic', 'Senior', 'Master'], group: 3 },
+  { id: 'AVB', name: 'Aviation Badge', kind: 'skill', metal: 'silver', label: 'AVIATION', levels: ['Basic', 'Senior', 'Master'], group: 3 },
+  { id: 'RIGGER', name: 'Parachute Rigger Badge', kind: 'skill', metal: 'silver', label: 'RIGGER', group: 3 },
+  { id: 'SPACE', name: 'Space Badge', kind: 'skill', metal: 'silver', label: 'SPACE', levels: ['Basic', 'Senior', 'Master'], group: 4 },
+  { id: 'MTN', name: 'Army Mountaineering Badge', kind: 'skill', metal: 'silver', label: 'MOUNTAIN', isNew: true },
   // marksmanship
-  { id: 'RIFLE', name: 'Marksmanship Qualification Badge', kind: 'marksmanship', metal: 'silver', label: 'RIFLE', levels: ['Marksman', 'Sharpshooter', 'Expert'] },
-  { id: 'PISTOL', name: 'Marksmanship Qualification Badge (Pistol bar)', kind: 'marksmanship', metal: 'silver', label: 'PISTOL', levels: ['Marksman', 'Sharpshooter', 'Expert'] },
-  { id: 'DRVR', name: 'Driver and Mechanic Badge', kind: 'skill', metal: 'silver', label: 'DRIVER', group: 5 },
+  { id: 'RIFLE', name: 'Marksmanship Qualification Badge', kind: 'marksmanship', group: 5, metal: 'silver', label: 'RIFLE', levels: ['Marksman', 'Sharpshooter', 'Expert'] },
+  { id: 'PISTOL', name: 'Marksmanship Qualification Badge (Pistol bar)', kind: 'marksmanship', group: 5, metal: 'silver', label: 'PISTOL', levels: ['Marksman', 'Sharpshooter', 'Expert'] },
+  { id: 'DRVR', name: 'Driver and Technician Badge (formerly Driver and Mechanic)', kind: 'skill', metal: 'silver', label: 'DRIVER', group: 5 },
   // identification
   { id: 'DS', name: 'Drill Sergeant Identification Badge', kind: 'id', metal: 'gold', label: 'DS', side: 'right' },
-  { id: 'REC', name: 'Recruiter Identification Badge', kind: 'id', metal: 'silver', label: 'REC', side: 'right' },
+  { id: 'REC', name: 'Recruiter Identification Badge', kind: 'id', metal: 'silver', label: 'REC', side: 'left' },
   { id: 'ASIB', name: 'Army Staff Identification Badge', kind: 'id', metal: 'gold', label: 'ARSTAF', side: 'right' },
-  { id: 'TOMB', name: 'Tomb of the Unknown Soldier Guard Identification Badge', kind: 'id', metal: 'oxidized', label: 'TOMB', side: 'left' },
+  { id: 'TOMB', name: 'Tomb of the Unknown Soldier Guard Identification Badge', kind: 'id', metal: 'oxidized', label: 'TOMB', side: 'right' },
   // foreign
   { id: 'GAFPB', name: 'German Armed Forces Proficiency Badge', kind: 'foreign', metal: 'gold', label: 'GAFPB', levels: ['Bronze', 'Silver', 'Gold'] },
   { id: 'FPARA', name: 'Foreign Parachutist Badge', kind: 'foreign', metal: 'silver', label: 'FGN JUMP' },

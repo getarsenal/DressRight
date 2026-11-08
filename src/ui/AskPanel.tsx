@@ -11,9 +11,9 @@ export function AskPanel({ build }: { build: Build }) {
   const [q, setQ] = useState('');
   const results = useMemo(() => searchArticles(q), [q]);
   return (
-    <main className="page">
-      <h2>Can I wear…?</h2>
-      <p className="muted">
+    <div className="screen">
+      <header className="screen-head"><h1>Can I wear…?</h1></header>
+      <p className="muted pad">
         Answers to the questions the regulation buries in sub-paragraphs. Where the answer depends on your situation, it's worked out
         from your builder profile: <strong>{rankById(build.rankId).abbr}, {COMPONENT[build.component]}</strong>
         {build.component === 'ARNG' && <>, <strong>{STATUS[build.dutyStatus]}</strong></>}.
@@ -23,7 +23,6 @@ export function AskPanel({ build }: { build: Build }) {
         placeholder="Try: governor's twenty, combat patch, GAFPB, hash marks, unit award…"
         value={q}
         onChange={(e) => setQ(e.target.value)}
-        autoFocus
       />
       {!results.length && <p className="muted">No answer for that yet. Check DA PAM 670-1 or ask your unit's S-1.</p>}
       <div className="articles">
@@ -44,6 +43,6 @@ export function AskPanel({ build }: { build: Build }) {
           );
         })}
       </div>
-    </main>
+    </div>
   );
 }

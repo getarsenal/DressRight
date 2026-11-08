@@ -8,6 +8,7 @@ import type { InsigniaArt } from '../regs/build';
 import type { Rank } from '../regs/types';
 import type { RackRibbon, TextureSpec } from '../regs/layout';
 import { rackRows } from '../regs/layout';
+import { artImage, artVersion } from '../ui/art';
 
 const PPI = 96; // pixels per inch
 const cache = new Map<string, THREE.CanvasTexture>();
@@ -56,6 +57,12 @@ function roundRect(ctx: CanvasRenderingContext2D, x: number, y: number, w: numbe
 // ------------------------------------------------------------------ ribbons
 
 function drawRibbon(ctx: CanvasRenderingContext2D, r: RackRibbon, x: number, y: number, w: number, h: number) {
+  const img = r.id ? artImage(r.id) : undefined;
+  if (img) {
+    ctx.drawImage(img, x, y, w, h);
+    drawDevices(ctx, r, x, y, w, h);
+    return;
+  }
   const total = r.stripes.reduce((s, [, n]) => s + n, 0);
   let cx = x;
   r.stripes.forEach(([col, n]) => {
@@ -79,12 +86,34 @@ function drawRibbon(ctx: CanvasRenderingContext2D, r: RackRibbon, x: number, y: 
     ctx.lineWidth = h * 0.12;
     ctx.strokeRect(x + ctx.lineWidth / 2, y + ctx.lineWidth / 2, w - ctx.lineWidth, h - ctx.lineWidth);
   }
+  drawDevices(ctx, r, x, y, w, h);
+}
 
+const DEVICE_ART: Partial<Record<string, string>> = {
+  olc: 'OLC_BRONZE',
+  star: 'STAR_BRONZE',
+  knot: 'KNOT_BRONZE',
+  V: 'V_BRONZE',
+  C: 'C_DEVICE',
+  R: 'R_DEVICE',
+  M: 'M_DEVICE',
+  hourglass: 'HOURGLASS_BRONZE',
+  arrowhead: 'ARROWHEAD',
+};
+
+export function drawDevices(ctx: CanvasRenderingContext2D, r: RackRibbon, x: number, y: number, w: number, h: number) {
   const n = Math.min(r.count ?? 0, 4);
   if (!r.device || !n) return;
   const cy = y + h / 2;
   const s = h * 0.32;
   const positions = Array.from({ length: n }, (_, i) => x + w / 2 + (i - (n - 1) / 2) * s * 2.4);
+  const devArt = r.device !== 'numeral' && DEVICE_ART[r.device] ? artImage(DEVICE_ART[r.device]!) : undefined;
+  if (devArt) {
+    const dh = h * 0.8;
+    const dw = (devArt.naturalWidth / devArt.naturalHeight) * dh;
+    positions.forEach((px) => ctx.drawImage(devArt, px - dw / 2, cy - dh / 2, dw, dh));
+    return;
+  }
   ctx.fillStyle = r.device === 'star' ? BRONZE : r.device === 'knot' ? GOLD[1] : BRONZE;
   switch (r.device) {
     case 'olc':
@@ -118,7 +147,7 @@ function drawRibbon(ctx: CanvasRenderingContext2D, r: RackRibbon, x: number, y: 
       ctx.font = `bold ${h * 0.75}px serif`;
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
-      const letter = r.device === 'hourglass' ? '⧗' : r.device;
+      const letter = r.device === 'hourglass' ? '⧗' : r.device === 'arrowhead' ? '▲' : r.device;
       ctx.fillText(letter, x + w / 2, cy + 1);
     }
   }
@@ -141,9 +170,33 @@ function drawRack(spec: Extract<TextureSpec, { type: 'rack' }>, wIn: number, hIn
 
 // ------------------------------------------------------------------ badges
 
+export const slug = (s: string) => s.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+
+/** Artwork ids to try for a badge, most specific first (see manifest schema). */
+export function badgeArtIds(id: string, level?: string, levels?: string[]) {
+  const ids: string[] = [];
+  if (level && levels?.includes(level)) ids.push(`${id}__${slug(level)}`);
+  ids.push(id);
+  return ids;
+}
+
+function drawImageFit(ctx: CanvasRenderingContext2D, img: HTMLImageElement, W: number, H: number) {
+  const s = Math.min(W / img.naturalWidth, H / img.naturalHeight);
+  const w = img.naturalWidth * s;
+  const h = img.naturalHeight * s;
+  ctx.drawImage(img, (W - w) / 2, (H - h) / 2, w, h);
+}
+
 function drawBadge(spec: Extract<TextureSpec, { type: 'badge' }>, wIn: number, hIn: number) {
   const { c, ctx, W, H } = canvas(wIn, hIn);
   const d = spec.def;
+  for (const id of badgeArtIds(d.id, spec.level, d.levels)) {
+    const img = artImage(id);
+    if (img) {
+      drawImageFit(ctx, img, W, H);
+      return c;
+    }
+  }
   const stops = d.metal === 'gold' ? GOLD : d.metal === 'oxidized' ? ['#d8d0c0', '#8c8270', '#4b4436'] : SILVER;
   ctx.fillStyle = metal(ctx, H, stops);
   ctx.strokeStyle = 'rgba(0,0,0,0.5)';
@@ -438,7 +491,7 @@ function drawOfficerRank(rank: Rank, ctx: CanvasRenderingContext2D, W: number, H
 // ------------------------------------------------------------------ dispatcher
 
 export function textureFor(spec: TextureSpec, wIn: number, hIn: number): THREE.CanvasTexture {
-  const key = JSON.stringify([spec, wIn.toFixed(2), hIn.toFixed(2)]);
+  const key = JSON.stringify([spec, wIn.toFixed(2), hIn.toFixed(2), artVersion()]);
   const hit = cache.get(key);
   if (hit) return hit;
 
@@ -547,6 +600,11 @@ export function textureFor(spec: TextureSpec, wIn: number, hIn: number): THREE.C
           }
           break;
         case 'tab': {
+          const tabImg = spec.id ? artImage(spec.id) : undefined;
+          if (tabImg) {
+            drawImageFit(ctx, tabImg, W, H);
+            break;
+          }
           const palette: Record<string, [string, string]> = {
             RANGER: ['#111', '#f1c40f'],
             'SPECIAL FORCES': ['#0b6e6e', '#f1c40f'],

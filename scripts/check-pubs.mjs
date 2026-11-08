@@ -10,6 +10,9 @@
  * failure is never mistaken for "up to date").
  *
  *   npm run check-pubs
+ *
+ * Behind an HTTPS proxy (e.g. a sandbox), Node 22's fetch needs
+ * NODE_USE_ENV_PROXY=1 (and NODE_EXTRA_CA_CERTS for a custom CA).
  */
 import { readFile } from 'node:fs/promises';
 
@@ -36,7 +39,10 @@ async function page(url) {
       url,
       fetch(url, { headers: { 'User-Agent': 'DressRight-regulation-drift-check' } }).then(async (r) => {
         if (!r.ok) throw new Error(`HTTP ${r.status} for ${url}`);
-        return strip(await r.text());
+        const text = strip(await r.text());
+        // APD serves missing pages with HTTP 200 and a "PAGE NOT FOUND" body.
+        if (/PAGE NOT FOUND/i.test(text)) throw new Error(`APD returned "page not found" for ${url}`);
+        return text;
       }),
     );
   }
@@ -61,6 +67,11 @@ for (const pub of manifest.publications) {
     };
     const dates = hits.flatMap((h) => datesIn(rowOf(h)));
     if (!dates.length) throw new Error(`no date found next to "${pub.apdNumber}"`);
+    // Changes only appear on the details page: "Changes 001 - 03/04/2025".
+    if (pub.apdDetailsUrl) {
+      const details = await page(pub.apdDetailsUrl);
+      for (const m of details.matchAll(/Changes?\s+(\d{3})\s*-\s*(\d{1,2}\/\d{1,2}\/\d{4})/gi)) dates.push(...datesIn(m[2]));
+    }
     const latest = new Date(Math.max(...dates));
     const iso = latest.toISOString().slice(0, 10);
     if (latest > ours) {

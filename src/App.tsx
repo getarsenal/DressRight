@@ -1,94 +1,75 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Canvas } from '@react-three/fiber';
-import { ContactShadows, OrbitControls } from '@react-three/drei';
 import { loadBuild, saveBuild, type Build } from './regs/build';
 import { layout } from './regs/layout';
 import { validate } from './regs/validate';
-import { Coat } from './three/Coat';
-import { BuilderPanel } from './ui/BuilderPanel';
-import { Inspector } from './ui/Inspector';
-import { Findings } from './ui/Findings';
+import { loadArt } from './ui/art';
+import { CoatScreen } from './ui/screens/CoatScreen';
+import { AwardsScreen } from './ui/screens/AwardsScreen';
+import { UnitScreen } from './ui/screens/UnitScreen';
+import { MoreScreen } from './ui/screens/MoreScreen';
+import { Onboarding } from './ui/screens/Onboarding';
 import { AskPanel } from './ui/AskPanel';
-import { ChangesPanel } from './ui/ChangesPanel';
-import { SourcesPanel } from './ui/SourcesPanel';
 import { VersionBanner } from './ui/VersionBanner';
+import { Icon } from './ui/components/Icons';
 
-type View = 'builder' | 'ask' | 'changes' | 'sources';
+type Tab = 'coat' | 'awards' | 'unit' | 'ask' | 'more';
+
+const TABS: [Tab, string, () => JSX.Element][] = [
+  ['coat', 'Uniform', Icon.coat],
+  ['awards', 'Awards', Icon.medal],
+  ['unit', 'Unit', Icon.shield],
+  ['ask', 'Can I wear?', Icon.ask],
+  ['more', 'Profile', Icon.more],
+];
 
 export default function App() {
   const [build, setBuild] = useState<Build>(loadBuild);
-  const [selected, setSelected] = useState<string | null>(null);
-  const [view, setView] = useState<View>('builder');
+  const [tab, setTab] = useState<Tab>('coat');
+  const [setup, setSetup] = useState(!build.onboarded);
 
   useEffect(() => saveBuild(build), [build]);
+  useEffect(() => {
+    loadArt();
+  }, []);
 
   const items = useMemo(() => layout(build), [build]);
   const findings = useMemo(() => validate(build), [build]);
-  const selectedItem = items.find((i) => i.key === selected) ?? null;
   const errors = findings.filter((f) => f.severity === 'error').length;
-
   const update = (patch: Partial<Build>) => setBuild((b) => ({ ...b, ...patch }));
 
-  return (
-    <div className="app">
-      <header className="topbar">
-        <div className="brand">
-          <span className="logo">★</span> DressRight
-          <small>AR 670-1 uniform builder</small>
-        </div>
-        <nav>
-          {(
-            [
-              ['builder', 'Builder'],
-              ['ask', 'Can I wear…?'],
-              ['changes', 'What changed'],
-              ['sources', 'Sources'],
-            ] as [View, string][]
-          ).map(([v, label]) => (
-            <button key={v} className={view === v ? 'active' : ''} onClick={() => setView(v)}>
-              {label}
-            </button>
-          ))}
-        </nav>
-      </header>
-      <VersionBanner onOpenSources={() => setView('sources')} />
+  if (setup)
+    return (
+      <Onboarding
+        build={build}
+        update={update}
+        onDone={() => {
+          update({ onboarded: true });
+          setSetup(false);
+          setTab('coat');
+        }}
+      />
+    );
 
-      {view === 'builder' && (
-        <main className="builder">
-          <aside className="left">
-            <BuilderPanel build={build} update={update} />
-          </aside>
-          <section className="stage">
-            <div className="stage-head">
-              <strong>
-                {build.uniform === 'AGSU' ? 'Army Green Service Uniform' : 'Army Blue Service Uniform'} coat ·{' '}
-                {build.sex === 'male' ? 'male' : 'female'}
-              </strong>
-              <span className={errors ? 'pill bad' : 'pill good'}>
-                {errors ? `${errors} problem${errors > 1 ? 's' : ''}` : 'No problems found'}
-              </span>
-            </div>
-            <Canvas onPointerMissed={() => setSelected(null)} shadows camera={{ position: [0, 16, 50], fov: 38 }} dpr={[1, 2]}>
-              <color attach="background" args={['#14171c']} />
-              <ambientLight intensity={1.1} />
-              <directionalLight position={[15, 30, 25]} intensity={2.2} castShadow />
-              <directionalLight position={[-20, 10, 20]} intensity={0.9} />
-              <hemisphereLight args={['#dfe6ef', '#2a2620', 0.9]} />
-              <Coat build={build} items={items} selected={selected} onSelect={setSelected} />
-              <ContactShadows position={[0, -16, 0]} opacity={0.4} scale={50} blur={2.5} />
-              <OrbitControls target={[0, 3, 0]} minDistance={12} maxDistance={90} enablePan />
-            </Canvas>
-            <p className="hint">Drag to rotate · scroll to zoom · click any item to see its placement rule</p>
-          </section>
-          <aside className="right">
-            <Inspector item={selectedItem} />
-            <Findings findings={findings} />
-          </aside>
-        </main>
-      )}
-      {view === 'ask' && <AskPanel build={build} />}
-      {view === 'changes' && <ChangesPanel />}
-      {view === 'sources' && <SourcesPanel />}
+  return (
+    <div className="shell">
+      <nav className="tabbar" aria-label="Main">
+        <div className="rail-brand"><span className="logo">★</span> DressRight</div>
+        {TABS.map(([t, label, I]) => (
+          <button key={t} className={tab === t ? 'on' : ''} onClick={() => setTab(t)} aria-current={tab === t ? 'page' : undefined}>
+            <I />
+            <span>{label}</span>
+            {t === 'coat' && errors > 0 && <i className="badge-dot">{errors}</i>}
+          </button>
+        ))}
+      </nav>
+      <main className={`content tab-${tab}`}>
+        {tab !== 'coat' && <VersionBanner compact />}
+        {tab === 'coat' && <CoatScreen build={build} update={update} items={items} findings={findings} />}
+        {tab === 'awards' && <AwardsScreen build={build} update={update} />}
+        {tab === 'unit' && <UnitScreen build={build} update={update} />}
+        {tab === 'ask' && <AskPanel build={build} />}
+        {tab === 'more' && <MoreScreen build={build} update={update} onRestartSetup={() => setSetup(true)} />}
+      </main>
     </div>
   );
 }

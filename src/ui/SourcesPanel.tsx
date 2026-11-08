@@ -2,8 +2,7 @@ import { DIRECTIVES, PUBLICATIONS, RULESET_AS_OF } from '../regs/sources';
 
 export function SourcesPanel() {
   return (
-    <main className="page">
-      <h2>Sources & how this stays current</h2>
+    <div className="page">
       <p>
         Every rule, placement and answer in DressRight cites the publication it comes from and says how well that citation has been
         checked:
@@ -47,6 +46,6 @@ export function SourcesPanel() {
         A scheduled check compares the publication dates on armypubs.army.mil with the versions above and flags any drift, so rule
         data gets updated when the Army publishes a new revision or change. Rule data last updated {RULESET_AS_OF}.
       </p>
-    </main>
+    </div>
   );
 }
