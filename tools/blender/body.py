@@ -109,7 +109,7 @@ def trim_to_dress_form(ob, sh):
     """Keep a neck stub through the knees; close the cut ends."""
     bm = bmesh.new()
     bm.from_mesh(ob.data)
-    for co, no in (((0, 0, sh + 4.6), (0, 0, 1)), ((0, 0, sh - 40.0), (0, 0, -1))):
+    for co, no in (((0, 0, sh + 3.7), (0, 0, 1)), ((0, 0, sh - 40.0), (0, 0, -1))):
         geom = bm.verts[:] + bm.edges[:] + bm.faces[:]
         bmesh.ops.bisect_plane(bm, geom=geom, plane_co=Vector(co), plane_no=Vector(no), clear_outer=True)
     bmesh.ops.holes_fill(bm, edges=bm.edges[:], sides=0)

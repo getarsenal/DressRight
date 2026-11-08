@@ -61,7 +61,7 @@ SPEC = {
     "lower_flap": dict(cx=5.0, top=-15.8, w=4.1, h=3.5, button_dx=1.6, button_z=-17.9),
     "hem_z": -27.7,
     "cuff_z": -22.9,
-    "loop": dict(x0=3.2, x1=8.1, w=1.6, button_x=3.86),
+    "loop": dict(x0=3.2, x1=7.2, w=1.6, button_x=3.86),  # ends at the shoulder seam
     "color_srgb": (60, 48, 32),  # photographed coat, lightly corrected for studio exposure
 }
 
@@ -186,7 +186,8 @@ def coat_joints(m, roomy=0.0):
         "axilla": ring(-3.9, 8.1, 1.4, 0.75),
         "uchest": ring(-2.3, 7.2, 0.9, 0.7),
         "neckb": ((0, 0.5, Z(0.9)), (2.9, 3.0)),
-        "collar": ((0, 0.55, Z(SPEC["collar_top_z"] + 0.9)), (3.0, 3.1)),
+        # collar: a short stand, then the fall rolls outward and lies over the shoulder slope
+        "collar": ((0, 0.75, Z(SPEC["collar_top_z"] + 0.6)), (3.95, 4.05)),
     }
     E = [("hemx", "hip"), ("hip", "belt"), ("belt", "ribs"), ("ribs", "chest"), ("chest", "axilla"), ("axilla", "uchest"), ("uchest", "neckb"), ("neckb", "collar")]
     arm = sorted(m["arm"], key=lambda a: -a[0])
@@ -323,9 +324,9 @@ def project_onto(ob, target, offset, axis="Y", positive=True):
         if axis == "Y":
             origin, d = Vector((v.co.x, -60, v.co.z)), Vector((0, 1, 0))
             ok_side = lambda h: h.y < 1.0
-        else:  # from above, onto the shoulders
+        else:  # from above, onto the shoulders (a hit far down means we fell off the shoulder)
             origin, d = Vector((v.co.x, v.co.y, 80)), Vector((0, 0, -1))
-            ok_side = lambda h: True
+            ok_side = lambda h: h.z > Z(-2.5)
         hit, nor, _, _ = bvh.ray_cast(origin, d)
         if hit is not None and ok_side(hit):
             if nor.dot(d) > 0:
@@ -515,7 +516,7 @@ def build_front(coat, man, uniform):
     outline_r = [(-x, Z(z)) for x, z in lapel_r]  # wearer's right is -x
     outline_l = mirror_x(outline_r)
     for name, ol in (("LapelR", outline_r), ("LapelL", outline_l)):
-        piece(name, ol, coat, 0.1, 0.12, fabric, step=0.1, bevel=0.045)
+        piece(name, ol, coat, 0.12, 0.17, fabric, step=0.1, bevel=0.06)  # thick enough to cast an edge shadow
     # open the V between the lapels (inner edge runs from the neck to where the lapels meet)
     (xi, zi), (xb, zb) = lapel_r[0], lapel_r[1]
     bm = bmesh.new()
@@ -530,21 +531,6 @@ def build_front(coat, man, uniform):
     bmesh.ops.delete(bm, geom=kill, context="FACES")
     bm.to_mesh(coat.data)
     bm.free()
-    # back collar: stands around the neck between the collar ends, top at the measured height
-    me = bpy.data.meshes.new("CollarBack")
-    bm = bmesh.new()
-    rows = []
-    for r, z in ((3.12, Z(1.0)), (3.3, Z(SPEC["collar_top_z"]))):
-        row = []
-        for i in range(41):
-            th = math.radians(-38 + i * (256 / 40))
-            row.append(bm.verts.new((r * math.cos(th), 0.45 + r * math.sin(th) * 1.05, z)))
-        rows.append(row)
-    for i in range(40):
-        bm.faces.new((rows[0][i], rows[0][i + 1], rows[1][i + 1], rows[1][i]))
-    bm.to_mesh(me)
-    bm.free()
-    finish_piece(link(bpy.data.objects.new("CollarBack", me)), 0.14, fabric, bevel=0.04)
     # shirt and tie in the V
     shirt_rgb = (0.52, 0.45, 0.34) if uniform == "AGSU" else (0.82, 0.82, 0.8)
     tie_rgb = (0.035, 0.03, 0.02) if uniform == "AGSU" else (0.01, 0.01, 0.01)
@@ -635,7 +621,7 @@ def build_details(coat, uniform):
         zc = Z(bt["top"]) - bt["h"] / 2
         hit, nor = front_hit(bvh, 0.2, zc)
         if hit:  # buckle: an open rectangular frame
-            bpy.ops.mesh.primitive_cube_add(size=1, location=hit + nor * 0.36)
+            bpy.ops.mesh.primitive_cube_add(size=1, location=hit + nor * 0.5)  # sits on the belt's face
             bk = bpy.context.object
             bk.name = "Buckle"
             bk.scale = (bt["buckle_w"], 0.1, bt["buckle_h"])
