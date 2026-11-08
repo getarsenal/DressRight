@@ -65,17 +65,23 @@ describe('sleeve insignia', () => {
     expect(ids(b)).toContain('tabs-agsu');
     expect(keys(b).filter((k) => k.startsWith('tab-'))).toHaveLength(2);
   });
-  it('puts AGSU service stripes on both sleeves and ASU stripes on the left only', () => {
-    const agsu = keys(build({ uniform: 'AGSU', rankId: 'SFC', yearsService: 13 }));
-    expect(agsu).toContain('service-stripes-leftSleeve');
-    expect(agsu).toContain('service-stripes-rightSleeve');
-    const asu = keys(build({ uniform: 'ASU', rankId: 'SFC', yearsService: 13 }));
-    expect(asu).toContain('service-stripes-leftSleeve');
-    expect(asu).not.toContain('service-stripes-rightSleeve');
+  it('puts service stripes on the left sleeve and overseas bars on the right, on both uniforms', () => {
+    for (const uniform of ['AGSU', 'ASU'] as const) {
+      const items = layout(build({ uniform, rankId: 'SFC', yearsService: 13, monthsHostile: 18 }));
+      expect(items.find((i) => i.key === 'service-stripes')?.surface).toBe('leftSleeve');
+      expect(items.find((i) => i.key === 'overseas-bars')?.surface).toBe('rightSleeve');
+    }
+  });
+  it('sizes chevrons from DA PAM 670-1 21-7b', () => {
+    const chev = layout(build({ rankId: 'SFC', sex: 'male' })).find((i) => i.key === 'chev-leftSleeve')!;
+    expect(chev.w).toBe(3);
+    expect(chev.h).toBeGreaterThan(3.5); // three chevrons over two arcs is taller than wide
+    const small = layout(build({ rankId: 'SFC', sex: 'female' })).find((i) => i.key === 'chev-leftSleeve')!;
+    expect(small.w).toBe(2.5);
   });
   it('counts stripes and bars; officers get bars but no stripes', () => {
     const items = layout(build({ rankId: 'SFC', yearsService: 13, monthsHostile: 25 }));
-    expect(items.find((i) => i.key === 'service-stripes-leftSleeve')?.label).toContain('(4)');
+    expect(items.find((i) => i.key === 'service-stripes')?.label).toContain('(4)');
     expect(items.find((i) => i.key === 'overseas-bars')?.label).toContain('(4)');
     const off = keys(build({ rankId: 'CPT', yearsService: 9, monthsHostile: 12 }));
     expect(off.some((k) => k.startsWith('service-stripes'))).toBe(false);

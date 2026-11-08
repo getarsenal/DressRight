@@ -9,6 +9,7 @@ import type { Rank } from '../regs/types';
 import type { RackRibbon, TextureSpec } from '../regs/layout';
 import { rackRows } from '../regs/layout';
 import { artImage, artVersion } from '../ui/art';
+import { chevronGeometry, overseasBarSpec, serviceStripeSpec, serviceStripesSize } from '../regs/insigniaSpec';
 
 const PPI = 96; // pixels per inch
 const cache = new Map<string, THREE.CanvasTexture>();
@@ -345,84 +346,184 @@ function drawArt(art: InsigniaArt, wIn: number, hIn: number, onUpdate: () => voi
 
 // ------------------------------------------------------------------ rank
 
-function drawChevrons(rank: Rank, uniform: 'AGSU' | 'ASU', wIn: number, hIn: number) {
+/** Heritage tan 566 on heritage green 564 (AGSU); golden-light on Army blue (ASU). DA PAM 670-1 21-7b. */
+const SEWN = {
+  AGSU: { bg: '#2f4637', fg: ['#f0d08a', '#d9b468', '#b8924a'] },
+  ASU: { bg: '#1b2748', fg: ['#f5dc8c', '#e0bd5c', '#b8933a'] },
+} as const;
+
+function drawChevrons(rank: Rank, uniform: 'AGSU' | 'ASU', small: boolean, wIn: number, hIn: number) {
   const { c, ctx, W, H } = canvas(wIn, hIn);
-  const bg = uniform === 'ASU' ? '#16203a' : '#3a3828';
-  const fg = metal(ctx, H, GOLD);
+  const k = W / wIn; // px per inch
+  const col = SEWN[uniform];
+  const fg = (() => {
+    const g = ctx.createLinearGradient(0, 0, W, H);
+    g.addColorStop(0, col.fg[0]);
+    g.addColorStop(0.5, col.fg[1]);
+    g.addColorStop(1, col.fg[2]);
+    return g;
+  })();
   const ch = rank.chevrons!;
+
   if (ch.device === 'eagle' && ch.up === 0) {
-    // Specialist
-    ctx.fillStyle = bg;
+    // Specialist: eagle on a shield-shaped background with a pointed top
+    ctx.fillStyle = col.bg;
     ctx.beginPath();
-    ctx.moveTo(W * 0.1, H * 0.25);
-    ctx.lineTo(W * 0.5, H * 0.05);
-    ctx.lineTo(W * 0.9, H * 0.25);
-    ctx.lineTo(W * 0.9, H * 0.6);
-    ctx.quadraticCurveTo(W * 0.5, H * 0.95, W * 0.1, H * 0.6);
-    ctx.closePath();
+    ctx.moveTo(W / 2, 0);
+    ctx.bezierCurveTo(W * 0.72, H * 0.12, W, H * 0.2, W, H * 0.34);
+    ctx.lineTo(W, H * 0.62);
+    ctx.quadraticCurveTo(W, H, W / 2, H);
+    ctx.quadraticCurveTo(0, H, 0, H * 0.62);
+    ctx.lineTo(0, H * 0.34);
+    ctx.bezierCurveTo(0, H * 0.2, W * 0.28, H * 0.12, W / 2, 0);
     ctx.fill();
     ctx.strokeStyle = fg;
-    ctx.lineWidth = W * 0.03;
-    ctx.stroke();
-    ctx.fillStyle = fg;
+    ctx.lineWidth = 0.09 * k;
     ctx.beginPath();
-    ctx.moveTo(W * 0.5, H * 0.25);
-    ctx.lineTo(W * 0.7, H * 0.45);
-    ctx.lineTo(W * 0.5, H * 0.6);
-    ctx.lineTo(W * 0.3, H * 0.45);
-    ctx.closePath();
+    ctx.moveTo(W / 2, 0.16 * k);
+    ctx.bezierCurveTo(W * 0.7, H * 0.16, W - 0.16 * k, H * 0.24, W - 0.16 * k, H * 0.36);
+    ctx.lineTo(W - 0.16 * k, H * 0.6);
+    ctx.quadraticCurveTo(W - 0.16 * k, H - 0.16 * k, W / 2, H - 0.16 * k);
+    ctx.quadraticCurveTo(0.16 * k, H - 0.16 * k, 0.16 * k, H * 0.6);
+    ctx.lineTo(0.16 * k, H * 0.36);
+    ctx.bezierCurveTo(0.16 * k, H * 0.24, W * 0.3, H * 0.16, W / 2, 0.16 * k);
+    ctx.stroke();
+    // stylized eagle: body, spread wings, head
+    ctx.fillStyle = fg;
+    const cx = W / 2;
+    const cy = H * 0.58;
+    ctx.beginPath();
+    ctx.moveTo(cx, cy - H * 0.2);
+    ctx.quadraticCurveTo(cx + W * 0.06, cy - H * 0.12, cx + W * 0.05, cy);
+    ctx.lineTo(cx + W * 0.08, cy + H * 0.16);
+    ctx.lineTo(cx, cy + H * 0.12);
+    ctx.lineTo(cx - W * 0.08, cy + H * 0.16);
+    ctx.lineTo(cx - W * 0.05, cy);
+    ctx.quadraticCurveTo(cx - W * 0.06, cy - H * 0.12, cx, cy - H * 0.2);
     ctx.fill();
+    [1, -1].forEach((sd) => {
+      ctx.beginPath();
+      ctx.moveTo(cx + sd * W * 0.04, cy - H * 0.06);
+      ctx.quadraticCurveTo(cx + sd * W * 0.22, cy - H * 0.22, cx + sd * W * 0.34, cy - H * 0.16);
+      ctx.quadraticCurveTo(cx + sd * W * 0.26, cy - H * 0.02, cx + sd * W * 0.05, cy + H * 0.04);
+      ctx.fill();
+    });
     return c;
   }
-  const lw = H * 0.085;
-  const gap = H * 0.035;
+
+  const geo = chevronGeometry(rank, small);
+  const X = (x: number) => W / 2 + x * k;
+  const Y = (y: number) => y * k;
+  const { band, edge } = geo.s;
+  const trace = (pl: [number, number][], move = true) =>
+    pl.forEach(([x, y], i) => (i === 0 && move ? ctx.moveTo(X(x), Y(y)) : ctx.lineTo(X(x), Y(y))));
+  const strokeAll = (width: number, style: string | CanvasGradient) => {
+    ctx.strokeStyle = style;
+    ctx.lineWidth = width * k;
+    [...geo.chevrons, ...geo.rockers].forEach((pl) => {
+      ctx.beginPath();
+      trace(pl);
+      ctx.stroke();
+    });
+  };
+  ctx.lineJoin = 'miter';
+  ctx.miterLimit = 20;
   ctx.lineCap = 'butt';
-  for (let i = 0; i < ch.up; i++) {
-    const y = H * 0.12 + i * (lw + gap);
-    ctx.strokeStyle = bg;
-    ctx.lineWidth = lw + 6;
+  const clipTo = (inset: number) => {
     ctx.beginPath();
-    ctx.moveTo(W * 0.05, y + H * 0.28);
-    ctx.lineTo(W * 0.5, y);
-    ctx.lineTo(W * 0.95, y + H * 0.28);
-    ctx.stroke();
-    ctx.strokeStyle = fg;
-    ctx.lineWidth = lw;
-    ctx.stroke();
-  }
-  for (let i = 0; i < ch.rockers; i++) {
-    const y = H * 0.62 + i * (lw + gap);
-    ctx.strokeStyle = bg;
-    ctx.lineWidth = lw + 6;
+    ctx.rect(X(-geo.hw + inset), 0, (geo.width - 2 * inset) * k, H);
+    ctx.clip();
+  };
+
+  // 1. background: bands widened by the edging (fills the spaces too) + the center field
+  ctx.save();
+  clipTo(0);
+  strokeAll(band + 2 * edge, col.bg);
+  if (geo.hasField && geo.chevrons.length) {
+    ctx.fillStyle = col.bg;
     ctx.beginPath();
-    ctx.moveTo(W * 0.05, y - H * 0.08);
-    ctx.quadraticCurveTo(W * 0.5, y + H * 0.14, W * 0.95, y - H * 0.08);
-    ctx.stroke();
-    ctx.strokeStyle = fg;
-    ctx.lineWidth = lw;
-    ctx.stroke();
+    trace(geo.chevrons[geo.chevrons.length - 1]);
+    trace([...geo.rockers[0]].reverse(), false);
+    ctx.closePath();
+    ctx.fill();
   }
+  ctx.restore();
+
+  // 2. gold bands, inset by the edging at the sides
+  ctx.save();
+  clipTo(edge);
+  strokeAll(band, fg);
+  ctx.restore();
+
+  // 3. center device (1SG lozenge, SGM star, CSM star in wreath)
   if (ch.device && ch.device !== 'none') {
-    const cy = H * 0.58;
+    const cy = Y(geo.fieldCenter);
+    const r = 0.26 * k;
     ctx.fillStyle = fg;
     if (ch.device === 'diamond') {
       ctx.beginPath();
-      ctx.moveTo(W / 2, cy - H * 0.1);
-      ctx.lineTo(W / 2 + H * 0.07, cy);
-      ctx.lineTo(W / 2, cy + H * 0.1);
-      ctx.lineTo(W / 2 - H * 0.07, cy);
+      ctx.moveTo(W / 2, cy - r * 1.3);
+      ctx.lineTo(W / 2 + r * 0.8, cy);
+      ctx.lineTo(W / 2, cy + r * 1.3);
+      ctx.lineTo(W / 2 - r * 0.8, cy);
+      ctx.closePath();
+      ctx.fill();
+      ctx.fillStyle = col.bg; // "pierced" lozenge
+      ctx.beginPath();
+      ctx.moveTo(W / 2, cy - r * 0.55);
+      ctx.lineTo(W / 2 + r * 0.32, cy);
+      ctx.lineTo(W / 2, cy + r * 0.55);
+      ctx.lineTo(W / 2 - r * 0.32, cy);
       ctx.closePath();
       ctx.fill();
     } else {
-      star(ctx, W / 2, cy, H * 0.09);
+      star(ctx, W / 2, cy, r);
       if (ch.device === 'wreath-star') {
         ctx.strokeStyle = fg;
-        ctx.lineWidth = H * 0.025;
+        ctx.lineWidth = 0.07 * k;
         ctx.beginPath();
-        ctx.arc(W / 2, cy, H * 0.13, Math.PI * 0.15, Math.PI * 0.85);
+        ctx.arc(W / 2, cy, r * 1.55, Math.PI * 0.12, Math.PI * 0.88);
         ctx.stroke();
       }
     }
+  }
+  return c;
+}
+
+/** A stack of diagonal service stripes, lower end toward the front of the sleeve. 21-28. */
+function drawServiceStripes(count: number, uniform: 'AGSU' | 'ASU', small: boolean, wIn: number, hIn: number) {
+  const { c, ctx, W, H } = canvas(wIn, hIn);
+  const k = W / wIn;
+  const sp = serviceStripeSpec(small, uniform);
+  const box = serviceStripesSize(1, small, uniform);
+  const col = SEWN[uniform];
+  const hb = (box.pl * Math.sin(box.angle) + box.pw * Math.cos(box.angle)) / 2;
+  for (let i = 0; i < count; i++) {
+    ctx.save();
+    ctx.translate(W / 2, H - (hb + i * box.pitch) * k);
+    ctx.rotate(-box.angle);
+    ctx.fillStyle = col.bg;
+    ctx.fillRect((-box.pl / 2) * k, (-box.pw / 2) * k, box.pl * k, box.pw * k);
+    ctx.fillStyle = col.fg[1];
+    ctx.fillRect((-sp.length / 2) * k, (-sp.width / 2) * k, sp.length * k, sp.width * k);
+    ctx.restore();
+  }
+  return c;
+}
+
+/** Stack of horizontal overseas service bars, first bar at the bottom. 21-29. */
+function drawOverseasBars(count: number, uniform: 'AGSU' | 'ASU', small: boolean, wIn: number, hIn: number) {
+  const { c, ctx, W } = canvas(wIn, hIn);
+  const k = W / wIn;
+  const sp = overseasBarSpec(small);
+  const pw = sp.width + 2 * sp.border;
+  const col = SEWN[uniform];
+  for (let i = 0; i < count; i++) {
+    const top = hIn - pw - i * (pw + sp.spacing);
+    ctx.fillStyle = col.bg;
+    ctx.fillRect(0, top * k, W, pw * k);
+    ctx.fillStyle = col.fg[1];
+    ctx.fillRect(sp.border * k, (top + sp.border) * k, sp.length * k, sp.width * k);
   }
   return c;
 }
@@ -512,7 +613,13 @@ export function textureFor(spec: TextureSpec, wIn: number, hIn: number): THREE.C
       c = drawArt(spec.art, wIn, hIn, update);
       break;
     case 'chevrons':
-      c = drawChevrons(spec.rank, spec.uniform, wIn, hIn);
+      c = drawChevrons(spec.rank, spec.uniform, spec.small, wIn, hIn);
+      break;
+    case 'serviceStripes':
+      c = drawServiceStripes(spec.count, spec.uniform, spec.small, wIn, hIn);
+      break;
+    case 'overseasBars':
+      c = drawOverseasBars(spec.count, spec.uniform, spec.small, wIn, hIn);
       break;
     default: {
       const k = canvas(wIn, hIn);
@@ -579,26 +686,6 @@ export function textureFor(spec: TextureSpec, wIn: number, hIn: number): THREE.C
           ctx.restore();
           break;
         }
-        case 'serviceStripes':
-          ctx.fillStyle = metal(ctx, H, GOLD);
-          for (let i = 0; i < spec.count; i++) {
-            ctx.save();
-            ctx.translate(W / 2, H - (i + 0.5) * (H / spec.count));
-            ctx.rotate(-Math.PI / 4);
-            ctx.fillStyle = spec.uniform === 'ASU' ? '#16203a' : '#3a3828';
-            ctx.fillRect(-W * 0.48, -H * 0.06 - 3, W * 0.96, H * 0.12 / Math.max(1, spec.count / 2) + 6);
-            ctx.fillStyle = metal(ctx, H, GOLD);
-            ctx.fillRect(-W * 0.45, -H * 0.06, W * 0.9, H * 0.12 / Math.max(1, spec.count / 2));
-            ctx.restore();
-          }
-          break;
-        case 'overseasBars':
-          for (let i = 0; i < spec.count; i++) {
-            const bh = H / spec.count;
-            ctx.fillStyle = metal(ctx, H, GOLD);
-            ctx.fillRect(0, i * bh + bh * 0.2, W, bh * 0.55);
-          }
-          break;
         case 'tab': {
           const tabImg = spec.id ? artImage(spec.id) : undefined;
           if (tabImg) {

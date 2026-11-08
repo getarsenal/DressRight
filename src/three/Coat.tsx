@@ -9,6 +9,7 @@ import { useArtVersion } from '../ui/art';
 import {
   analyticSurface,
   bodyParams,
+  cuffCap,
   conformalPatch,
   sleeveGeometry,
   torsoGeometry,
@@ -165,7 +166,8 @@ export function Coat({ build, items, selected, onSelect, showMeasures }: Props) 
 
   const braidSpec = sleeveBraid(build);
   const loopLen = g.width / 2 - g.notchX - 0.5;
-  const sleeveLen = useMemo(() => p.sleeveCurve(1).getLength(), [p]);
+  const sleeveLen = g.sleeveLength;
+  const cuffs = useMemo(() => [cuffCap(p, 1), cuffCap(p, -1)], [p]);
 
   // belt band (AGSU)
   const belt = useMemo(() => {
@@ -195,6 +197,11 @@ export function Coat({ build, items, selected, onSelect, showMeasures }: Props) 
       <mesh geometry={torso} material={[cloth.front, cloth.plain]} />
       {sleeves.map((s, i) => (
         <mesh key={i} geometry={s} material={cloth.plain} />
+      ))}
+      {cuffs.map((geo, i) => (
+        <mesh key={`cuff${i}`} geometry={geo}>
+          <meshStandardMaterial color="#0d0e0b" roughness={1} side={THREE.DoubleSide} />
+        </mesh>
       ))}
       {/* mannequin neck */}
       <mesh position={[0, p.top + p.shoulderRise + 1.2, -0.4]}>

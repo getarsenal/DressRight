@@ -82,13 +82,13 @@ export function bodyParams(g: CoatGeometry, male: boolean): BodyParams {
     let c = curves.get(side);
     if (!c) {
       const s = sleeveTop(side);
-      // hang slightly away from the body, then bend forward below the elbow
+      // hang close to the body (following the waist suppression), bending forward below the elbow
       c = new THREE.CatmullRomCurve3([
         s,
-        s.clone().add(new THREE.Vector3(side * 0.9, -sleeveLen * 0.3, 0.1)),
-        s.clone().add(new THREE.Vector3(side * 1.4, -sleeveLen * 0.58, 0.3)),
-        s.clone().add(new THREE.Vector3(side * 1.3, -sleeveLen * 0.8, 1.6)),
-        s.clone().add(new THREE.Vector3(side * 1.0, -sleeveLen, 3.0)),
+        s.clone().add(new THREE.Vector3(side * -0.15, -sleeveLen * 0.3, 0.15)),
+        s.clone().add(new THREE.Vector3(side * -0.35, -sleeveLen * 0.56, 0.45)),
+        s.clone().add(new THREE.Vector3(side * -0.3, -sleeveLen * 0.79, 1.5)),
+        s.clone().add(new THREE.Vector3(side * -0.15, -sleeveLen * 0.98, 2.7)),
       ]);
       curves.set(side, c);
     }
@@ -146,7 +146,8 @@ export function analyticSurface(p: BodyParams): BodySurface {
       f = { curve, len: curve.getLength() };
       frames.set(side, f);
     }
-    const t = Math.min(1, Math.max(0, along / f.len));
+    // `along` is measured in sleeve inches: 0 = shoulder seam, g.sleeveLength = bottom of the sleeve
+    const t = Math.min(1, Math.max(0, along / p.g.sleeveLength));
     const c = f.curve.getPointAt(t);
     const tan = f.curve.getTangentAt(t);
     // outward reference = ±x projected perpendicular to the tangent
@@ -243,7 +244,7 @@ export function torsoGeometry(p: BodyParams, uvRect: { x0: number; y0: number; w
 export function sleeveGeometry(p: BodyParams, side: 1 | -1, surf: BodySurface) {
   const segA = 48;
   const segL = 40;
-  const len = p.sleeveCurve(side).getLength();
+  const len = p.g.sleeveLength;
   const pos: number[] = [];
   const nor: number[] = [];
   for (let j = 0; j <= segL; j++) {
@@ -266,6 +267,18 @@ export function sleeveGeometry(p: BodyParams, side: 1 | -1, surf: BodySurface) {
   geo.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
   geo.setAttribute('normal', new THREE.Float32BufferAttribute(nor, 3));
   geo.setIndex(idx);
+  return geo;
+}
+
+/** Closes the cuff opening so the sleeve doesn't read as a hollow tube. */
+export function cuffCap(p: BodyParams, side: 1 | -1) {
+  const curve = p.sleeveCurve(side);
+  const center = curve.getPointAt(1);
+  const tan = curve.getTangentAt(1);
+  const geo = new THREE.CircleGeometry(p.sleeveR(p.g.sleeveLength) * 0.97, 40);
+  const q = new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0, 0, 1), tan);
+  geo.applyQuaternion(q);
+  geo.translate(center.x - tan.x * 0.25, center.y - tan.y * 0.25, center.z - tan.z * 0.25);
   return geo;
 }
 

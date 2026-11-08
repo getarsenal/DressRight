@@ -11,6 +11,7 @@
 import type { Build, InsigniaArt } from './build';
 import type { Citation, Rank } from './types';
 import { C } from './citations';
+import { chevronSize, overseasBarsSize, serviceStripesSize } from './insigniaSpec';
 import { rankById } from './catalog/ranks';
 import { branchById, type Branch } from './catalog/branches';
 import { BADGES, badgeById, type BadgeDef } from './catalog/badges';
@@ -87,11 +88,11 @@ export type TextureSpec =
   | { type: 'usLetters' }
   | { type: 'branchPin'; branch: Branch }
   | { type: 'art'; art: InsigniaArt }
-  | { type: 'chevrons'; rank: Rank; uniform: Build['uniform'] }
+  | { type: 'chevrons'; rank: Rank; uniform: Build['uniform']; small: boolean }
   | { type: 'officerRank'; rank: Rank }
   | { type: 'shoulderStrap'; rank: Rank; branch: Branch }
-  | { type: 'serviceStripes'; count: number; uniform: Build['uniform'] }
-  | { type: 'overseasBars'; count: number; uniform: Build['uniform'] }
+  | { type: 'serviceStripes'; count: number; uniform: Build['uniform']; small: boolean }
+  | { type: 'overseasBars'; count: number; uniform: Build['uniform']; small: boolean }
   | { type: 'tab'; label: string; color?: string; id?: string }
   | { type: 'rdi'; branch: Branch };
 
@@ -599,9 +600,12 @@ export function layout(b: Build): PlacedItem[] {
     }
   }
 
+  const small = b.sex === 'female';
   if (!officer && rank.chevrons) {
-    const midway = g.sleeveLength * 0.27;
-    const cy = agsu ? Math.max(midway, ssiBottom + 0.5 + 1.5) : midway;
+    const size = chevronSize(rank, small);
+    // centered between the shoulder seam and the elbow (elbow ≈ 55% down the sleeve)
+    const midway = g.sleeveLength * 0.275;
+    const cy = agsu ? Math.max(midway, ssiBottom + 0.5 + size.h / 2) : midway;
     (['leftSleeve', 'rightSleeve'] as const).forEach((surface) =>
       items.push({
         key: `chev-${surface}`,
@@ -609,12 +613,10 @@ export function layout(b: Build): PlacedItem[] {
         surface,
         x: 0,
         y: cy,
-        w: b.sex === 'female' ? 2.5 : 3,
-        h: b.sex === 'female' ? 2.5 : 3,
-        tex: { type: 'chevrons', rank, uniform: b.uniform },
-        rule: agsu
-          ? 'Centered on each sleeve between the shoulder seam and the elbow; if the SSI doesn\'t allow that, 1/2 inch below the SSI. Heritage tan on heritage green.'
-          : 'Centered on each sleeve between the shoulder seam and the elbow. Gold on Army blue; large chevrons on the male coat, small on the female.',
+        w: size.w,
+        h: size.h,
+        tex: { type: 'chevrons', rank, uniform: b.uniform, small },
+        rule: `${small ? 'Small' : 'Large'} insignia, ${size.w} inches wide (${small ? '1/4-inch chevrons and arcs, 5/32 inch apart' : '5/16-inch chevrons and arcs, 3/16 inch apart'}, 1/8-inch edging), centered on each sleeve between the shoulder seam and the elbow${agsu ? '; if the SSI doesn\'t allow that, 1/2 inch below the SSI. Heritage tan on heritage green' : '. Golden-light on Army blue'}.`,
         citations: [C.rankInsignia],
       }),
     );
@@ -623,41 +625,38 @@ export function layout(b: Build): PlacedItem[] {
   const braid = sleeveBraid(b);
   const stripes = officer ? 0 : Math.min(15, Math.floor(b.yearsService / 3) + (b.yearsService >= 29.5 && b.yearsService < 30 ? 1 : 0));
   if (stripes > 0) {
-    const sides = agsu ? (['leftSleeve', 'rightSleeve'] as const) : (['leftSleeve'] as const);
-    sides.forEach((surface) => {
-      const h = 0.45 + stripes * (agsu ? 0.32 : 0.3);
-      items.push({
-        key: `service-stripes-${surface}`,
-        label: `Service stripes (${stripes})`,
-        surface,
-        x: 0,
-        y: agsu ? g.sleeveLength - 3.6 - h / 2 : g.sleeveLength - 4 - h / 2,
-        w: agsu ? 3.4 : 2.4,
-        h,
-        tex: { type: 'serviceStripes', count: stripes, uniform: b.uniform },
-        rule: agsu
-          ? 'AGSU: both sleeves, outside bottom half, from seam to seam at a 30-degree angle, 1/8 inch between stripes. One per 3 years of creditable service.'
-          : 'ASU: left sleeve, outside bottom half, at a 45-degree angle with the lower end 4 inches from the bottom of the sleeve, 1/16 inch between stripes. One per 3 years of creditable service.',
-        citations: [C.serviceStripes, C.serviceStripesElig],
-      });
+    const size = serviceStripesSize(stripes, small, b.uniform);
+    items.push({
+      key: 'service-stripes',
+      label: `Service stripes (${stripes})`,
+      surface: 'leftSleeve',
+      x: 0,
+      y: g.sleeveLength - 4 - size.h / 2,
+      w: size.w,
+      h: size.h,
+      tex: { type: 'serviceStripes', count: stripes, uniform: b.uniform, small },
+      rule: agsu
+        ? 'Left sleeve, outside bottom half, at 30 degrees with the lower end toward the front, 1/8 inch between stripes, as drawn in DA PAM 670-1 figure 21-148. Note: the text of para 21-28c(2) says "both sleeves, seam to seam", which conflicts with its own figure and matches the mess-uniform paragraph; we follow the figure. Confirm with your unit. One stripe per 3 years of creditable service.'
+        : 'Left sleeve, outside bottom half, at 45 degrees with the lower end toward the inside seam, 4 inches from the bottom of the sleeve, 1/16 inch between stripes. One stripe per 3 years of creditable service.',
+      citations: [C.serviceStripes, C.serviceStripesElig],
     });
   }
   const bars = Math.floor(b.monthsHostile / 6);
   if (bars > 0) {
     const base = officer && braid ? 3 + braid.width + 0.25 : 4;
-    const h = bars * 0.45;
+    const size = overseasBarsSize(bars, small);
     items.push({
       key: 'overseas-bars',
       label: `Overseas service bars (${bars})`,
       surface: 'rightSleeve',
       x: 0,
-      y: g.sleeveLength - base - h / 2,
-      w: 1.6,
-      h,
-      tex: { type: 'overseasBars', count: bars, uniform: b.uniform },
+      y: g.sleeveLength - base - size.h / 2,
+      w: size.w,
+      h: size.h,
+      tex: { type: 'overseasBars', count: bars, uniform: b.uniform, small },
       rule: officer
-        ? 'Right sleeve, outside bottom half; lower edge 1/4 inch above the sleeve braid, 1/16 inch between bars. One bar per 6 months in a listed operation/area.'
-        : 'Right sleeve, outside bottom half; lower edge 4 inches above the bottom of the sleeve, 1/16 inch between bars. One bar per 6 months in a listed operation/area.',
+        ? 'Right sleeve, outside bottom half, parallel to the bottom of the sleeve; lower edge 1/4 inch above the sleeve braid, 1/16 inch between bars. One bar per 6 months in a listed operation/area.'
+        : 'Right sleeve, outside bottom half, parallel to the bottom of the sleeve; lower edge 4 inches above the bottom of the sleeve, 1/16 inch between bars. One bar per 6 months in a listed operation/area.',
       citations: [C.overseasBars, C.overseasBarsElig],
     });
   }
@@ -712,9 +711,9 @@ function addMeasures(
   }
   const mohc = get('ssi-mohc');
   if (mohc) mohc.measures = [{ from: [mohc.w / 2 + 0.4, 0], to: [mohc.w / 2 + 0.4, mohc.y - mohc.h / 2], label: '1/2 in' }];
-  const st = get('service-stripes-leftSleeve');
-  if (st && g) {
-    if (st.w < 3) st.measures = [{ from: [st.w / 2 + 0.5, g.sleeveLength], to: [st.w / 2 + 0.5, st.y + st.h / 2], label: '4 in' }];
+  const st = get('service-stripes');
+  if (st) {
+    st.measures = [{ from: [st.w / 2 + 0.5, g.sleeveLength], to: [st.w / 2 + 0.5, st.y + st.h / 2], label: '4 in' }];
   }
   const ob = get('overseas-bars');
   if (ob) {

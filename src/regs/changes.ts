@@ -36,10 +36,10 @@ export const CHANGES: Change[] = [
   {
     date: '2021-01-26',
     pub: 'AR 670-1 / DA PAM 670-1 (major revision)',
-    title: 'AGSU rules: no name plate, four badges, two tabs, stripes on both sleeves',
-    before: 'Common setups carry over blue-uniform habits: a name plate on the right flap, five or six badges, three tabs, hash marks on the left sleeve only.',
-    now: 'On the AGSU: no name plate; four badges total including marksmanship; two skill tabs of your choosing; service stripes on both sleeves at 30°; unit awards earned or current, not both.',
-    citations: [C.agsuNoNameplate, C.badgeTotalAgsu, C.tabsAgsu, C.serviceStripes, C.unitAwardsAgsu],
+    title: 'AGSU rules: no name plate, four badges, two tabs',
+    before: 'Common setups carry over blue-uniform habits: a name plate on the right flap, five or six badges, three tabs, and earned plus current unit awards together.',
+    now: 'On the AGSU: no name plate; four badges total including marksmanship; two skill tabs of your choosing; service stripes at 30° (left sleeve per figure 21-148); unit awards earned or current, not both.',
+    citations: [C.agsuNoNameplate, C.badgeTotalAgsu, C.tabsAgsu, C.unitAwardsAgsu],
   },
   {
     date: '2021-01-26',
