@@ -366,48 +366,16 @@ function drawChevrons(rank: Rank, uniform: 'AGSU' | 'ASU', small: boolean, wIn: 
   const ch = rank.chevrons!;
 
   if (ch.device === 'eagle' && ch.up === 0) {
-    // Specialist: eagle on a shield-shaped background with a pointed top
+    // Specialist: spade shape (broad arched top, concave sides to a point) with the eagle
     ctx.fillStyle = col.bg;
     ctx.beginPath();
-    ctx.moveTo(W / 2, 0);
-    ctx.bezierCurveTo(W * 0.72, H * 0.12, W, H * 0.2, W, H * 0.34);
-    ctx.lineTo(W, H * 0.62);
-    ctx.quadraticCurveTo(W, H, W / 2, H);
-    ctx.quadraticCurveTo(0, H, 0, H * 0.62);
-    ctx.lineTo(0, H * 0.34);
-    ctx.bezierCurveTo(0, H * 0.2, W * 0.28, H * 0.12, W / 2, 0);
+    ctx.moveTo(W / 2, H);
+    ctx.bezierCurveTo(W * 0.42, H * 0.78, W * 0.06, H * 0.56, 0, H * 0.41);
+    ctx.bezierCurveTo(W * 0.02, H * 0.14, W * 0.26, 0, W / 2, 0);
+    ctx.bezierCurveTo(W * 0.74, 0, W * 0.98, H * 0.14, W, H * 0.41);
+    ctx.bezierCurveTo(W * 0.94, H * 0.56, W * 0.58, H * 0.78, W / 2, H);
     ctx.fill();
-    ctx.strokeStyle = fg;
-    ctx.lineWidth = 0.09 * k;
-    ctx.beginPath();
-    ctx.moveTo(W / 2, 0.16 * k);
-    ctx.bezierCurveTo(W * 0.7, H * 0.16, W - 0.16 * k, H * 0.24, W - 0.16 * k, H * 0.36);
-    ctx.lineTo(W - 0.16 * k, H * 0.6);
-    ctx.quadraticCurveTo(W - 0.16 * k, H - 0.16 * k, W / 2, H - 0.16 * k);
-    ctx.quadraticCurveTo(0.16 * k, H - 0.16 * k, 0.16 * k, H * 0.6);
-    ctx.lineTo(0.16 * k, H * 0.36);
-    ctx.bezierCurveTo(0.16 * k, H * 0.24, W * 0.3, H * 0.16, W / 2, 0.16 * k);
-    ctx.stroke();
-    // stylized eagle: body, spread wings, head
-    ctx.fillStyle = fg;
-    const cx = W / 2;
-    const cy = H * 0.58;
-    ctx.beginPath();
-    ctx.moveTo(cx, cy - H * 0.2);
-    ctx.quadraticCurveTo(cx + W * 0.06, cy - H * 0.12, cx + W * 0.05, cy);
-    ctx.lineTo(cx + W * 0.08, cy + H * 0.16);
-    ctx.lineTo(cx, cy + H * 0.12);
-    ctx.lineTo(cx - W * 0.08, cy + H * 0.16);
-    ctx.lineTo(cx - W * 0.05, cy);
-    ctx.quadraticCurveTo(cx - W * 0.06, cy - H * 0.12, cx, cy - H * 0.2);
-    ctx.fill();
-    [1, -1].forEach((sd) => {
-      ctx.beginPath();
-      ctx.moveTo(cx + sd * W * 0.04, cy - H * 0.06);
-      ctx.quadraticCurveTo(cx + sd * W * 0.22, cy - H * 0.22, cx + sd * W * 0.34, cy - H * 0.16);
-      ctx.quadraticCurveTo(cx + sd * W * 0.26, cy - H * 0.02, cx + sd * W * 0.05, cy + H * 0.04);
-      ctx.fill();
-    });
+    drawEagle(ctx, W / 2, H * 0.37, W * 0.8, fg);
     return c;
   }
 
@@ -488,6 +456,83 @@ function drawChevrons(rank: Rank, uniform: 'AGSU' | 'ASU', small: boolean, wIn: 
     }
   }
   return c;
+}
+
+/**
+ * Stylized heraldic eagle for the Specialist insignia: raised wings, head
+ * turned to its right, olive branch and arrows in the talons.
+ */
+function drawEagle(ctx: CanvasRenderingContext2D, cx: number, cy: number, span: number, fill: string | CanvasGradient) {
+  const s = span / 2;
+  ctx.save();
+  ctx.translate(cx, cy);
+  ctx.fillStyle = fill;
+  ctx.strokeStyle = fill;
+  // wings (mirrored), with feather tips
+  [1, -1].forEach((d) => {
+    ctx.beginPath();
+    ctx.moveTo(d * s * 0.1, -s * 0.05);
+    ctx.bezierCurveTo(d * s * 0.3, -s * 0.35, d * s * 0.55, -s * 0.62, d * s * 0.95, -s * 0.72);
+    for (let i = 0; i < 5; i++) {
+      const t = i / 4;
+      const x = d * s * (0.95 - t * 0.55);
+      const y = -s * (0.72 - t * 0.62);
+      ctx.lineTo(x - d * s * 0.04, y + s * 0.12);
+      ctx.lineTo(x - d * s * 0.12, y + s * 0.1);
+    }
+    ctx.lineTo(d * s * 0.12, s * 0.12);
+    ctx.closePath();
+    ctx.fill();
+  });
+  // body and tail
+  ctx.beginPath();
+  ctx.ellipse(0, s * 0.08, s * 0.17, s * 0.3, 0, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.beginPath();
+  ctx.moveTo(-s * 0.14, s * 0.32);
+  ctx.lineTo(-s * 0.24, s * 0.62);
+  ctx.lineTo(0, s * 0.52);
+  ctx.lineTo(s * 0.24, s * 0.62);
+  ctx.lineTo(s * 0.14, s * 0.32);
+  ctx.closePath();
+  ctx.fill();
+  // head and beak, turned to the eagle's right (viewer's left)
+  ctx.beginPath();
+  ctx.arc(-s * 0.04, -s * 0.28, s * 0.11, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.beginPath();
+  ctx.moveTo(-s * 0.12, -s * 0.3);
+  ctx.lineTo(-s * 0.26, -s * 0.24);
+  ctx.lineTo(-s * 0.12, -s * 0.2);
+  ctx.fill();
+  // olive branch (eagle's right) and arrows (eagle's left)
+  ctx.lineWidth = s * 0.04;
+  ctx.beginPath();
+  ctx.moveTo(-s * 0.18, s * 0.3);
+  ctx.quadraticCurveTo(-s * 0.5, s * 0.25, -s * 0.68, s * 0.05);
+  ctx.stroke();
+  for (let i = 0; i < 4; i++) {
+    const t = 0.25 + i * 0.2;
+    const x = -s * (0.18 + 0.5 * t);
+    const y = s * (0.3 - 0.25 * t * t);
+    ctx.beginPath();
+    ctx.ellipse(x, y - s * 0.06, s * 0.035, s * 0.08, -0.6, 0, Math.PI * 2);
+    ctx.fill();
+  }
+  for (let i = 0; i < 3; i++) {
+    ctx.beginPath();
+    ctx.moveTo(s * 0.18, s * 0.32);
+    const ex = s * (0.6 + i * 0.06);
+    const ey = s * (0.0 + i * 0.1);
+    ctx.lineTo(ex, ey);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(ex, ey);
+    ctx.lineTo(ex - s * 0.09, ey + s * 0.01);
+    ctx.lineTo(ex - s * 0.03, ey + s * 0.08);
+    ctx.fill();
+  }
+  ctx.restore();
 }
 
 /** A stack of diagonal service stripes, lower end toward the front of the sleeve. 21-28. */
