@@ -23,7 +23,7 @@ def smooth(a, b, t):
     return k * k * (3 - 2 * k)
 
 
-def load_body(blend_path, sh, arm_hang_deg=8.0, multires_level=1):
+def load_body(blend_path, sh, arm_hang_deg=8.0, multires_level=1, neck_cut=3.7):
     if not os.path.exists(blend_path):
         raise SystemExit(f"Body mesh not found: {blend_path}. Run tools/blender/fetch_assets.sh first.")
     with bpy.data.libraries.load(blend_path, link=False) as (src, dst):
@@ -60,7 +60,7 @@ def load_body(blend_path, sh, arm_hang_deg=8.0, multires_level=1):
         v.co.z += dz
 
     lower_arms(me, sh, arm_hang_deg)
-    trim_to_dress_form(ob, sh)
+    trim_to_dress_form(ob, sh, neck_cut)
     me.update()
     bpy.context.view_layer.update()
     return ob
@@ -105,11 +105,11 @@ def lower_arms(me, sh, target_deg):
             v.co = pivot + p.lerp(q, w)
 
 
-def trim_to_dress_form(ob, sh):
+def trim_to_dress_form(ob, sh, neck_cut=3.7):
     """Keep a neck stub through the knees; close the cut ends."""
     bm = bmesh.new()
     bm.from_mesh(ob.data)
-    for co, no in (((0, 0, sh + 3.7), (0, 0, 1)), ((0, 0, sh - 40.0), (0, 0, -1))):
+    for co, no in (((0, 0, sh + neck_cut), (0, 0, 1)), ((0, 0, sh - 40.0), (0, 0, -1))):
         geom = bm.verts[:] + bm.edges[:] + bm.faces[:]
         bmesh.ops.bisect_plane(bm, geom=geom, plane_co=Vector(co), plane_no=Vector(no), clear_outer=True)
     bmesh.ops.holes_fill(bm, edges=bm.edges[:], sides=0)
