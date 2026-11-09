@@ -3,7 +3,7 @@ import { Canvas, useThree } from '@react-three/fiber';
 import * as THREE from 'three';
 import { ContactShadows, OrbitControls } from '@react-three/drei';
 import type { OrbitControls as OrbitControlsImpl } from 'three-stdlib';
-import type { Build } from '../../regs/build';
+import { VERIFIED, type Build } from '../../regs/build';
 import type { Finding } from '../../regs/types';
 import type { PlacedItem } from '../../regs/layout';
 import { rankById } from '../../regs/catalog/ranks';
@@ -120,7 +120,13 @@ export function CoatScreen({ build, update, items, findings }: {
         <div className="coat-top">
           <div className="seg pill-seg">
             {(['AGSU', 'ASU'] as const).map((u) => (
-              <button key={u} className={build.uniform === u ? 'on' : ''} onClick={() => update({ uniform: u })}>
+              <button
+                key={u}
+                className={build.uniform === u ? 'on' : ''}
+                disabled={!VERIFIED.uniforms.includes(u)}
+                title={VERIFIED.uniforms.includes(u) ? undefined : 'Coming soon: not yet verified'}
+                onClick={() => update({ uniform: u })}
+              >
                 {u === 'AGSU' ? 'Greens' : 'Blues'}
               </button>
             ))}

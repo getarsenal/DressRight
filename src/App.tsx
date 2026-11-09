@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { loadBuild, saveBuild, type Build } from './regs/build';
+import { loadBuild, lockVerified, saveBuild, type Build } from './regs/build';
 import { layout } from './regs/layout';
 import { validate } from './regs/validate';
 import { loadArt } from './ui/art';
@@ -35,7 +35,7 @@ export default function App() {
   const items = useMemo(() => layout(build), [build]);
   const findings = useMemo(() => validate(build), [build]);
   const errors = findings.filter((f) => f.severity === 'error').length;
-  const update = (patch: Partial<Build>) => setBuild((b) => ({ ...b, ...patch }));
+  const update = (patch: Partial<Build>) => setBuild((b) => lockVerified({ ...b, ...patch }));
 
   if (setup)
     return (

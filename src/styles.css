@@ -313,3 +313,6 @@ fieldset.insignia legend { font-weight: 650; padding: 0 6px; }
   .viewport { right: 396px; }
   .beforenow { grid-template-columns: 1fr 1fr; }
 }
+
+/* options not yet verified: shown, but greyed out */
+.seg button:disabled, .opt:disabled { opacity: 0.38; cursor: not-allowed; }
