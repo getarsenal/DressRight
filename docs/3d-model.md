@@ -28,6 +28,28 @@ In the app, `src/three/glbCoat.ts` loads the model and implements `BodySurface` 
 being refined, insignia are switched off on the sculpted coat (`SCULPTED_INSIGNIA` in `src/three/Coat.tsx`). Female coats still
 use the procedural body.
 
+
+## Purchased base model (current male and female AGSU)
+
+The AGSU coats now start from a purchased model: CGTrader's "Uniform of the United States army", in OBJ format. It's a
+women's-cut belted service coat in a T-pose. The raw files are licensed for use, not redistribution, so they never enter the
+repo; only the processed, compressed GLBs ship.
+
+```sh
+python tools/blender/asset_coat.py --obj <uniform.obj> --sex male   --export public/models/coat-agsu-male.glb
+python tools/blender/asset_coat.py --obj <uniform.obj> --sex female --export public/models/coat-agsu-female.glb
+tools/blender/compress.sh public/models/coat-agsu-*.glb
+```
+
+- **`asset_load.py`:** normalises the model to our frame (inches, front -Y) and drops the trousers, boots, cap and placeholder insignia.
+- **Male:**
+  - The model's detail is kept: lapels, collar, shirt and tie, flaps, belt, buttons and folds. Each surface is split into
+    a smooth shape plus the detail on top of it. The smooth shape is mapped onto the verified block coat
+    (`block_coat.py`), and the detail is added back.
+  - The sleeves are the block coat's straight sleeves, ending in a square cuff. The armhole seam is drawn at the
+    shoulder seam, and its top is exported as `dr_seam_L/R`.
+- **Female:** the model's own shape, with the arms bent down at the shoulder.
+
 The full contract below is the target for hand-built models.
 
 DressRight currently draws the coat procedurally (`src/three/body.ts`): the torso is built from mathematical cross-sections, with sloped

@@ -44,7 +44,7 @@ ap.add_argument("--res", type=int, default=700)
 ap.add_argument("--export", default="")
 ap.add_argument("--body", default=os.path.join(HERE, "assets", "human_base_meshes_bundle.blend"))
 ap.add_argument("--ref", default="", help="reference drawing, for a side-by-side comparison render")
-args = ap.parse_args(sys.argv[1:])
+args, _ = ap.parse_known_args(sys.argv[1:])  # tolerate other scripts' flags when imported
 AGSU = args.uniform == "AGSU"
 
 SH = 14.5  # mannequin shoulder line (inches)
@@ -1493,4 +1493,5 @@ def main():
         export_glb(coat, man, sleeve, args.export)
 
 
-main()
+if __name__ == "__main__":
+    main()
