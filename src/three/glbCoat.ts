@@ -65,11 +65,6 @@ function prepare(scene: THREE.Object3D, fabric: string): CoatModel {
     const mat = m.material as THREE.MeshStandardMaterial;
     const name = mat?.name ?? '';
     if (name.startsWith('Fabric')) {
-      // compressed normals band on the big smooth surfaces: rebuild them
-      if (/^(Coat|Sleeve)/.test(nodeName(m))) {
-        m.geometry.deleteAttribute('normal');
-        m.geometry.computeVertexNormals();
-      }
       boxUV(m.geometry, m.matrixWorld, 2.2);
       m.material = cloth;
     } else if (name === 'Brass') {

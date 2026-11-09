@@ -4,6 +4,7 @@
 set -euo pipefail
 for f in "$@"; do
   tmp="$(mktemp --suffix=.glb)"
-  npx --yes @gltf-transform/cli@4.1.1 meshopt "$f" "$tmp"
+  # 16-bit positions and normals: coarser grids show as banding on the large smooth panels
+  npx --yes @gltf-transform/cli@4.1.1 meshopt "$f" "$tmp" --quantize-position 16 --quantize-normal 16
   mv "$tmp" "$f"
 done
