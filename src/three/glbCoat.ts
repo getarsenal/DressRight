@@ -31,7 +31,7 @@ const UNDER = { polygonOffset: true, polygonOffsetFactor: 3, polygonOffsetUnits:
 const cache = new Map<string, Promise<CoatModel | null>>();
 
 export function loadCoatModel(uniform: string, sex: string, fabric: string): Promise<CoatModel | null> {
-  if (sex !== 'male') return Promise.resolve(null);
+  // models exist for the male AGSU/ASU and the female AGSU; anything else falls back (404 -> null)
   const url = modelUrl(uniform, sex);
   const key = `${url}|${fabric}`;
   if (!cache.has(key)) {
@@ -65,6 +65,7 @@ function prepare(scene: THREE.Object3D, fabric: string): CoatModel {
     const mat = m.material as THREE.MeshStandardMaterial;
     const name = mat?.name ?? '';
     if (name.startsWith('Fabric')) {
+      m.geometry.deleteAttribute('uv'); // the model's own UVs aren't to scale: lay the weave out in inches
       boxUV(m.geometry, m.matrixWorld, 1.1); // fine twill: ~20 ribs per inch
       m.material = cloth;
     } else if (name === 'Brass') {
