@@ -406,157 +406,166 @@ def linfit(pts):
 SLEEVE_IN = [(dz_of(15.5), 7.13), (dz_of(28.5), 8.36)]
 
 
+SEAM_TOP, SEAM_BOT = -0.7, -6.6  # armhole seam: top at the shoulder point, bottom at the armpit
+
+
+def armhole_seams(sleeve, objs):
+    """The armhole seam drawn on the coat: up the front of the arm from the armpit, over the
+    shoulder point and down the back, where sleeve and body meet. Its top is the shoulder seam
+    that sleeve insignia are measured from (exported as dr_seam_L / dr_seam_R)."""
+    bvh = bvh_of(objs)
+    sm = sleeve.seam
+    _, cy, _, ry = sleeve.ring(sm["dzc"])
+    ry -= 0.4
+    pts = []
+    for k in range(73):
+        if k <= 12:  # front leg, up from the armpit
+            dz = SEAM_BOT + (sm["dzc"] - SEAM_BOT) * k / 12
+            _, c_, _, r_ = sleeve.ring(dz)
+            y = c_ - r_ + 0.4
+        elif k >= 60:  # back leg, down to the armpit
+            dz = sm["dzc"] + (SEAM_BOT - sm["dzc"]) * (k - 60) / 12
+            _, c_, _, r_ = sleeve.ring(dz)
+            y = c_ + r_ - 0.4
+        else:  # over the shoulder
+            th = math.pi * (k - 12) / 48
+            y, dz = cy - ry * math.cos(th), sm["dzc"] + sm["az"] * math.sin(th)
+        pts.append((y, dz))
+    sleeve.seam_top = {}
+    for side in (1, -1):
+        vs, fs = [], []
+        prev = None
+        hits = []
+        for y, dz in pts:
+            hit = cast(bvh, Vector((side * 30.0, y, Z(dz))), Vector((-side, 0, 0)))
+            if hit:
+                p, n = hit
+                hits.append((p, n if n.x * side > 0 else -n))
+        for _ in range(3):  # even out small steps where the line crosses mesh rows
+            hits = [hits[0]] + [((a[0] + b[0] * 2 + c[0]) / 4, (a[1] + b[1] * 2 + c[1]).normalized())
+                                for a, b, c in zip(hits, hits[1:], hits[2:])] + [hits[-1]]
+        for p, n in hits:
+            p = p + n * 0.02
+            if prev is not None:
+                tan = (p - prev).normalized()
+                w = n.cross(tan).normalized() * 0.04
+                vs += [p - w, p + w]
+            prev = p
+        for i in range(len(vs) // 2 - 1):
+            q = 2 * i
+            fs.append((q, q + 1, q + 3, q + 2))
+        seam_ob = mesh_object(f"ArmholeSeam{side}", vs, fs, "seam")
+        fix_normals(seam_ob, outward=True)
+        top = cast(bvh, Vector((side * 30.0, sm["yc"], Z(SEAM_TOP))), Vector((-side, 0, 0)))
+        down = cast(bvh, Vector((side * (sleeve.sx - 0.1), sm["yc"], 80.0)), Vector((0, 0, -1)))
+        sleeve.seam_top[side] = down[0] if down else (top[0] if top else Vector((side * sleeve.sx, sm["yc"], Z(SEAM_TOP))))
+
+
+def fit_line(top_dz, bot_dz, reqs, ge=True, top_min=None, top_max=None):
+    """The tightest straight edge from top_dz to bot_dz that stays clear of every requirement
+    (dz, value): >= them when ge, else <=. Returns (top value, bottom value)."""
+    sg = 1 if ge else -1
+    rs = [(min(1.0, max(0.0, (dz - top_dz) / (bot_dz - top_dz))), sg * r) for dz, r in reqs]
+    lo = min(r for _, r in rs) - 2.0
+    hi = max(r for _, r in rs) + 4.0
+    best = None
+    steps = 120
+    for i in range(steps + 1):
+        top = lo + (hi - lo) * i / steps
+        if top_min is not None and sg * top < sg * top_min - 1e-9 and ge:
+            continue
+        # smallest bottom that works with this top
+        bot = -1e9
+        for f, r in rs:
+            if f > 1e-6:
+                bot = max(bot, top + (r - top) / f)
+            elif top < r:
+                bot = None
+                break
+        if bot is None:
+            continue
+        score = top + bot
+        if best is None or score < best[0]:
+            best = (score, top, bot)
+    top, bot = best[1], best[2]
+    if top_min is not None:
+        top = max(top, top_min) if ge else min(top, top_min)
+    return (sg * top, sg * bot)
+
+
 class Sleeve:
-    """A straight sleeve on the drawing's lines: the outer edge follows the drawing into the
-    shoulder point, the inner edge is a straight line, both kept clear of the mannequin's arm.
-    Depth comes from the arm plus ease. Sections are rounded and off-center (outer/inner radii)."""
+    """A clean, straight military sleeve: four straight edges (outer, inner, front, back) from the
+    shoulder to a square cuff, sized to clear the mannequin's arm with a little ease. Near the top
+    the cap rounds over the shoulder point. The armhole seam is an arch in the side view, from
+    the shoulder point down the front and back of the arm to the armpit."""
 
     def __init__(self, arm, body_full, delt, torso=None, body_verts=()):
-        self.body_verts = [v for v in body_verts if v.x > 6.0 and Z(CUFF_DZ + 0.8) < v.z < Z(-2.0)]
         self.torso = torso
-        self.delt = delt
-        self.arm = arm
-        self.body_full = body_full
-        # depth from the forearm/elbow (higher up the slab also catches the armpit)
-        ys = [(dz, (a[2] + a[3]) / 2) for dz, a in arm.items() if CUFF_DZ - 0.5 <= dz <= -9.0]
-        rs = [(dz, (a[3] - a[2]) / 2 + 0.4) for dz, a in arm.items() if CUFF_DZ - 0.5 <= dz <= -9.0]
-        self.kcy, self.bcy = linfit(ys)
-        self.kry, self.bry = linfit(rs)
-        self.bry += max(0.0, max(r - (self.kry * d + self.bry) + abs((self.kcy * d + self.bcy) - c) for (d, r), (_, c) in zip(sorted(rs), sorted(ys))))
+        top, bot = -1.0, CUFF_DZ
+        self.top, self.bot = top, bot
+        self.sx = torso.hw(SEAM_TOP) if torso is not None else 8.8
+        lower = [(dz, a) for dz, a in arm.items() if bot <= dz <= -7.0]
+        # outer edge: clear the deltoid and the arm
+        reqs = [(dz, lerp_keys(body_full, dz) + 0.3) for dz in [x * 0.25 for x in range(-18, -5)]]
+        reqs += [(dz, a[1] + 0.35) for dz, a in lower]
+        self.out = fit_line(top, bot, reqs, True)
+        # inner edge parallel to the outer one: a constant width, like a pressed sleeve
+        width = max(4.6, max(self.edge(self.out, dz) - (a[0] - 0.35) for dz, a in lower))
+        self.inn = (self.out[0] - width, self.out[1] - width)
+        # front/back: straight centre line through the arm, constant depth
+        # the arm's own front/back, read from the mannequin beyond the torso's side
+        prof = []
+        for k in range(int((CUFF_DZ + 1.0 + 3.0) / -0.5)):
+            dz = -3.0 - 0.5 * k
+            ys = [v.y for v in body_verts if v.x > 7.7 and abs(v.z - Z(dz)) < 0.25]
+            if len(ys) > 6:
+                prof.append((dz, min(ys), max(ys)))
+        cyk, cyb = linfit([(dz, (a + b) / 2) for dz, a, b in prof])
+        need = [max(cyk * dz + cyb - a, b - (cyk * dz + cyb)) + 0.35 for dz, a, b in prof]
+        depth = min(3.1, max(need))
+        print("arm profile", [(round(d, 1), round(a, 2), round(b, 2)) for d, a, b in prof[::4]], "depth", round(depth, 2))
+        cyt, cyb2 = cyk * top + cyb, cyk * bot + cyb
+        self.front = (cyt - depth, cyb2 - depth)
+        self.back = (cyt + depth, cyb2 + depth)
+        mid = (SEAM_TOP + SEAM_BOT) / 2
+        f, b = self.edge(self.front, mid), self.edge(self.back, mid)
+        self.seam = dict(yc=(f + b) / 2, ay=(b - f) / 2 + 0.25, dzc=mid, az=(SEAM_TOP - SEAM_BOT) / 2)
+        print("sleeve edges", [round(v, 2) for v in self.out + self.inn + self.front + self.back], self.seam)
 
-    def edges(self, dz):
-        out = lerp_keys(SLEEVE_OUT, dz)
-        k = (SLEEVE_IN[1][1] - SLEEVE_IN[0][1]) / (SLEEVE_IN[1][0] - SLEEVE_IN[0][0])
-        inn = SLEEVE_IN[0][1] + k * (dz - SLEEVE_IN[0][0])
-        near = [a for d, a in self.arm.items() if abs(d - dz) <= 0.75]
-        if near:
-            out = max(out, max(a[1] for a in near) + 0.3)
-            inn = min(inn, min(a[0] for a in near) - 0.3)
-        if dz > -4.5:  # shoulder: clear the deltoid
-            out = max(out, lerp_keys(self.body_full, dz) + 0.3)
-        if self.torso is not None and dz < -1.5:  # tuck the inside of the sleeve under the torso's side
-            inn = min(inn, self.torso.hw(dz) - 0.6)
-        return inn, out
+    def edge(self, line, dz):
+        f = (dz - self.top) / (self.bot - self.top)
+        return line[0] + (line[1] - line[0]) * f
 
     def ring(self, dz):
-        """Smoothed along the sleeve, so no ledges where the arm readings start or stop."""
-        if not hasattr(self, "_tab"):
-            self._dzs = [CUFF_DZ - 1 + i * 0.1 for i in range(int((1.0 - CUFF_DZ) / 0.1) + 1)]
-            raw = [self.raw_ring(d) for d in self._dzs]
-            tab = []
-            for i in range(len(raw)):
-                lo, hi = max(0, i - 18), min(len(raw), i + 19)
-                win = raw[lo:hi]
-                tab.append(tuple(sum(w[k] for w in win) / len(win) for k in range(4)))
-            # make sure the smoothed sleeve still contains the arm: grow rings where it pokes out
-            n = 2.4
-            need = [1.0] * len(tab)
-            for v in self.body_verts:
-                i = int(round((v.z - SH - self._dzs[0]) / 0.1))
-                if not 0 <= i < len(tab):
-                    continue
-                cx, cy, rx, ry = tab[i]
-                if v.x < cx - 0.3 * rx or abs(v.y - cy) > 1.25 * ry:
-                    continue  # the arm's outer half only (the rest is under the torso)
-                dx, dy = abs(v.x - cx) + 0.35, abs(v.y - cy) + 0.35
-                val = (dx / rx) ** n + (dy / ry) ** n
-                need[i] = max(need[i], val ** (1 / n))
-            dil = [max(need[max(0, i - 10):i + 11]) for i in range(len(need))]
-            sm = []
-            for i in range(len(dil)):
-                win = dil[max(0, i - 10):i + 11]
-                sm.append(min(1.18, max(sum(win) / len(win), need[i])))
-            tab = [(cx, cy, rx * f, ry * f) for (cx, cy, rx, ry), f in zip(tab, sm)]
-            # final gaussian pass (sigma 0.6 in) so the sleeve has no kinks that read as bands
-            kern = [math.exp(-0.5 * (k / 6.0) ** 2) for k in range(-18, 19)]
-            out = []
-            for i in range(len(tab)):
-                acc = [0.0] * 4
-                wsum = 0.0
-                for k, w in zip(range(-18, 19), kern):
-                    j = min(len(tab) - 1, max(0, i + k))
-                    for q in range(4):
-                        acc[q] += tab[j][q] * w
-                    wsum += w
-                sm4 = [a / wsum for a in acc]
-                sm4[2] = max(sm4[2], tab[i][2] * 0.99)
-                sm4[3] = max(sm4[3], tab[i][3] * 0.99)
-                out.append(tuple(sm4))
-            self._tab = out
-        i = (dz - self._dzs[0]) / 0.1
-        i0 = max(0, min(len(self._tab) - 2, int(i)))
-        f = min(1.0, max(0.0, i - i0))
-        a, b = self._tab[i0], self._tab[i0 + 1]
-        return tuple(a[k] + (b[k] - a[k]) * f for k in range(4))
-
-    def raw_ring(self, dz):
-        inn, out = self.edges(dz)
-        cy = self.kcy * dz + self.bcy
-        ry = min(2.7, self.kry * dz + self.bry)
-        lo, hi = cy - ry, cy + ry
-        near = [a for d, a in self.delt.items() if abs(d - dz) <= 0.5]
-        if near:  # contain the deltoid and upper arm front to back
-            lo = min(lo, min(a[0] for a in near) - 0.35)  # front only: the torso covers the back of the shoulder
-        near = [a for d, a in self.arm.items() if abs(d - dz) <= 0.5]
-        if near:  # the arm's front (its back reading includes the armpit)
-            lo = min(lo, min(a[2] for a in near) - 0.35)
-        cy, ry = (lo + hi) / 2, (hi - lo) / 2
-        if self.torso is not None:  # the shoulder belongs to the torso: tuck the sleeve head inside it
-            w = smoothstep(-2.2, -1.2, dz)
-            out = out * (1 - w) + min(out, self.torso.hw(dz) - 0.2) * w
-        if dz > -1.6:  # close the head up inside the shoulder
-            f = min(1.0, (dz + 1.6) / 1.2)
-            g = math.sqrt(max(0.0, 1 - f * f))
-            ry *= 0.4 + 0.6 * g
-            inn = out - (out - inn) * (0.4 + 0.6 * g)
-        cx = (inn + out) / 2
-        if self.torso is not None:  # near the top, stay within the torso's depth so the head blends in
-            w = smoothstep(-6.2, -4.2, dz)
-            if w > 0:
-                hw, c, ryf, n, ryb = self.torso.section(dz)
-                k = (1 - min(0.999, abs(cx) / hw) ** n) ** (1 / n)
-                lo, hi = cy - ry, cy + ry
-                lo2 = max(lo, c - ryf * k + 0.15)
-                hi2 = min(hi, c + ryb * k - 0.15)
-                if hi2 - lo2 > 0.8:
-                    lo, hi = lo + (lo2 - lo) * w, hi + (hi2 - hi) * w
-                    cy, ry = (lo + hi) / 2, (hi - lo) / 2
-        return cx, cy, out - cx, ry
-
-    def tuck(self, ob):
-        """Armhole seam: above an arc that peaks at the shoulder point and drops to the armpit
-        front and back, the sleeve dives just under the torso, so the seam shows as a rounded
-        curve over the shoulder. Done after the cloth thickness is added (no spikes)."""
-        if self.torso is None:
-            return
-        for v in ob.data.vertices:
-            c = v.co
-            dz = c.z - SH
-            ax = abs(c.x)
-            hw, c0, ryf, nn, ryb = self.torso.section(dz)
-            rr = ryb if c.y > c0 else ryf
-            u = min(0.999, abs(c.y - c0) / max(rr, 1e-3))
-            xt = hw * (1 - u ** nn) ** (1 / nn)
-            cxr, cyr, rxr, ryr = self.ring(dz)
-            ang = math.atan2(c.y - cyr, (ax - cxr))
-            seam = -4.4 + 3.6 * max(0.0, math.cos(ang)) ** 0.7
-            k = smoothstep(seam - 0.2, seam + 0.2, dz)
-            if k > 0:
-                # pull into the torso's depth, then just inside its side
-                yt = min(max(c.y, c0 - ryf + 0.2), c0 + ryb - 0.2)
-                u2 = min(0.999, abs(yt - c0) / max(ryb if yt > c0 else ryf, 1e-3))
-                xt2 = hw * (1 - u2 ** nn) ** (1 / nn)
-                c.y = c.y * (1 - k) + yt * k
-                c.x = math.copysign(ax * (1 - k) + min(ax, xt2 - 0.14) * k, c.x)
-        ob.data.update()
+        out, inn = self.edge(self.out, dz), self.edge(self.inn, dz)
+        fy, by = self.edge(self.front, dz), self.edge(self.back, dz)
+        cap0, capt = -2.6, -0.45
+        if dz > cap0:  # the cap rounds over the shoulder point
+            s = min(1.0, (dz - cap0) / (capt - cap0))
+            g = math.sqrt(max(0.0, 1 - s * s))
+            out = self.sx + (out - self.sx) * g
+            c, h = (fy + by) / 2, (by - fy) / 2 * (0.55 + 0.45 * g)
+            fy, by = c - h, c + h
+            inn = min(inn, out - 1.2)
+        cx, cy = (inn + out) / 2, (fy + by) / 2
+        return cx, cy, (out - inn) / 2, (by - fy) / 2
 
     def axis(self, dz):
         cx, cy, _, _ = self.ring(dz)
         return Vector((cx, cy, Z(dz)))
 
+    def seam_r(self, y, dz, pad=0.0):
+        """<1 inside the armhole: an arch over the shoulder whose legs run down the sleeve's own
+        front and back edges to the armpit. `pad` widens (+) or narrows (-) it."""
+        s = self.seam
+        _, cy, _, ry = self.ring(min(dz, s["dzc"]))
+        u = (y - cy) / max(ry + pad, 0.3)
+        v = max(0.0, (dz - s["dzc"]) / (s["az"] + pad))
+        return math.hypot(u, v)
+
     def build(self, side, cols=72):
-        n = 2.4
-        dzs = [CUFF_DZ + i * 0.2 for i in range(int((-0.6 - CUFF_DZ) / 0.2) + 1)]
+        n = 3.2  # squarer sections: a pressed sleeve
+        dzs = [CUFF_DZ + i * 0.2 for i in range(int((-0.45 - CUFF_DZ) / 0.2) + 1)]
         verts, faces = [], []
         for dz in dzs:
             cx, cy, rx, ry = self.ring(dz)
@@ -578,8 +587,45 @@ class Sleeve:
         for c in range(cols):
             a, b = base + c, base + (c + 1) % cols
             faces.append((a, b, top) if side > 0 else (a, top, b))
-        ob = mesh_object(f"Sleeve{'L' if side > 0 else 'R'}", verts, faces, "coat")
-        return ob
+        return mesh_object(f"Sleeve{'L' if side > 0 else 'R'}", verts, faces, "coat")
+
+    def tuck(self, ob):
+        """Outside the armhole arch (and above the armpit) the sleeve dives just under the body."""
+        t = self.torso
+        for v in ob.data.vertices:
+            c = v.co
+            dz = c.z - SH
+            if dz < SEAM_BOT - 0.05:
+                continue
+            k = smoothstep(1.0, 1.08, self.seam_r(c.y, dz, 0.25))
+            if k <= 0:
+                continue
+            hw, c0, ryf, nn, ryb = t.section(dz)
+            yt = min(max(c.y, c0 - ryf + 0.2), c0 + ryb - 0.2)
+            u2 = min(0.999, abs(yt - c0) / max(ryb if yt > c0 else ryf, 1e-3))
+            xt2 = hw * (1 - u2 ** nn) ** (1 / nn)
+            ax = abs(c.x)
+            c.y = c.y * (1 - k) + yt * k
+            c.x = math.copysign(ax * (1 - k) + min(ax, xt2 - 0.14) * k, c.x)
+        ob.data.update()
+
+    def tuck_torso(self, ob):
+        """Inside the armhole arch the body's side goes under the sleeve."""
+        t = self.torso
+        for v in ob.data.vertices:
+            c = v.co
+            dz = c.z - SH
+            if not (SEAM_BOT - 0.3 < dz < SEAM_TOP + 0.3):
+                continue
+            ax = abs(c.x)
+            if ax < 0.7 * t.hw(dz):
+                continue
+            w = smoothstep(1.0, 0.92, self.seam_r(c.y, dz, -0.12))
+            if w <= 0:
+                continue
+            cx = self.ring(dz)[0]
+            c.x = math.copysign(ax + (min(ax, cx) - ax) * w, c.x)
+        ob.data.update()
 
 
 # ------------------------------------------------------------------ bands (collar, shirt collar, belt)
@@ -695,6 +741,36 @@ def neck_form(torso):
     return point, normal
 
 
+def shell(name, verts, nrms, faces, thickness, material_key):
+    """A cloth panel with thickness built from exact surface normals: the back face is offset
+    along them and the edges are closed. Shading uses the same normals, so the panel reads
+    perfectly smooth however irregular its triangles are."""
+    n = len(verts)
+    tris = []
+    for f in faces:
+        a, b, c = (verts[i] for i in f)
+        fn = (b - a).cross(c - a)
+        if fn.length < 1e-10:
+            continue
+        avg = nrms[f[0]] + nrms[f[1]] + nrms[f[2]]
+        tris.append(tuple(f) if fn.dot(avg) > 0 else (f[0], f[2], f[1]))
+    allv = list(verts) + [v - nm * thickness for v, nm in zip(verts, nrms)]
+    allf = list(tris) + [(c + n, b + n, a + n) for a, b, c in tris]
+    count = {}
+    for a, b, c in tris:
+        for e in ((a, b), (b, c), (c, a)):
+            k = (min(e), max(e))
+            count[k] = count.get(k, 0) + 1
+    for a, b, c in tris:
+        for e in ((a, b), (b, c), (c, a)):
+            if count[(min(e), max(e))] == 1:
+                allf.append((e[1], e[0], e[0] + n, e[1] + n))
+    ob = mesh_object(name, allv, allf, material_key)
+    custom = [tuple(nm) for nm in nrms] + [tuple(-nm) for nm in nrms]
+    ob.data.normals_split_custom_set_from_vertices(custom)
+    return ob
+
+
 def lapel_collar(torso):
     """Lapels and collar as ONE piece of cloth, as on the real coat: from the top button each
     lapel runs up the chest beside the opening, turns at the notch into the collar, and the
@@ -780,31 +856,18 @@ def lapel_collar(torso):
     nring = len(poly)
     vcos, _, faces, _, _, _ = delaunay_2d_cdt(pts, [(i, (i + 1) % nring) for i in range(nring)], [], 0, 1e-6)
     faces = [f for f in faces if inside(*(sum((vcos[i] for i in f), Vector((0, 0))) / 3), poly)]
-    verts = []
+    verts, nrms = [], []
     for v in vcos:
         t, dz = v.x / R, v.y
         p = point(t, dz)
         nrm = normal(t, dz)
         left = 1 - smoothstep(math.pi / 2 - 0.4, math.pi / 2 + 0.4, t)  # wearer's left lapel lies on top
+        # the lapel sits on the chest; along the opening it settles close over the shirt
+        edge = min_dist(v.x, v.y, poly)
         off = 0.17 + 0.04 * left
         verts.append(p + nrm * off)
-    ob = mesh_object("Collar", verts, [tuple(f) for f in faces], "coat")
-    bm = bmesh.new()
-    bm.from_mesh(ob.data)
-    bmesh.ops.remove_doubles(bm, verts=bm.verts, dist=1e-4)
-    bmesh.ops.dissolve_degenerate(bm, edges=bm.edges, dist=1e-4)
-    bmesh.ops.recalc_face_normals(bm, faces=bm.faces)
-    score = 0.0
-    for f in bm.faces:
-        c = f.calc_center_median()
-        score += f.normal.dot(Vector((c.x, c.y - 0.4, 0)).normalized()) * f.calc_area()
-    if score < 0:
-        bmesh.ops.reverse_faces(bm, faces=bm.faces)
-    bm.to_mesh(ob.data)
-    bm.free()
-    solidify(ob, 0.1, even=False)
-    smooth_by_angle(ob, 35)
-
+        nrms.append(nrm)
+    ob = shell("Collar", verts, nrms, [tuple(f) for f in faces], 0.1, "coat")
     # the stand: from the fold down inside, closing the gap to the shirt collar
     sv, sf, cols = [], [], 80
     t0, t1 = -0.5, math.pi + 0.5
@@ -1272,6 +1335,7 @@ def build():
         build_buckle(belt_bvh)
 
     # shoulder loops, laid on from above
+    LOOP["x1"] = sleeve.sx - 0.15  # the loop ends at the shoulder seam
     tops = bvh_of([coat] + sleeves)
     for side in (1, -1):
         ridge = lambda x: 0.65 + (abs(x) - LOOP["x0"]) / (LOOP["x1"] - LOOP["x0"]) * (1.8 - 0.65)
@@ -1291,6 +1355,8 @@ def build():
     for s in sleeves:
         solidify(s, 0.1)
         sleeve.tuck(s)
+    sleeve.tuck_torso(coat)
+    armhole_seams(sleeve, [coat] + sleeves)
     return coat, man, sleeve
 
 
@@ -1375,6 +1441,10 @@ def export_glb(coat, man, sleeve, path):
             e = bpy.data.objects.new(f"dr_arm_{'L' if side > 0 else 'R'}_{i:02d}", None)
             e.location = (p.x * side, p.y, p.z)
             bpy.context.collection.objects.link(e)
+    for side in (1, -1):
+        e = bpy.data.objects.new(f"dr_seam_{'L' if side > 0 else 'R'}", None)
+        e.location = sleeve.seam_top[side]
+        bpy.context.collection.objects.link(e)
     for ob in list(bpy.data.objects):
         if ob.type in ("CAMERA", "LIGHT"):
             bpy.data.objects.remove(ob)

@@ -89,7 +89,7 @@ export function MoreScreen({ build, update, onRestartSetup }: { build: Build; up
           Coat
           <select value={build.sex} onChange={(e) => update({ sex: e.target.value as Build['sex'] })}>
             <option value="male">Male coat</option>
-            <option value="female">Female coat</option>
+            <option value="female" disabled>Female coat (coming soon)</option>
           </select>
         </label>
         <label>

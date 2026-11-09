@@ -112,13 +112,27 @@ export const DEFAULT_BUILD: Build = {
 
 const STORAGE_KEY = 'dressright.build.v1';
 
+/**
+ * Only the male AGSU has been verified end to end (model, fit and placement).
+ * Other uniforms and coats stay visible in the UI but disabled until they are.
+ */
+export const VERIFIED = { uniforms: ['AGSU'] as Build['uniform'][], sexes: ['male'] as Build['sex'][] };
+
+export function lockVerified(b: Build): Build {
+  return {
+    ...b,
+    uniform: VERIFIED.uniforms.includes(b.uniform) ? b.uniform : VERIFIED.uniforms[0],
+    sex: VERIFIED.sexes.includes(b.sex) ? b.sex : VERIFIED.sexes[0],
+  };
+}
+
 export function loadBuild(): Build {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) return DEFAULT_BUILD;
     const parsed = JSON.parse(raw) as Partial<Build>;
     if (parsed.version !== 1) return DEFAULT_BUILD;
-    return { ...DEFAULT_BUILD, ...parsed };
+    return lockVerified({ ...DEFAULT_BUILD, ...parsed });
   } catch {
     return DEFAULT_BUILD;
   }

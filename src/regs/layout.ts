@@ -73,7 +73,7 @@ export function coatGeometry(b: Pick<Build, 'uniform' | 'sex'>): CoatGeometry {
           : { cx: 4.6, top: 2.6, width: 4.7, height: 6.6, flap: 2.5, style: 'flap', pleat: false },
       sleeveLength: 22.9,
       sleeveRadius: 2.6,
-      loopLength: 4.0,
+      loopLength: 3.4, // collar edge to the shoulder seam on the sculpted coat
       collarTilt: 0.35,
     };
   }

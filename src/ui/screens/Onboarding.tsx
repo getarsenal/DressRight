@@ -19,8 +19,8 @@ export function Onboarding({ build, update, onDone }: { build: Build; update: (p
   };
   const [rankCat, setRankCat] = useState<'enlisted' | 'warrant' | 'officer'>('enlisted');
 
-  const Option = ({ on, title, sub, onClick }: { on: boolean; title: string; sub?: string; onClick: () => void }) => (
-    <button className={`opt ${on ? 'on' : ''}`} onClick={onClick}>
+  const Option = ({ on, title, sub, onClick, disabled }: { on: boolean; title: string; sub?: string; onClick: () => void; disabled?: boolean }) => (
+    <button className={`opt ${on ? 'on' : ''}`} onClick={onClick} disabled={disabled}>
       <span>
         <strong>{title}</strong>
         {sub && <small>{sub}</small>}
@@ -116,7 +116,7 @@ export function Onboarding({ build, update, onDone }: { build: Build; update: (p
           <h1>Coat cut</h1>
           <p className="lead">Placement rules differ between the male and female coats.</p>
           <Option on={build.sex === 'male'} title="Male coat" onClick={() => pick({ sex: 'male' })} />
-          <Option on={build.sex === 'female'} title="Female coat" onClick={() => pick({ sex: 'female' })} />
+          <Option on={build.sex === 'female'} title="Female coat" sub="Coming soon" disabled onClick={() => pick({ sex: 'female' })} />
         </section>
       )}
 

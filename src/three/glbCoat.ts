@@ -153,7 +153,10 @@ function prepare(scene: THREE.Object3D, fabric: string): CoatModel {
     const out = new THREE.Vector3(side, 0, 0);
     const P = new THREE.Vector3(side * 7.4, pts[0].y + 0.3, pts[0].z);
     const capDir = (th: number) => up.clone().multiplyScalar(Math.cos(th)).addScaledVector(out, Math.sin(th));
-    const seam = cast(new THREE.Vector3(side * 7.2, 30, pts[0].z), down, coatMeshes);
+    // the shoulder seam (top of the armhole), exported with the model; sleeve insignia are measured from it
+    const seamAnchor = scene.getObjectByName(`dr_seam_${side > 0 ? 'L' : 'R'}`);
+    const sa = seamAnchor?.getWorldPosition(new THREE.Vector3());
+    const seam = sa ? { pos: sa, normal: up.clone() } : cast(new THREE.Vector3(side * 7.2, 30, pts[0].z), down, coatMeshes);
     const thS = seam ? Math.atan2((seam.pos.x - P.x) * side, seam.pos.y - P.y) : 0;
     const h0 = castOut(pts[0], frameAt(pts, 0, side), 6);
     const thE = h0 ? Math.atan2((h0.pos.x - P.x) * side, h0.pos.y - P.y) : Math.PI / 2;
