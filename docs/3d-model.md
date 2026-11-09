@@ -2,27 +2,31 @@
 
 ## Current pipeline (male AGSU and ASU coats)
 
-The male coats in the app are now built in Blender by a script, not by hand:
+The male coats are built in Blender by `tools/blender/block_coat.py` from a front-view reference drawing. It replaces the
+cloth-simulated `coat.py`, which produced bunched, overlapping cloth.
 
 ```sh
 tools/blender/fetch_assets.sh                     # CC0 Human Base Meshes body (Blender Foundation)
-python tools/blender/coat.py --uniform AGSU --export public/models/coat-agsu-male.glb
-python tools/blender/coat.py --uniform ASU  --export public/models/coat-asu-male.glb
-tools/blender/compress.sh public/models/coat-*.glb   # meshopt, about 4x smaller
+python tools/blender/block_coat.py --stage agsu --export public/models/coat-agsu-male.glb --ref <drawing.png>
+python tools/blender/block_coat.py --uniform ASU --stage asu --export public/models/coat-asu-male.glb
+tools/blender/compress.sh public/models/coat-*.glb   # meshopt, about 5x smaller
 ```
 
-(`coat.py` runs under Blender or a `bpy` Python module.) It fits the coat to the realistic mannequin, drapes it with a cloth simulation,
-then cuts the lapels, pockets, flaps, belt and buttons from measurements taken off the product photo (the `SPEC` table). At export it
-moves the origin to the top button and thins the mesh to a phone budget. It also writes `dr_arm_{L,R}_00…12` empties along each
-sleeve's centerline. The root node's extras carry `dr_sleeve_length` and the spec.
+How the builder works (no cloth simulation):
+- **Torso:** a stack of rounded-box sections. The width at each height is measured off the drawing (44.6 px/in, center
+  x = 603 px, collar top y = 610 px). Depth comes from the mannequin plus ease, and every section keeps clearance over the body.
+- **Sleeves:** straight tubes on the drawing's outer and inner edge lines, kept clear of the mannequin's arm and smoothed
+  along their length.
+- **Details:** the collar band, shirt collar, lapels, tie, pockets, flaps, belt (V-dip in front), keeper, buckle,
+  buttons and loops are cut from outlines measured on the drawing, laid onto those surfaces and given thickness.
+- **Comparison render:** `--ref` also renders an orthographic front view in the drawing's frame, for side-by-side
+  comparison.
 
-In the app, `src/three/glbCoat.ts` loads the model and implements `BodySurface` by ray-casting with a BVH:
-- the front from +z;
-- the sleeves outward from the centerline anchors;
-- the shoulder loops from above.
+The GLB keeps the same contract: origin at the top button, inches, and `dr_arm_*` anchors along each sleeve axis.
 
-It also adds a twill normal map. The male entries in `coatGeometry()` (`src/regs/layout.ts`) are measured from the same spec, so the
-regulation layout lines up with the sculpted pockets, notch and sleeves. Female coats still use the procedural body until a sculpted one exists.
+In the app, `src/three/glbCoat.ts` loads the model and implements `BodySurface` by BVH ray-casting. While the block coat is
+being refined, insignia are switched off on the sculpted coat (`SCULPTED_INSIGNIA` in `src/three/Coat.tsx`). Female coats still
+use the procedural body.
 
 The full contract below is the target for hand-built models.
 

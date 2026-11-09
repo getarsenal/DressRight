@@ -20,7 +20,7 @@ export interface CoatModel {
 }
 
 /** meshes insignia sit on (buttons, shirt, tie and the mannequin are excluded) */
-const CLOTH = /^(Coat|Lapel|BreastBody|BreastFlap|BreastPleat|LowerFlap|Belt|Loop\d|Loop-)/;
+const CLOTH = /^(Coat|Sleeve|Lapel|BreastBody|BreastFlap|BreastPleat|LowerFlap|Belt|Loop\d|Loop-)/;
 
 export function modelUrl(uniform: string, sex: string) {
   return `${import.meta.env.BASE_URL}models/coat-${uniform.toLowerCase()}-${sex}.glb`;
@@ -65,6 +65,11 @@ function prepare(scene: THREE.Object3D, fabric: string): CoatModel {
     const mat = m.material as THREE.MeshStandardMaterial;
     const name = mat?.name ?? '';
     if (name.startsWith('Fabric')) {
+      // compressed normals band on the big smooth surfaces: rebuild them
+      if (/^(Coat|Sleeve)/.test(nodeName(m))) {
+        m.geometry.deleteAttribute('normal');
+        m.geometry.computeVertexNormals();
+      }
       boxUV(m.geometry, m.matrixWorld, 2.2);
       m.material = cloth;
     } else if (name === 'Brass') {
@@ -72,9 +77,8 @@ function prepare(scene: THREE.Object3D, fabric: string): CoatModel {
     } else if (name === 'Mannequin') {
       m.material = new THREE.MeshStandardMaterial({ color: '#9a9ca0', roughness: 0.65, ...UNDER });
     } else if (mat) {
-      // shirt and tie: plain cloth, drawn as if a hair behind the coat so the
-      // thinned coat mesh never lets them flicker through
-      m.material = new THREE.MeshStandardMaterial({ color: mat.color, roughness: 0.85, side: THREE.DoubleSide, ...UNDER });
+      // shirt, tie
+      m.material = new THREE.MeshStandardMaterial({ color: mat.color, roughness: 0.85, side: THREE.DoubleSide });
     }
     const n = nodeName(m);
     if (CLOTH.test(n) || n === 'Coat') {
@@ -84,7 +88,7 @@ function prepare(scene: THREE.Object3D, fabric: string): CoatModel {
       m.raycast = acceleratedRaycast;
     }
     if (CLOTH.test(n)) targets.push(m);
-    if (n === 'Coat') coatMeshes.push(m);
+    if (n === 'Coat' || n.startsWith('Sleeve')) coatMeshes.push(m);
   });
 
   const root = scene.getObjectByName('DressRightCoat') ?? scene;
