@@ -54,7 +54,7 @@ function prepare(scene: THREE.Object3D, fabric: string): CoatModel {
     color: fabric,
     roughness: 0.9,
     normalMap: weave,
-    normalScale: new THREE.Vector2(0.55, 0.55),
+    normalScale: new THREE.Vector2(0.28, 0.28),
     side: THREE.DoubleSide,
   });
   const targets: THREE.Mesh[] = [];
@@ -65,7 +65,7 @@ function prepare(scene: THREE.Object3D, fabric: string): CoatModel {
     const mat = m.material as THREE.MeshStandardMaterial;
     const name = mat?.name ?? '';
     if (name.startsWith('Fabric')) {
-      boxUV(m.geometry, m.matrixWorld, 2.2);
+      boxUV(m.geometry, m.matrixWorld, 1.1); // fine twill: ~20 ribs per inch
       m.material = cloth;
     } else if (name === 'Brass') {
       m.material = new THREE.MeshStandardMaterial({ color: '#c9a227', metalness: 0.9, roughness: 0.28 });
@@ -327,7 +327,7 @@ let weaveTex: THREE.Texture | null = null;
 function weaveNormalMap() {
   if (weaveTex) return weaveTex;
   const N = 128;
-  const ribs = 22; // ribs per tile: ~10 per inch at a 2.2 in tile
+  const ribs = 22; // ribs per tile: ~20 per inch at a 1.1 in tile
   const h = new Float32Array(N * N);
   for (let y = 0; y < N; y++)
     for (let x = 0; x < N; x++) {
@@ -353,6 +353,7 @@ function weaveNormalMap() {
   t.wrapS = t.wrapT = THREE.RepeatWrapping;
   t.generateMipmaps = true;
   t.minFilter = THREE.LinearMipmapLinearFilter;
+  t.anisotropy = 8; // keeps the fine weave from shimmering into stripes at grazing angles
   t.magFilter = THREE.LinearFilter;
   t.needsUpdate = true;
   weaveTex = t;
