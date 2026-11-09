@@ -63,8 +63,9 @@ def Z(dz):
 # ------------------------------------------------------------------ drawing measurements
 
 # torso half-width (front view) by height (dz from the shoulder line)
-HW_KEYS = [(1.90, 3.60), (1.36, 4.90), (0.46, 6.40), (-0.44, 7.90), (-0.90, 8.50), (-1.60, 8.95), (-2.50, 9.25),
-           (-3.30, 9.35), (-4.20, 9.35), (-5.00, 9.0), (-5.80, 8.25), (-6.60, 7.9), (-7.64, 7.45), (-12.1, 7.08), (-14.1, 6.90),
+# straight shoulder line from the neck to the shoulder point, then a rounded edge rolling into the sleeve
+HW_KEYS = [(1.90, 3.60), (1.20, 5.10), (0.40, 6.80), (-0.35, 8.40), (-0.80, 9.20), (-1.30, 9.60), (-2.00, 9.78),
+           (-3.00, 9.82), (-4.20, 9.75), (-5.00, 9.10), (-5.80, 8.25), (-6.60, 7.9), (-7.64, 7.45), (-12.1, 7.08), (-14.1, 6.90),
            (-16.6, 7.17), (-18.8, 7.42), (-25.6, 7.49), (-29.8, 7.50)]
 # sleeve outer edge (front view)
 SLEEVE_OUT = [(-0.9, 8.68), (-5.38, 9.66), (-12.14, 11.19), (-16.64, 11.5), (-25.14, 12.13)]
@@ -76,6 +77,10 @@ NECK_DZ = 1.9
 LAPEL = [(2.74, 0.55), (4.42, 4.26), (3.07, 4.44), (5.20, 4.60), (4.44, 5.83), (3.86, 6.50), (3.23, 7.17), (2.56, 7.85),
          (1.88, 8.52), (1.17, 9.19), (0.43, 9.87), (-0.07, 10.2), (0.0, 9.64), (0.25, 8.74), (0.70, 7.40), (1.10, 6.05),
          (1.52, 4.70), (1.93, 3.36), (2.35, 2.00)]
+# the lapel below the gorge (the collar piece covers the rest, up and around the neck)
+LAPEL_LOW = [(1.80, 3.70), (3.40, 4.02), (3.07, 4.44), (5.20, 4.60), (4.44, 5.83), (3.86, 6.50), (3.23, 7.17), (2.56, 7.85),
+             (1.88, 8.52), (1.17, 9.19), (0.43, 9.87), (-0.07, 10.2), (0.0, 9.64), (0.25, 8.74), (0.70, 7.40), (1.10, 6.05),
+             (1.52, 4.70)]
 V_EDGE = [(2.74, 0.6), (2.35, 2.0), (1.93, 3.36), (1.52, 4.7), (1.1, 6.05), (0.7, 7.4), (0.25, 8.74), (0.0, 9.64)]
 SHIRT_LEAF = [(2.74, 0.55), (0.16, 2.80), (0.62, 4.75), (1.28, 5.95), (1.60, 4.50), (2.05, 3.0), (2.45, 1.8)]
 TIE = [(-0.55, 2.55), (0.55, 2.55), (0.38, 4.75), (0.95, 6.7), (0.0, 9.7), (-0.95, 6.7), (-0.38, 4.75)]
@@ -88,7 +93,7 @@ BELT = dict(top_c=18.4, top_s=17.7, bot_c=20.0, bot_s=19.2, side_x=6.76)
 BUCKLE = dict(w=1.12, h=1.75, bar=0.2, y=19.25)
 KEEPER = [(2.2, 18.3), (2.8, 18.3), (2.8, 20.0), (2.2, 20.0)]
 FRONT_EDGE = [(-0.32, 10.2), (-0.08, 10.2), (-0.08, 32.6), (-0.32, 32.6)]
-LOOP = dict(x0=3.9, x1=8.35, w=0.8, button_x=4.5)
+LOOP = dict(x0=5.2, x1=8.9, w=0.8, button_x=5.75)  # starts just outside the collar edge
 
 COLORS = {
     "AGSU": dict(coat=(75, 70, 53), shirt=(181, 161, 140), tie=(76, 71, 53)),
@@ -281,11 +286,12 @@ class Torso:
         # smooth every profile (gaussian, ~1 in) so the surface has no ripples
         sigma = 8.0
         kern = [math.exp(-0.5 * (k / sigma) ** 2) for k in range(-24, 25)]
+        kern_w = [math.exp(-0.5 * (k / 3.5) ** 2) for k in range(-24, 25)]  # width: keep the shoulder edge defined
         for col in (1, 2, 3, 4, 5):
             vals = [r[col] for r in rows]
             for i in range(len(rows)):
                 acc = wsum = 0.0
-                for k, w in zip(range(-24, 25), kern):
+                for k, w in zip(range(-24, 25), kern_w if col == 1 else kern):
                     j = min(len(rows) - 1, max(0, i + k))
                     acc += vals[j] * w
                     wsum += w
@@ -629,6 +635,102 @@ def collar_fall(torso_bvh, stand_top, t0=-0.62, t1=math.pi + 0.62, cols=96, rows
     return ob
 
 
+def catmull(pts, n):
+    """Catmull-Rom through pts, n samples per segment."""
+    out = []
+    P = [pts[0]] + pts + [pts[-1]]
+    for i in range(1, len(P) - 2):
+        p0, p1, p2, p3 = P[i - 1], P[i], P[i + 1], P[i + 2]
+        for k in range(n):
+            t = k / n
+            t2, t3 = t * t, t * t * t
+            out.append(0.5 * ((2 * p1) + (-p0 + p2) * t + (2 * p0 - 5 * p1 + 4 * p2 - p3) * t2 + (-p0 + 3 * p1 - 3 * p2 + p3) * t3))
+    out.append(pts[-1])
+    return out
+
+
+def continuous_collar(torso, stand_top, rows=10, roll_rows=4):
+    """One piece of cloth: from the notch on each lapel it runs up the chest along the roll line,
+    over the shoulders and around the back of the neck, where it rolls over the stand.
+
+    Built on the coat's own surface: every point is torso.point(t, dz) lifted along the surface
+    normal, with the collar outline interpolated in (t, dz), so it can't twist or float."""
+    def t_front(x, dz, side=1):
+        hw, cy, ryf, n, ryb = torso.section(dz)
+        c = min(0.999, abs(x) / hw) ** (n / 2)
+        t = -math.acos(c)  # front, wearer's left
+        return t if side > 0 else -math.pi - t
+
+    top = NECK_DZ - 0.08
+    # (inner = roll line, outer = collar edge) on the drawing, notch end first
+    front = [((1.77, 3.95), (4.42, 4.26)), ((2.00, 3.20), (3.94, 3.20)), ((2.20, 2.50), (3.62, 2.50)), ((2.38, 1.90), (3.35, 1.90))]
+    secs = []  # (t_in, dz_in, t_out, dz_out, neckness)
+    for (xi, yi), (xo, yo) in front:
+        di, do = dz_of(yi), dz_of(yo)
+        secs.append((t_front(xi, di), di, t_front(xo, do), do, 0.0))
+    t0, t1 = -0.72, math.pi + 0.72
+    steps = 22
+    for k in range(steps + 1):
+        t = t0 + (t1 - t0) * k / steps
+        back = (math.sin(t) + 1) / 2
+        width = 1.45 + 0.35 * back  # measured along the cloth
+        dz, run, prev = top, 0.0, torso.point(t, top)
+        while run < width and dz > -6.0:
+            dz -= 0.05
+            q = torso.point(t, dz)
+            run += (q - prev).length
+            prev = q
+        w = smoothstep(-0.72, -0.2, t) * smoothstep(math.pi + 0.72, math.pi + 0.2, t)
+        secs.append((t, top, t, dz, w))
+    for (xi, yi), (xo, yo) in reversed(front):
+        di, do = dz_of(yi), dz_of(yo)
+        secs.append((t_front(xi, di, -1), di, t_front(xo, do, -1), do, 0.0))
+
+    cols = [catmull([Vector((s_[k], 0, 0)) for s_ in secs], 6) for k in range(5)]
+    tin, din, tout, dout, neck = [[v.x for v in c] for c in cols]
+    verts, faces = [], []
+    w_ = rows + roll_rows + 1
+    for i in range(len(tin)):
+        off = 0.40 - 0.12 * neck[i]
+        for r in range(rows + 1):  # outer edge -> roll line, on the surface
+            h = r / rows
+            t = tout[i] + (tin[i] - tout[i]) * h
+            dz = dout[i] + (din[i] - dout[i]) * h
+            p = torso.point(t, dz)
+            nrm = surface_normal(torso, t, dz)
+            verts.append(p + nrm * (off + 0.06 * math.sin(math.pi * h)))
+        # the roll: from the roll line up and over to the fold at the top of the stand
+        base = verts[-1]
+        tt = tin[i]
+        fold = Vector((3.74 * math.cos(tt), 0.4 + 3.44 * math.sin(tt), Z(stand_top(tt) + 0.12)))
+        for r in range(1, roll_rows + 1):
+            h = r / roll_rows
+            q = base.lerp(fold, h)
+            q.z += 0.25 * math.sin(math.pi * h)  # rounded fold
+            verts.append(base.lerp(q, neck[i]))
+    for i in range(len(tin) - 1):
+        for r in range(rows + roll_rows):
+            q = i * w_ + r
+            faces.append((q, q + 1, q + 1 + w_, q + w_))
+    ob = mesh_object("Collar", verts, faces, "coat")
+    bm = bmesh.new()
+    bm.from_mesh(ob.data)
+    bmesh.ops.remove_doubles(bm, verts=bm.verts, dist=1e-4)
+    bmesh.ops.recalc_face_normals(bm, faces=bm.faces)
+    score = 0.0
+    for f in bm.faces:
+        c = f.calc_center_median()
+        score += f.normal.dot(Vector((c.x, c.y - 0.4, 0)).normalized() + Vector((0, 0, 0.6))) * f.calc_area()
+    if score < 0:
+        bmesh.ops.reverse_faces(bm, faces=bm.faces)
+    bm.to_mesh(ob.data)
+    bm.free()
+    solidify(ob, 0.11, even=False)
+    for p_ in ob.data.polygons:
+        p_.use_smooth = True
+    return ob
+
+
 def seam(name, outline_xz, panel_ob, inset=0.14, width=0.035, lift=0.008):
     """A topstitch line just inside a panel's outline, laid on the panel's front."""
     pts = [Vector(p) for p in outline_xz]
@@ -876,22 +978,39 @@ def build():
                       0, 2 * math.pi, "shirt", thickness=0.06)
     stand_top = lambda t: 2.55 + 0.35 * (math.sin(t) + 1) / 2
     stand = band("CollarStand", 3.62, 3.32, 3.66, 3.36, 0.4, 1.7, stand_top, -0.62, math.pi + 0.62, "coat", thickness=0.1)
-    fall = collar_fall(bvh_of([coat]), stand_top)
+    fall = continuous_collar(torso, stand_top)
 
     base = bvh_of([coat, stand, fall, shirt_band])
     torso_only = bvh_of([coat])
+    # a smooth form for the shirt and tie: the coat front blending up into the shirt collar
+    # (projecting onto the collar pieces themselves gives stair-stepped edges)
+    fv, ff, cols = [], [], 96
+    for r in range(9):
+        h = r / 8
+        for c in range(cols):
+            t = 2 * math.pi * c / cols
+            a_ = torso.point(t, 1.7)
+            b_ = Vector((3.30 * math.cos(t), 0.35 + 3.0 * math.sin(t), Z(3.3)))
+            fv.append(a_.lerp(b_, h * h * (3 - 2 * h)))
+    for r in range(8):
+        for c in range(cols):
+            q, q2 = r * cols + c, r * cols + (c + 1) % cols
+            ff.append((q, q2, q2 + cols, q + cols))
+    form = mesh_object("ShirtForm", fv, ff, "shirt")
+    shirt_bvh = bvh_of([coat, form])
+    bpy.data.objects.remove(form)
 
     # shirt in the V, tie, shirt collar leaves
     shirt_poly = [(min(x + 0.45, 2.85), y) for x, y in V_EDGE]
     shirt_poly = [(x, 0.6) for x, _ in shirt_poly[:1]] + shirt_poly + [(-x, y) for x, y in reversed(shirt_poly)] + [(-shirt_poly[0][0], 0.6)]
-    panel("ShirtFront", outline_to_xz(shirt_poly), base, 0.03, 0.0, "shirt", bev=0)
-    panel("Tie", outline_to_xz(TIE), base, 0.08, 0.04, "tie", bev=0.012)
+    panel("ShirtFront", outline_to_xz(shirt_poly), shirt_bvh, 0.03, 0.0, "shirt", bev=0)
+    panel("Tie", outline_to_xz(TIE), shirt_bvh, 0.08, 0.04, "tie", bev=0.012)
     for m in (False, True):
-        panel(f"ShirtLeaf{'R' if m else 'L'}", outline_to_xz(SHIRT_LEAF, m), base, 0.13, 0.04, "shirt", bev=0.012)
+        panel(f"ShirtLeaf{'R' if m else 'L'}", outline_to_xz(SHIRT_LEAF, m), shirt_bvh, 0.13, 0.04, "shirt", bev=0.012)
 
     # lapels (the wearer's left one on top)
-    panel("LapelR", outline_to_xz(LAPEL, True), base, 0.2, 0.12, "coat", torso=torso)
-    panel("LapelL", outline_to_xz(LAPEL, False), base, 0.23, 0.12, "coat", torso=torso)
+    panel("LapelR", outline_to_xz(LAPEL_LOW, True), torso_only, 0.2, 0.12, "coat", torso=torso)
+    panel("LapelL", outline_to_xz(LAPEL_LOW, False), torso_only, 0.23, 0.12, "coat", torso=torso)
 
     # breast pockets, flaps, pleats, buttons
     P = POCKET
