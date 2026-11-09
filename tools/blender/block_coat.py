@@ -502,10 +502,10 @@ class Sleeve:
             lo = min(lo, min(a[2] for a in near) - 0.35)
         cy, ry = (lo + hi) / 2, (hi - lo) / 2
         if self.torso is not None:  # the shoulder belongs to the torso: tuck the sleeve head inside it
-            w = smoothstep(-4.4, -3.6, dz)
+            w = smoothstep(-2.2, -1.2, dz)
             out = out * (1 - w) + min(out, self.torso.hw(dz) - 0.2) * w
-        if dz > -3.6:  # close the head up inside the shoulder
-            f = min(1.0, (dz + 3.6) / 1.2)
+        if dz > -1.6:  # close the head up inside the shoulder
+            f = min(1.0, (dz + 1.6) / 1.2)
             g = math.sqrt(max(0.0, 1 - f * f))
             ry *= 0.4 + 0.6 * g
             inn = out - (out - inn) * (0.4 + 0.6 * g)
@@ -529,7 +529,7 @@ class Sleeve:
 
     def build(self, side, cols=72):
         n = 2.4
-        dzs = [CUFF_DZ + i * 0.2 for i in range(int((-2.4 - CUFF_DZ) / 0.2) + 1)]
+        dzs = [CUFF_DZ + i * 0.2 for i in range(int((-0.6 - CUFF_DZ) / 0.2) + 1)]
         verts, faces = [], []
         for dz in dzs:
             cx, cy, rx, ry = self.ring(dz)
@@ -551,7 +551,33 @@ class Sleeve:
         for c in range(cols):
             a, b = base + c, base + (c + 1) % cols
             faces.append((a, b, top) if side > 0 else (a, top, b))
-        return mesh_object(f"Sleeve{'L' if side > 0 else 'R'}", verts, faces, "coat")
+        ob = mesh_object(f"Sleeve{'L' if side > 0 else 'R'}", verts, faces, "coat")
+        if self.torso is not None:
+            # armhole seam: the sleeve is cut along an arc that peaks at the shoulder point and drops
+            # to the armpit front and back; above it the torso's shoulder shows, so the seam reads
+            # as a rounded curve over the shoulder (like a set-in sleeve)
+            bm = bmesh.new()
+            bm.from_mesh(ob.data)
+            dead = []
+            for f in bm.faces:
+                c = f.calc_center_median()
+                dz = c.z - SH
+                ax = abs(c.x)
+                hw, c0, ryf, nn, ryb = self.torso.section(dz)
+                rr = ryb if c.y > c0 else ryf
+                u = min(0.999, abs(c.y - c0) / max(rr, 1e-3))
+                xt = hw * (1 - u ** nn) ** (1 / nn)
+                cxr, cyr, rxr, ryr = self.ring(dz)
+                # angle round the sleeve: 0 = straight out (the shoulder point side)
+                ang = math.atan2(c.y - cyr, (ax - cxr))
+                seam = -4.4 + 3.6 * max(0.0, math.cos(ang)) ** 0.7
+                if dz > seam and ax < xt + 0.02:
+                    dead.append(f)
+            bmesh.ops.delete(bm, geom=dead, context="FACES")
+            bmesh.ops.delete(bm, geom=[v for v in bm.verts if not v.link_faces], context="VERTS")
+            bm.to_mesh(ob.data)
+            bm.free()
+        return ob
 
 
 # ------------------------------------------------------------------ bands (collar, shirt collar, belt)
@@ -673,7 +699,7 @@ def continuous_collar(torso, stand_top, rows=10, roll_rows=4):
     for k in range(steps + 1):
         t = t0 + (t1 - t0) * k / steps
         back = (math.sin(t) + 1) / 2
-        width = 1.45 + 0.35 * back  # measured along the cloth
+        width = 1.05 + 0.3 * back  # short: measured along the cloth
         dz, run, prev = top, 0.0, torso.point(t, top)
         while run < width and dz > -6.0:
             dz -= 0.05
@@ -691,22 +717,22 @@ def continuous_collar(torso, stand_top, rows=10, roll_rows=4):
     verts, faces = [], []
     w_ = rows + roll_rows + 1
     for i in range(len(tin)):
-        off = 0.40 - 0.12 * neck[i]
+        off = 0.38 - 0.2 * neck[i]  # over the lapel in front, close to the coat around the neck
         for r in range(rows + 1):  # outer edge -> roll line, on the surface
             h = r / rows
             t = tout[i] + (tin[i] - tout[i]) * h
             dz = dout[i] + (din[i] - dout[i]) * h
             p = torso.point(t, dz)
             nrm = surface_normal(torso, t, dz)
-            verts.append(p + nrm * (off + 0.06 * math.sin(math.pi * h)))
+            verts.append(p + nrm * (off + 0.04 * math.sin(math.pi * h)))
         # the roll: from the roll line up and over to the fold at the top of the stand
         base = verts[-1]
         tt = tin[i]
-        fold = Vector((3.74 * math.cos(tt), 0.4 + 3.44 * math.sin(tt), Z(stand_top(tt) + 0.12)))
+        fold = Vector((3.64 * math.cos(tt), 0.4 + 3.34 * math.sin(tt), Z(stand_top(tt) + 0.08)))
         for r in range(1, roll_rows + 1):
             h = r / roll_rows
             q = base.lerp(fold, h)
-            q.z += 0.25 * math.sin(math.pi * h)  # rounded fold
+            q.z += 0.1 * math.sin(math.pi * h)  # rounded fold
             verts.append(base.lerp(q, neck[i]))
     for i in range(len(tin) - 1):
         for r in range(rows + roll_rows):
@@ -976,8 +1002,8 @@ def build():
     # collar band (open at the front between the lapels) and shirt collar
     shirt_band = band("ShirtCollar", 3.38, 3.08, 3.42, 3.12, 0.35, 1.45, lambda t: 2.95 + 0.15 * (math.sin(t) + 1) / 2,
                       0, 2 * math.pi, "shirt", thickness=0.06)
-    stand_top = lambda t: 2.55 + 0.35 * (math.sin(t) + 1) / 2
-    stand = band("CollarStand", 3.62, 3.32, 3.66, 3.36, 0.4, 1.7, stand_top, -0.62, math.pi + 0.62, "coat", thickness=0.1)
+    stand_top = lambda t: 2.15 + 0.3 * (math.sin(t) + 1) / 2  # low: the shirt collar shows above it
+    stand = band("CollarStand", 3.52, 3.22, 3.56, 3.26, 0.4, 1.5, stand_top, -0.62, math.pi + 0.62, "coat", thickness=0.09)
     fall = continuous_collar(torso, stand_top)
 
     base = bvh_of([coat, stand, fall, shirt_band])
