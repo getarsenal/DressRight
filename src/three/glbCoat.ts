@@ -270,8 +270,10 @@ function prepare(scene: THREE.Object3D, fabric: string): CoatModel {
 
   // shoulder loops run from the button (x ≈ 3.9) out to the seam (x ≈ 7.2)
   const loopZ = { 1: loopCenterZ(scene, '1'), [-1]: loopCenterZ(scene, '-1') } as Record<1 | -1, number>;
+  // the loop starts just inside its button (at the collar edge)
+  const loopStart = { 1: loopButtonX(scene, '1'), [-1]: loopButtonX(scene, '-1') } as Record<1 | -1, number>;
   const shoulder = (side: 1 | -1, t: number, zOff = 0): SurfaceHit => {
-    const x = side * (3.6 + t);
+    const x = side * (loopStart[side] + t);
     const h = cast(new THREE.Vector3(x, 30, loopZ[side] + zOff), down, targets);
     return h ?? { pos: new THREE.Vector3(x, 8, loopZ[side] + zOff), normal: new THREE.Vector3(0, 1, 0) };
   };
@@ -294,9 +296,18 @@ function anchors(scene: THREE.Object3D, s: 'L' | 'R') {
   return pts.length >= 2 ? pts : [new THREE.Vector3(s === 'L' ? 8.5 : -8.5, 4.4, 0), new THREE.Vector3(s === 'L' ? 10 : -10, -14.5, 0.5)];
 }
 
+function loopButtonX(scene: THREE.Object3D, side: string) {
+  const b = scene.getObjectByName(`LoopButton${side}`);
+  if (!b) return 3.6;
+  const box = new THREE.Box3().setFromObject(b);
+  return Math.abs((box.min.x + box.max.x) / 2) - 0.3;
+}
+
 function loopCenterZ(scene: THREE.Object3D, side: string) {
   const b = scene.getObjectByName(`LoopButton${side}`);
-  return b ? b.getWorldPosition(new THREE.Vector3()).z : 0;
+  if (!b) return 0;
+  const box = new THREE.Box3().setFromObject(b); // the node sits at the origin; use the mesh itself
+  return (box.min.z + box.max.z) / 2;
 }
 
 /** box-projected UVs (inches / scale) so the weave map tiles evenly over the cloth */

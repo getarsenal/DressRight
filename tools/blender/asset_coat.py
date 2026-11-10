@@ -461,13 +461,10 @@ def top_button_z(coat):
     """Height of the highest front button (the layout's origin)."""
     me = coat.data
     brass = [i for i, m in enumerate(me.materials) if m and m.name.startswith("Brass")]
-    best = None
-    for p in me.polygons:
-        if p.material_index in brass:
-            c = p.center
-            if abs(c.x) < 1.2 and c.y < 0 and (best is None or c.z > best):
-                best = c.z
-    return best
+    pts = [p.center.copy() for p in me.polygons if p.material_index in brass and abs(p.center.x) < 1.2 and p.center.y < 0]
+    top = max(c.z for c in pts)
+    cl = [c.z for c in pts if c.z > top - 0.8]  # the top button's faces
+    return sum(cl) / len(cl)  # its centre
 
 
 def export(coat, male):
