@@ -385,6 +385,29 @@ def main():
     if tie_v:
         cx = NEW[tie_v, 0].mean()
         NEW[tie_v, 0] = cx + (NEW[tie_v, 0] - cx) * 0.72
+    if male:
+        # shirt collar: pull it in around the neck so it sits on the (dress-form) neck, not floating
+        sv = np.array(sorted({v for f, p in enumerate(me.polygons) if role[f] == "shirt" for v in p.vertices}))
+        if len(sv):
+            c0 = np.array([0.0, 0.45])
+            d = NEW[sv, :2] - c0
+            ang = np.arctan2(d[:, 1], d[:, 0])
+            r = np.hypot(d[:, 0], d[:, 1] * 1.08)
+            hz = smoothstep(bc.Z(0.6), bc.Z(1.8), NEW[sv, 2])
+            bins = ((ang + np.pi) / (2 * np.pi) * 36).astype(int) % 36
+            minr = np.full(36, np.inf)
+            for b, rr, h in zip(bins, r, hz):
+                if h > 0.5:
+                    minr[b] = min(minr[b], rr)
+            minr[~np.isfinite(minr)] = np.nan
+            target = NECK_R + 0.12
+            fac = np.where(np.isnan(minr), 1.0, np.minimum(1.0, target / np.nan_to_num(minr, nan=1.0)))
+            fac = np.convolve(np.pad(fac, 2, mode="wrap"), np.ones(5) / 5, mode="valid")
+            k = 1 - hz * (1 - fac[bins])
+            NEW[sv, 0] = c0[0] + d[:, 0] * k
+            NEW[sv, 1] = c0[1] + d[:, 1] * k
+        # coat collar / lapels: smooth their outline so the edges aren't wavy
+        smooth_piece_edges(me, NEW, island_of, role, main_v)
     # the model's shoulder loops are short pads near the shoulder point: replaced below (male)
     names = [m.name for m in me.materials]
     loop_face = np.array([names[p.material_index] in ("bordado", "bordado_1", "boton") for p in me.polygons])
@@ -859,6 +882,12 @@ def shoulder_loops(coat, sleeve_ref, width=1.75):
             if ta[1] - tb[1] > 0.25:  # a step down: the collar edge
                 x0 = xb_ + 0.2
         x1 = sleeve_ref.sx - 0.3
+        # start just outside the collar: the collar's outer edge along the top of the shoulder
+        cv = np.array([v.co[:] for v in coat.data.vertices])
+        band = cv[(np.sign(cv[:, 0]) == side) & (cv[:, 2] > bc.Z(-0.6)) & (np.abs(cv[:, 1] - 0.9) < 0.9)]
+        collar = band[band[:, 2] > bc.Z(0.55)]
+        if len(collar):
+            x0 = max(x0, np.abs(collar[:, 0]).max() - 1.1)  # tucked under the collar edge
         ys = {x: t[0] for x, t in prof}
         # a straight centre line along the top of the shoulder (fit to the ridge)
         px = np.array([p_[0] for p_ in prof if x0 <= p_[0] <= x1])
@@ -883,10 +912,48 @@ def shoulder_loops(coat, sleeve_ref, width=1.75):
         print("loop", side, "x0", round(x0, 2), "x1", round(x1, 2))
 
 
+NECK_R = 2.95  # dress-form neck radius (inches): fills a 16-16.5 in shirt collar
+
+
+def smooth_piece_edges(me, NEW, island_of, role, main_v, iters=30):
+    """Relax the outline (boundary loop) of the collar and lapel pieces along itself, and pull the
+    next ring of vertices with it, so the edges read as clean lines."""
+    bm = bmesh.new()
+    bm.from_mesh(me)
+    bm.verts.ensure_lookup_table()
+    sel = set()
+    for f in bm.faces:
+        if role[f.index] == "coat" and not main_v[f.verts[0].index] and NEW[f.verts[0].index, 2] > bc.Z(-12):
+            sel.update(v.index for v in f.verts)
+    bnd = [v for v in bm.verts if v.index in sel and v.is_boundary]
+    nb = {v.index: [e.other_vert(v).index for e in v.link_edges if e.is_boundary] for v in bnd}
+    for _ in range(iters):
+        upd = {}
+        for v in bnd:
+            ns = nb[v.index]
+            if len(ns) == 2:
+                upd[v.index] = NEW[v.index] * 0.5 + (NEW[ns[0]] + NEW[ns[1]]) * 0.25
+        for i, c in upd.items():
+            NEW[i] = c
+    ring = set()
+    bset = {v.index for v in bnd}
+    for v in bnd:
+        for e in v.link_edges:
+            o = e.other_vert(v).index
+            if o not in bset and o in sel:
+                ring.add(o)
+    for _ in range(8):
+        for i in ring:
+            ns = [e.other_vert(bm.verts[i]).index for e in bm.verts[i].link_edges]
+            NEW[i] = NEW[i] * 0.5 + NEW[ns].mean(axis=0) * 0.5
+    bm.free()
+
+
 def neck_stub():
     """Dress-form neck filling the shirt collar (the mannequin's own neck is cut below the jaw)."""
     nv, nf, ncols = [], [], 64
-    for rx, ry, z in ((2.55, 2.35, 1.4), (2.55, 2.35, 2.75), (2.35, 2.15, 2.9), (0.0, 0.0, 2.92)):
+    R = NECK_R
+    for rx, ry, z in ((R, R * 0.92, 1.4), (R, R * 0.92, 2.75), (R - 0.2, R * 0.92 - 0.2, 2.9), (0.0, 0.0, 2.92)):
         for c in range(ncols):
             t = 2 * math.pi * c / ncols
             nv.append(Vector((rx * math.cos(t), 0.45 + ry * math.sin(t), bc.Z(z))))
