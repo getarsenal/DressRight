@@ -56,25 +56,22 @@ export interface CoatGeometry {
 export function coatGeometry(b: Pick<Build, 'uniform' | 'sex'>): CoatGeometry {
   const male = b.sex === 'male';
   if (male) {
-    // Measured from the sculpted 40R coat (tools/blender/coat.py SPEC, from the
-    // product photo): origin at the top button, shoulder line 7.1 in above it.
+    // Measured on the sculpted 40R coat (tools/blender/asset_coat.py, from the purchased model):
+    // origin at the centre of the top button, inches.
     return {
       width: 17,
       height: 30,
       depth: 9.5,
       top: 15,
-      notchY: 6.78,
-      notchX: 3.54,
+      notchY: 7.73,
+      notchX: 4.2,
       topButtonY: 0,
-      buttons: [0, -3.1, -5.9, -8.7],
-      pocket:
-        b.uniform === 'AGSU'
-          ? { cx: 4.6, top: 2.6, width: 4.7, height: 6.9, flap: 2.75, style: 'flap', pleat: true }
-          : { cx: 4.6, top: 2.6, width: 4.7, height: 6.6, flap: 2.5, style: 'flap', pleat: false },
-      sleeveLength: 22.9,
+      buttons: [0, -1.7, -3.65, -5.6],
+      pocket: { cx: 4.3, top: 3.58, width: 4.0, height: 3.77, flap: 1.75, style: 'flap', pleat: true },
+      sleeveLength: 23.1,
       sleeveRadius: 2.6,
-      loopLength: 3.4, // collar edge to the shoulder seam on the sculpted coat
-      collarTilt: 0.35,
+      loopLength: 3.4, // collar edge to the shoulder seam
+      collarTilt: 0.45,
     };
   }
   // proportions of a 12R female coat (procedural model)

@@ -218,7 +218,7 @@ function Insignia({ build, items, selected, onSelect, showMeasures, surf, sleeve
  * While the sculpted coat is being fitted (block stage), show the bare uniform:
  * insignia go back on once the coat's shape is settled.
  */
-const SCULPTED_INSIGNIA = false;
+const SCULPTED_INSIGNIA = true;
 
 function SculptedCoat(props: Props & { model: CoatModel }) {
   const { model } = props;
