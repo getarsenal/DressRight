@@ -380,6 +380,14 @@ def main():
         # into the app frame: shoulder line at the same height as the male coat, centred front to back
         NEW[:, 2] += bc.Z(0.35) - ASSET["shoulder"]
         NEW[:, 1] -= np.median(S[main_v & (np.abs(S[:, 0]) < 3), 1])
+    # a narrower tie (the model's is oversized): scale its width about its centre line
+    tie_v = sorted({v for f, p in enumerate(me.polygons) if role[f] == "tie" for v in p.vertices})
+    if tie_v:
+        cx = NEW[tie_v, 0].mean()
+        NEW[tie_v, 0] = cx + (NEW[tie_v, 0] - cx) * 0.72
+    # the model's shoulder loops are short pads near the shoulder point: replaced below (male)
+    names = [m.name for m in me.materials]
+    loop_face = np.array([names[p.material_index] in ("bordado", "bordado_1", "boton") for p in me.polygons])
     for i, v in enumerate(me.vertices):
         v.co = NEW[i]
     me.update()
@@ -396,7 +404,8 @@ def main():
     # the AGSU has no buttons on the cuffs: drop the model's sleeve buttons
     bm = bmesh.new()
     bm.from_mesh(me)
-    dead = [f for f in bm.faces if role[f.index] == "brass" and all(in_sleeve[v.index] for v in f.verts)]
+    dead = [f for f in bm.faces if (role[f.index] == "brass" and all(in_sleeve[v.index] for v in f.verts))
+            or (male and loop_face[f.index])]
     bmesh.ops.delete(bm, geom=dead, context="FACES")
     bmesh.ops.delete(bm, geom=[v for v in bm.verts if not v.link_faces], context="VERTS")
     bm.to_mesh(me)
@@ -406,7 +415,11 @@ def main():
         relax_underarm(coat)
         clear_body(coat, man)
         bc.smooth_by_angle(coat, 40)
-        bc.armhole_seams(sleeve_ref, [coat])
+        bc.armhole_seams(sleeve_ref, [coat])  # keeps the shoulder-seam anchors
+        for ob in list(bpy.data.objects):  # no drawn seam line on the shoulder
+            if ob.name.startswith("ArmholeSeam"):
+                bpy.data.objects.remove(ob)
+        shoulder_loops(coat, sleeve_ref)
         neck_stub()
         export_ctx.update(sleeve=sleeve_ref, man=man)
     else:
@@ -819,6 +832,55 @@ def relax_underarm(coat, iters=25):
     for i in idx:
         me.vertices[i].co = co[i]
     me.update()
+
+
+def shoulder_loops(coat, sleeve_ref, width=1.75):
+    """AGSU shoulder loops: from the collar edge out to the shoulder seam along the top of the
+    shoulder, pointed at the collar end with a button there."""
+    bpy.context.view_layer.update()
+    bvh = bc.bvh_of([coat])
+
+    def top_at(x):
+        """y of the shoulder's ridge (highest cloth) at x, and its height"""
+        best = None
+        for k in range(61):
+            y = -3.0 + 7.0 * k / 60
+            hit = bc.cast(bvh, Vector((x, y, 80.0)), Vector((0, 0, -1)))
+            if hit and (best is None or hit[0].z > best[1]):
+                best = (y, hit[0].z)
+        return best
+
+    for side in (1, -1):
+        # the collar's outer edge: where the cloth surface steps down from the collar onto the shoulder
+        prof = [(x, top_at(side * x)) for x in [3.5 + 0.1 * k for k in range(50)]]
+        prof = [(x, t) for x, t in prof if t]
+        x0 = 4.6
+        for (xa_, ta), (xb_, tb) in zip(prof, prof[1:]):
+            if ta[1] - tb[1] > 0.25:  # a step down: the collar edge
+                x0 = xb_ + 0.2
+        x1 = sleeve_ref.sx - 0.3
+        ys = {x: t[0] for x, t in prof}
+        # a straight centre line along the top of the shoulder (fit to the ridge)
+        px = np.array([p_[0] for p_ in prof if x0 <= p_[0] <= x1])
+        py = np.array([p_[1][0] for p_ in prof if x0 <= p_[0] <= x1])
+        k_, b_ = np.polyfit(px, py, 1) if len(px) > 2 else (0.0, 0.5)
+        ridge = lambda x: k_ * x + b_
+        w = width / 2
+        xs = np.linspace(x0, x1, 12)
+        top = [(x, ridge(x) - w) for x in xs]
+        bot = [(x, ridge(x) + w) for x in xs[::-1]]
+        outline = [(x0 - 0.45, ridge(x0))] + top + bot  # pointed at the collar end
+        outline = [(side * x, y) for x, y in outline]
+        if side < 0:
+            outline = outline[::-1]
+        bc.panel(f"Loop{side}", outline, bvh, 0.12, 0.12, "coat", from_above=True, step=0.1)
+        bx = x0 + 0.25
+        hit = bc.cast(bvh, Vector((side * bx, ridge(bx), 80.0)), Vector((0, 0, -1)))
+        if hit:
+            p, n = hit
+            n = n if n.z > 0 else -n
+            bc.button(f"LoopButton{side}", p + n * 0.3, n, 0.6, h=0.13)
+        print("loop", side, "x0", round(x0, 2), "x1", round(x1, 2))
 
 
 def neck_stub():
