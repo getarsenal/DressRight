@@ -346,9 +346,12 @@ def main():
         a_, b_ = a_ / nl, b_ / nl
         f = np.clip((np.abs(q[:, 0]) - xa) / (x_end[s] - xa), 0, 1)
         if male:
-            # onto the block coat's straight sleeve: same length position, same angle around it
-            top = -0.45
-            dz = top + f * (bc.CUFF_DZ - top)
+            # the model's own sleeve, laid onto the straight sleeve shape. It stays one piece with the
+            # body: its armhole edge starts on the armhole arch (high at the shoulder point, down
+            # at the armpit), so the shoulder rolls straight into the sleeve with no ridge
+            outer = np.clip((b_ + 1) / 2, 0, 1)
+            seam_dz = bc.SEAM_BOT + (bc.SEAM_TOP - bc.SEAM_BOT) * outer ** 1.4
+            dz = seam_dz + f * (bc.CUFF_DZ - seam_dz)
             base = np.zeros((len(ii), 3))
             radial = np.zeros((len(ii), 3))
             for j in range(len(ii)):
@@ -390,36 +393,20 @@ def main():
         p.material_index = slot[role[f]]
         p.use_smooth = True
     coat.name = "Coat"
+    # the AGSU has no buttons on the cuffs: drop the model's sleeve buttons
+    bm = bmesh.new()
+    bm.from_mesh(me)
+    dead = [f for f in bm.faces if role[f.index] == "brass" and all(in_sleeve[v.index] for v in f.verts)]
+    bmesh.ops.delete(bm, geom=dead, context="FACES")
+    bmesh.ops.delete(bm, geom=[v for v in bm.verts if not v.link_faces], context="VERTS")
+    bm.to_mesh(me)
+    bm.free()
+    in_sleeve = np.zeros(len(me.vertices), dtype=bool)  # indices changed; not needed past this point
     if male:
-        # sleeves: the verified straight block sleeves (the model's own sleeves are T-pose tubes with
-        # no detail beyond cuff buttons); the model's body ends at the armhole arch
-        drop_sleeves(coat, in_sleeve, sleeve_ref, torso)
+        relax_underarm(coat)
+        clear_body(coat, man)
         bc.smooth_by_angle(coat, 40)
-        smooth_boundary(coat)
-        lining = torso.build()  # the block coat's sides, just inside: closes the armholes
-        lining.name = "Lining"
-        bm = bmesh.new()
-        bm.from_mesh(lining.data)
-        dead = []
-        for f_ in bm.faces:
-            c = f_.calc_center_median()
-            dz = c.z - bc.SH
-            if abs(c.x) < 0.62 * torso.hw(dz) or dz > 0.5 or dz < bc.SEAM_BOT - 3.0:
-                dead.append(f_)
-        bmesh.ops.delete(bm, geom=dead, context="FACES")
-        bm.to_mesh(lining.data)
-        bm.free()
-        for v in lining.data.vertices:
-            hw, cy, ryf, n_, ryb = torso.section(v.co.z - bc.SH)
-            r = Vector((v.co.x, v.co.y - cy, 0))
-            if r.length > 1e-6:
-                v.co -= r.normalized() * 0.4  # well inside: never shows through the coat or the sleeve
-        bc.solidify(lining, 0.06)
-        sleeves = [sleeve_ref.build(1), sleeve_ref.build(-1)]
-        for sl_ in sleeves:
-            bc.solidify(sl_, 0.1)
-            sleeve_ref.tuck(sl_)
-        bc.armhole_seams(sleeve_ref, [coat, lining] + sleeves)
+        bc.armhole_seams(sleeve_ref, [coat])
         neck_stub()
         export_ctx.update(sleeve=sleeve_ref, man=man)
     else:
@@ -786,6 +773,52 @@ def tuck_armhole_edge(coat, torso, rings=8, depth=1.0):
             v.co -= rad.normalized() * depth * w * w
     bm.to_mesh(coat.data)
     bm.free()
+
+
+def clear_body(coat, man, gap=0.3, iters=3):
+    """Keep the cloth outside the mannequin: points under or too close to the skin are pushed out
+    along its normal, then the push is smoothed over the neighbours so nothing dents."""
+    bpy.context.view_layer.update()
+    bvh = bc.bvh_of([man])
+    me = coat.data
+    nb = neighbours(me)
+    co = np.array([v.co[:] for v in me.vertices])
+    for _ in range(iters):
+        push = np.zeros_like(co)
+        for i, c in enumerate(co):
+            loc, nrm, _, d = bvh.find_nearest(Vector(c))
+            if loc is None or d > gap + 0.5:
+                continue
+            n = Vector(nrm)
+            depth = (Vector(c) - loc).dot(n)
+            if depth < gap:
+                push[i] = np.array(n) * (gap - depth)
+        for _ in range(4):
+            push = np.array([np.maximum(push[i], 0) * 0 + push[i] if np.any(push[i]) else
+                             (push[nb[i]].mean(axis=0) * 0.7 if len(nb[i]) else 0) for i in range(len(co))])
+        co = co + push
+    for i, v in enumerate(me.vertices):
+        v.co = co[i]
+    me.update()
+
+
+def relax_underarm(coat, iters=25):
+    """Smooth the cloth where sleeve and body meet under the arm (front and back), where the mapped
+    surfaces fold over each other."""
+    me = coat.data
+    nb = neighbours(me)
+    co = np.array([v.co[:] for v in me.vertices])
+    dz = co[:, 2] - bc.SH
+    ax = np.abs(co[:, 0])
+    w = smoothstep(4.8, 6.0, ax) * (1 - smoothstep(9.5, 10.5, ax)) * smoothstep(bc.SEAM_BOT - 2.0, bc.SEAM_BOT, dz) \
+        * (1 - smoothstep(-2.0, -0.8, dz))
+    idx = np.where(w > 0)[0]
+    for _ in range(iters):
+        avg = np.array([co[nb[i]].mean(axis=0) if len(nb[i]) else co[i] for i in idx])
+        co[idx] += (avg - co[idx]) * (0.6 * w[idx, None])
+    for i in idx:
+        me.vertices[i].co = co[i]
+    me.update()
 
 
 def neck_stub():
